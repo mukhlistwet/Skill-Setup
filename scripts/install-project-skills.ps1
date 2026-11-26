@@ -11,7 +11,7 @@ param(
     [string]$ProjectPath,
     [string[]]$Skills = @(),
     [string]$SkillsCsv = "",
-    [string]$ManifestPath = (Join-Path $PSScriptRoot "..\manifest\skills-manifest.csv"),
+    [string]$ManifestPath = "",
     [string[]]$Agents = @(),
     [string]$AgentsCsv = "",
     [switch]$DryRun
@@ -19,6 +19,23 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+# Resolve the manifest after parameter binding. Do not reference $PSScriptRoot
+# in a param() default expression: it can be empty during parameter binding
+# in some Windows PowerShell invocation contexts.
+if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
+    $CurrentScriptPath = $PSCommandPath
+    if ([string]::IsNullOrWhiteSpace($CurrentScriptPath)) {
+        $CurrentScriptPath = $MyInvocation.MyCommand.Path
+    }
+    if ([string]::IsNullOrWhiteSpace($CurrentScriptPath)) {
+        throw "Tidak dapat menentukan lokasi file script. Berikan -ManifestPath secara eksplisit."
+    }
+    $CurrentScriptDirectory = Split-Path -Parent -Path $CurrentScriptPath
+    $ManifestPath = Join-Path -Path $CurrentScriptDirectory -ChildPath "..\manifest\skills-manifest.csv"
+}
+$ManifestPath = [System.IO.Path]::GetFullPath($ManifestPath)
+
 $KnownAgents = @("opencode", "claude-code", "codex", "antigravity", "hermes-agent", "zcode")
 
 if (-not (Test-Path -LiteralPath $ProjectPath -PathType Container)) {

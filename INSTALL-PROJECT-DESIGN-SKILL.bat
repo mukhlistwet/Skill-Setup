@@ -9,6 +9,14 @@ echo       PROJECT-LEVEL DESIGN SKILL INSTALLER
 echo ================================================================
 echo Skill: design-taste-frontend (installed with --copy)
 echo.
+set "MANIFEST_PATH=%~dp0manifest\skills-manifest.csv"
+
+if not exist "%MANIFEST_PATH%" (
+  echo [ERROR] manifest\skills-manifest.csv tidak ditemukan.
+  pause
+  popd
+  exit /b 1
+)
 if not exist "scripts\install-project-skills.ps1" (
   echo [ERROR] scripts\install-project-skills.ps1 tidak ditemukan.
   pause
@@ -45,7 +53,7 @@ echo Project : %PROJECT_PATH%
 echo Agents  : %AGENTS_CSV%
 echo.
 echo === DRY-RUN / PREVIEW ===
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-project-skills.ps1" -ProjectPath "%PROJECT_PATH%" -SkillsCsv "design-taste-frontend" -AgentsCsv "%AGENTS_CSV%" -DryRun
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-project-skills.ps1" -ManifestPath "%MANIFEST_PATH%" -ProjectPath "%PROJECT_PATH%" -SkillsCsv "design-taste-frontend" -AgentsCsv "%AGENTS_CSV%" -DryRun
 if errorlevel 1 (
   echo [ERROR] Dry-run gagal. Tidak ada perubahan.
   pause
@@ -59,7 +67,7 @@ if errorlevel 2 (
   exit /b 0
 )
 
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-project-skills.ps1" -ProjectPath "%PROJECT_PATH%" -SkillsCsv "design-taste-frontend" -AgentsCsv "%AGENTS_CSV%"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-project-skills.ps1" -ManifestPath "%MANIFEST_PATH%" -ProjectPath "%PROJECT_PATH%" -SkillsCsv "design-taste-frontend" -AgentsCsv "%AGENTS_CSV%"
 if errorlevel 1 (
   echo [ERROR] Instalasi gagal. Periksa output di atas.
   pause

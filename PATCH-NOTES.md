@@ -30,3 +30,11 @@ The `ref` field remains blank because immutable commit SHAs/tags were not verifi
 - ZIP integrity test passed.
 
 PowerShell and BAT scripts were not executed on a native Windows machine in this build environment. Run the BAT dry-run on Windows and review its output before confirming installation.
+
+
+## Hotfix v2.1.1 — Manifest path resolution
+
+- Fixed `Join-Path` failure caused by evaluating `$PSScriptRoot` inside a `param()` default expression.
+- All three PowerShell scripts now resolve the default manifest path after parameter binding using the script file path.
+- Both BAT launchers now pass the manifest path explicitly and stop early when the manifest is missing.
+- Existing installation behavior, skill selection, and confirmation flow are unchanged.

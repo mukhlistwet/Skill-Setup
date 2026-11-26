@@ -10,6 +10,15 @@ echo ================================================================
 echo Repository : %CD%
 echo.
 
+set "MANIFEST_PATH=%~dp0manifest\skills-manifest.csv"
+
+if not exist "%MANIFEST_PATH%" (
+  echo [ERROR] manifest\skills-manifest.csv tidak ditemukan.
+  pause
+  popd
+  exit /b 1
+)
+
 if not exist "scripts\install-global-skills.ps1" (
   echo [ERROR] scripts\install-global-skills.ps1 tidak ditemukan.
   echo Extract patch ini ke root repository Skill-Setup.
@@ -88,7 +97,7 @@ echo Target agents : %AGENTS_CSV%
 if not "%CONDITIONAL_CSV%"=="" echo Conditional  : %CONDITIONAL_CSV%
 echo.
 echo === DRY-RUN / PREVIEW ===
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-global-skills.ps1" -AgentsCsv "%AGENTS_CSV%" -IncludeConditionalSkillsCsv "%CONDITIONAL_CSV%" -DryRun
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-global-skills.ps1" -ManifestPath "%MANIFEST_PATH%" -AgentsCsv "%AGENTS_CSV%" -IncludeConditionalSkillsCsv "%CONDITIONAL_CSV%" -DryRun
 if errorlevel 1 (
   echo.
   echo [ERROR] Dry-run gagal. Tidak ada skill yang di-install.
@@ -107,7 +116,7 @@ if errorlevel 2 (
 
 echo.
 echo === INSTALL ===
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-global-skills.ps1" -AgentsCsv "%AGENTS_CSV%" -IncludeConditionalSkillsCsv "%CONDITIONAL_CSV%"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\install-global-skills.ps1" -ManifestPath "%MANIFEST_PATH%" -AgentsCsv "%AGENTS_CSV%" -IncludeConditionalSkillsCsv "%CONDITIONAL_CSV%"
 if errorlevel 1 (
   echo.
   echo [ERROR] Ada proses instalasi yang gagal. Periksa log di atas.
@@ -118,7 +127,7 @@ if errorlevel 1 (
 
 echo.
 echo === VERIFY ===
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\verify-install.ps1"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\verify-install.ps1" -ManifestPath "%MANIFEST_PATH%"
 echo.
 echo Selesai. Verifikasi lagi dari CLI/UI native setiap agent.
 pause

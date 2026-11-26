@@ -1,3 +1,5 @@
+> **Hotfix v2.1.1:** Perbaikan resolusi path manifest untuk Windows PowerShell; gunakan BAT terbaru di paket ini.
+
 # Engineering Agent Setup
 
 Panduan operasional, manifest, policy, template, dan skrip otomasi untuk menyiapkan lingkungan **AI coding-agent** pada **Windows 11 + PowerShell** secara konsisten saat pindah device atau memulai project baru.

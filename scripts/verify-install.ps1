@@ -8,11 +8,28 @@
 [CmdletBinding()]
 param(
     [string]$ProjectPath = "",
-    [string]$ManifestPath = (Join-Path $PSScriptRoot "..\manifest\skills-manifest.csv")
+    [string]$ManifestPath = ""
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Continue"
+
+# Resolve the manifest after parameter binding. Do not reference $PSScriptRoot
+# in a param() default expression: it can be empty during parameter binding
+# in some Windows PowerShell invocation contexts.
+if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
+    $CurrentScriptPath = $PSCommandPath
+    if ([string]::IsNullOrWhiteSpace($CurrentScriptPath)) {
+        $CurrentScriptPath = $MyInvocation.MyCommand.Path
+    }
+    if ([string]::IsNullOrWhiteSpace($CurrentScriptPath)) {
+        throw "Tidak dapat menentukan lokasi file script. Berikan -ManifestPath secara eksplisit."
+    }
+    $CurrentScriptDirectory = Split-Path -Parent -Path $CurrentScriptPath
+    $ManifestPath = Join-Path -Path $CurrentScriptDirectory -ChildPath "..\manifest\skills-manifest.csv"
+}
+$ManifestPath = [System.IO.Path]::GetFullPath($ManifestPath)
+
 function Test-CommandVersion {
     param([string]$Command, [string[]]$ArgsList)
     try {
