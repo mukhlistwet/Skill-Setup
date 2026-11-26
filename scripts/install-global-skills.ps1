@@ -1,71 +1,104 @@
 <#
 .SYNOPSIS
-    Install global core skills dari manifest/skills-manifest.csv secara idempotent.
+    Install global skills from manifest/skills-manifest.csv.
 .DESCRIPTION
-    Membaca manifest, memvalidasi bahwa tidak ada placeholder source/ref, dan memasang
-    skill dengan scope 'global' (serta conditional skills tertentu jika diminta).
-    Tidak pernah menghapus skill lain di luar manifest.
+    Installs scope=global skills and only the explicitly selected conditional skills.
+    A blank ref is allowed and means the source repository's default branch is used.
+    This is convenient but not reproducible; pin a tag or full commit SHA in the manifest for strict repeatability.
 .EXAMPLE
     .\scripts\install-global-skills.ps1 -DryRun
-    .\scripts\install-global-skills.ps1 -Agents opencode,claude-code,codex,antigravity
-    .\scripts\install-global-skills.ps1 -IncludeConditionalSkills vercel-react-best-practices
+    .\scripts\install-global-skills.ps1 -Agents opencode,codex,antigravity
+    .\scripts\install-global-skills.ps1 -AgentsCsv "opencode,codex" -IncludeConditionalSkillsCsv "vercel-react-best-practices"
 #>
 [CmdletBinding()]
 param(
     [string]$ManifestPath = (Join-Path $PSScriptRoot "..\manifest\skills-manifest.csv"),
     [string[]]$Agents = @(),
+    [string]$AgentsCsv = "",
     [string[]]$IncludeConditionalSkills = @(),
+    [string]$IncludeConditionalSkillsCsv = "",
     [switch]$DryRun
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-if (-not (Test-Path -LiteralPath $ManifestPath)) {
+$KnownAgents = @("opencode", "claude-code", "codex", "antigravity", "hermes-agent", "zcode")
+$EffectiveAgents = @()
+if (-not [string]::IsNullOrWhiteSpace($AgentsCsv)) {
+    $EffectiveAgents = @($AgentsCsv -split '[,;]' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+}
+elseif ($Agents -and $Agents.Count -gt 0) {
+    $EffectiveAgents = @($Agents | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+}
+if ($EffectiveAgents.Count -gt 0) {
+    $UnknownAgents = @($EffectiveAgents | Where-Object { $KnownAgents -notcontains $_ })
+    if ($UnknownAgents.Count -gt 0) {
+        throw "Agent tidak dikenal: $($UnknownAgents -join ', '). Valid: $($KnownAgents -join ', ')"
+    }
+    $EffectiveAgents = @($EffectiveAgents | Select-Object -Unique)
+}
+
+$Conditional = @($IncludeConditionalSkills)
+if (-not [string]::IsNullOrWhiteSpace($IncludeConditionalSkillsCsv)) {
+    $Conditional += @($IncludeConditionalSkillsCsv -split '[,;]' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+}
+$Conditional = @($Conditional | Select-Object -Unique)
+
+if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) {
     throw "Manifest tidak ditemukan: $ManifestPath"
 }
+if (-not (Get-Command npx.cmd -ErrorAction SilentlyContinue)) {
+    throw "npx.cmd tidak ditemukan. Install Node.js (termasuk npm) lalu buka terminal baru."
+}
 
-$Rows = Import-Csv -LiteralPath $ManifestPath
-$Selected = $Rows | Where-Object {
+$Rows = @(Import-Csv -LiteralPath $ManifestPath)
+$Selected = @($Rows | Where-Object {
     ($_.scope -eq "global") -or
-    ($_.scope -eq "conditional" -and ($IncludeConditionalSkills -contains $_.skill))
+    ($_.scope -eq "conditional" -and $Conditional -contains $_.skill)
+})
+if ($Selected.Count -eq 0) {
+    throw "Tidak ada skill global/conditional yang dipilih di manifest."
 }
 
-if (-not $Selected) {
-    throw "Tidak ada skill dengan scope 'global' yang ditemukan pada manifest."
-}
-
-# Fail-fast jika masih ada placeholder
-$InvalidRows = $Selected | Where-Object {
-    $_.source -match '<.*>' -or [string]::IsNullOrWhiteSpace($_.source) -or
-    $_.ref -match '<.*>' -or [string]::IsNullOrWhiteSpace($_.ref)
-}
-
-if ($InvalidRows) {
-    Write-Host "[ERROR] Manifest masih berisi placeholder pada skill berikut:" -ForegroundColor Red
+$InvalidRows = @($Selected | Where-Object {
+    [string]::IsNullOrWhiteSpace($_.skill) -or
+    [string]::IsNullOrWhiteSpace($_.source) -or
+    $_.source -match '<.*>' -or
+    $_.ref -match '<.*>'
+})
+if ($InvalidRows.Count -gt 0) {
+    Write-Host "[ERROR] Manifest berisi skill/source/ref yang belum valid:" -ForegroundColor Red
     $InvalidRows | Select-Object skill, source, ref | Format-Table -AutoSize
-    Write-Host "Lengkapi source URL dan tag/commit SHA di manifest\skills-manifest.csv sebelum instalasi." -ForegroundColor Yellow
-    Write-Host "Lihat panduan pemulihan source di runbooks\03-MAINTENANCE.md." -ForegroundColor Yellow
     exit 1
 }
 
-$Results = [System.Collections.Generic.List[object]]::new()
+$Unpinned = @($Selected | Where-Object { [string]::IsNullOrWhiteSpace($_.ref) })
+if ($Unpinned.Count -gt 0) {
+    Write-Warning "$($Unpinned.Count) skill memakai default branch (ref kosong). Isi kolom ref dengan tag/full commit SHA untuk instalasi yang reproducible."
+}
 
+$Results = [System.Collections.Generic.List[object]]::new()
 foreach ($Row in $Selected) {
-    $TargetAgents = if ($Agents.Count -gt 0) {
-        $Agents
-    } else {
-        ($Row.agents -split ';') | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    $TargetAgents = if ($EffectiveAgents.Count -gt 0) {
+        $EffectiveAgents
+    }
+    else {
+        @($Row.agents -split ';' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     }
 
-    $SourceSpec = "$($Row.source)@$($Row.ref)"
-    $ArgsList = @("skills", "add", $SourceSpec, "--skill", $Row.skill, "--global")
+    $SourceSpec = [string]$Row.source
+    if (-not [string]::IsNullOrWhiteSpace([string]$Row.ref)) {
+        $SourceSpec = "$($Row.source)@$($Row.ref)"
+    }
+
+    $ArgsList = @("--yes", "skills", "add", $SourceSpec, "--skill", [string]$Row.skill, "--global")
     foreach ($Agent in $TargetAgents) {
         $ArgsList += @("--agent", $Agent)
     }
     $ArgsList += "--yes"
+    $CmdDisplay = "npx.cmd " + (($ArgsList | ForEach-Object { if ($_ -match '\s') { '"' + $_ + '"' } else { $_ } }) -join ' ')
 
-    $CmdDisplay = "npx.cmd " + ($ArgsList -join " ")
     if ($DryRun) {
         Write-Host "[DRY-RUN] $CmdDisplay" -ForegroundColor Cyan
         $Results.Add([PSCustomObject]@{ Skill = $Row.skill; Status = "DRY-RUN"; Target = ($TargetAgents -join ",") })
@@ -75,8 +108,9 @@ foreach ($Row in $Selected) {
     Write-Host "[INSTALL] $($Row.skill) -> $($TargetAgents -join ', ')" -ForegroundColor Yellow
     try {
         & npx.cmd @ArgsList
-        if ($LASTEXITCODE -ne 0) {
-            throw "Exit code $LASTEXITCODE"
+        $ExitCode = $LASTEXITCODE
+        if ($ExitCode -ne 0) {
+            throw "Skills CLI exit code $ExitCode"
         }
         Write-Host "[OK] $($Row.skill)" -ForegroundColor Green
         $Results.Add([PSCustomObject]@{ Skill = $Row.skill; Status = "OK"; Target = ($TargetAgents -join ",") })
@@ -87,10 +121,8 @@ foreach ($Row in $Selected) {
     }
 }
 
-Write-Host ""
-Write-Host "=== Ringkasan Instalasi Global ===" -ForegroundColor Cyan
+Write-Host "`n=== Ringkasan Instalasi Global ===" -ForegroundColor Cyan
 $Results | Format-Table -AutoSize
-
-if ($Results | Where-Object { $_.Status -eq "FAILED" }) {
+if (@($Results | Where-Object { $_.Status -eq "FAILED" }).Count -gt 0) {
     exit 1
 }
