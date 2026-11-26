@@ -1,0 +1,9 @@
+
+# --- Coding Agent Local State & Secrets ---
+.env
+.env.*
+!.env.example
+.context-mode/
+.claude/settings.local.json
+.opencode/state/
+*.local.md

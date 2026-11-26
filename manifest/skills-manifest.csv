@@ -1,0 +1,14 @@
+skill,source,ref,scope,agents,license,prerequisites,notes
+frontend-ui-engineering,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: UI components, state, interactions, responsive behavior"
+webapp-testing,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+;Chromium,Core: Real browser workflow testing
+systematic-debugging,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,Core: Root-cause debugging for unclear bugs/regressions
+code-review,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,Core: Diff review and code quality verification
+security-review,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: Auth, authorization, secrets, input, API, trust boundaries"
+database-designer,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: Schema, indexing, query analysis, migrations"
+api-and-interface-design,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: Endpoint contracts, request/response, backward compatibility"
+software-architecture,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: System boundaries, tradeoffs, ADR"
+ci-cd-pipeline-builder,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: Build, test, and deployment pipelines"
+observability-setup,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: Logging, metrics, tracing, alerting, SLI/SLO"
+performance-engineer,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,global,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Core: Profiling, bottlenecks, capacity & benchmarks"
+design-taste-frontend,https://github.com/Leonxlnx/taste-skill,<PINNED_COMMIT>,project,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22+;Chromium;ffmpeg(optional),"Conditional: Marketing websites, landing pages, product launches, visual redesigns only"
+vercel-react-best-practices,<VERIFIED_OWNER/REPO>,<TAG_OR_COMMIT>,conditional,opencode;claude-code;codex;antigravity;hermes-agent;zcode,<VERIFY>,Node 22.20+,"Conditional: React/Next.js performance, rendering, waterfalls, bundles"

@@ -1,0 +1,22 @@
+# Project Agent Instructions
+
+## Project Overview
+- **Product Name:** `<PROJECT_NAME>`
+- **Project Type:** `<API / Dashboard-ERP / Marketing-Website>`
+- **Primary Stack:** `<e.g., Next.js, NestJS, PostgreSQL, TailwindCSS>`
+
+## Key Commands
+- **Install:** `<npm install>`
+- **Dev:** `<npm run dev>`
+- **Test:** `<npm test>`
+- **Lint / Typecheck:** `<npm run lint>`
+- **Build:** `<npm run build>`
+
+## Architecture & Boundaries
+- Jelaskan struktur folder utama, batasan domain, dan area kode sensitif.
+- Rujuk `DESIGN.md` di root repository untuk seluruh pekerjaan UI/frontend (jika ada).
+
+## Non-Negotiable Rules
+- Jangan ubah skema database atau kontrak API publik tanpa memperbarui migration/dokumentasi terkait.
+- Jangan commit secrets, `.env`, atau data produksi.
+- Jalankan test dan lint sebelum menyelesaikan perubahan.

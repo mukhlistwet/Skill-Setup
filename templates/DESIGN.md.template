@@ -1,0 +1,41 @@
+---
+version: alpha
+name: Product Name Design System
+---
+
+# Overview
+Purpose, target users, product context, and core visual direction.
+
+# Brand
+Approved logo usage, brand assets, tone, and non-negotiable brand constraints.
+
+# Colors
+Semantic color tokens:
+- Primary / Secondary
+- Background / Surface / Elevated Surface
+- Text Primary / Text Muted / Inverse Text
+- Border / Divider
+- Status: Success, Warning, Danger, Info
+
+# Typography
+Font families, type scale, weights, line heights, and heading/body hierarchy.
+
+# Spacing and Layout
+Spacing scale, grid system, container max-widths, and breakpoints.
+
+# Components
+Core UI primitives and interaction states (default, hover, focus, active, disabled, loading, error):
+- Buttons
+- Inputs & Forms
+- Cards & Containers
+- Tables & Data Displays
+- Navigation & Modals/Dialogs
+
+# Accessibility
+Semantic HTML, keyboard navigation, visible focus rings, WCAG contrast targets, form labels/errors, and reduced motion support.
+
+# Responsive Behavior
+Layout adaptation rules for mobile, tablet, and desktop viewports.
+
+# Do Not
+Patterns, visual overrides, or styling shortcuts that must not be introduced in this project.

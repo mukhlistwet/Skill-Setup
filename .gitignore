@@ -1,0 +1,31 @@
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*secret*
+*credential*
+*token*
+
+# Local Backups & Snapshots
+AI-Skill-Backup-*/
+backups/
+*.bak
+*.zip
+
+# Agent Runtime, Auth & Session State
+.claude/settings.local.json
+.opencode/state/
+.context-mode/
+*.sqlite
+*.db
+*.log
+
+# Node & OS Artifacts
+node_modules/
+.DS_Store
+Thumbs.db
+desktop.ini

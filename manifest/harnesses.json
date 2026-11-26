@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0",
+  "verified_date": "2026-11-26",
+  "harnesses": [
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "global_skills_dir": "~/.config/opencode/skills",
+      "project_skills_dirs": [
+        ".agents/skills",
+        ".opencode/skills"
+      ],
+      "compatibility_dirs": [
+        ".claude/skills",
+        ".agents/skills"
+      ],
+      "context_mode_supported": true,
+      "context_mode_install": [
+        "opencode plugin add context-mode"
+      ],
+      "context_mode_verify": "/ctx-doctor",
+      "opendesign_mcp_supported": true,
+      "opendesign_target": "opencode",
+      "notes": "Oh My OpenCode (OMP) shares OpenCode skill discovery; avoid duplicate skill IDs."
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code CLI",
+      "global_skills_dir": "~/.claude/skills",
+      "project_skills_dirs": [
+        ".claude/skills"
+      ],
+      "compatibility_dirs": [],
+      "context_mode_supported": true,
+      "context_mode_install": [
+        "claude plugin marketplace add mksglu/context-mode",
+        "claude plugin install context-mode@context-mode"
+      ],
+      "context_mode_verify": "/ctx-doctor",
+      "opendesign_mcp_supported": true,
+      "opendesign_target": "claude",
+      "notes": "Personal global skills apply across projects; project skills travel with Git."
+    },
+    {
+      "id": "codex",
+      "name": "Codex",
+      "global_skills_dir": "~/.agents/skills",
+      "project_skills_dirs": [
+        ".agents/skills"
+      ],
+      "compatibility_dirs": [],
+      "context_mode_supported": true,
+      "context_mode_install": [
+        "codex plugin marketplace add mksglu/context-mode",
+        "codex plugin add context-mode@context-mode",
+        "npm install -g context-mode",
+        "context-mode setup --agents codex"
+      ],
+      "context_mode_verify": "/ctx-doctor",
+      "opendesign_mcp_supported": true,
+      "opendesign_target": "codex",
+      "notes": "Supports user, project, admin, and system skill scopes."
+    },
+    {
+      "id": "antigravity",
+      "name": "Antigravity",
+      "global_skills_dir": "~/.gemini/config/skills",
+      "project_skills_dirs": [
+        ".agents/skills"
+      ],
+      "compatibility_dirs": [],
+      "context_mode_supported": false,
+      "context_mode_install": [],
+      "context_mode_verify": null,
+      "opendesign_mcp_supported": true,
+      "opendesign_target": "antigravity",
+      "notes": "No verified native Context Mode install flow yet; do not reuse commands from other harnesses."
+    },
+    {
+      "id": "hermes-agent",
+      "name": "Hermes Agent",
+      "global_skills_dir": "~/.hermes/skills",
+      "project_skills_dirs": [
+        ".hermes/skills",
+        ".agents/skills"
+      ],
+      "compatibility_dirs": [],
+      "context_mode_supported": false,
+      "context_mode_install": [],
+      "context_mode_verify": null,
+      "opendesign_mcp_supported": true,
+      "opendesign_target": "hermes",
+      "notes": "Requires 'hermes skills trust' per repository. Do not point skills.external_dirs to shared dirs that must stay read-only."
+    },
+    {
+      "id": "zcode",
+      "name": "ZCode",
+      "global_skills_dir": "~/.zcode/skills",
+      "project_skills_dirs": [
+        ".zcode/skills"
+      ],
+      "compatibility_dirs": [],
+      "context_mode_supported": true,
+      "context_mode_install": [
+        "zcode plugins marketplace add mksglu/context-mode",
+        "zcode plugins install context-mode@context-mode"
+      ],
+      "context_mode_verify": "zcode plugins list",
+      "opendesign_mcp_supported": false,
+      "opendesign_target": null,
+      "notes": "Not listed in OpenDesign MCP compatibility list as of 2026-11-26."
+    }
+  ]
+}
