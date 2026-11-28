@@ -1,0 +1,30 @@
+[
+  {
+    "diagram": "architecture",
+    "exit_code": 0,
+    "screenshot_bytes": 91926,
+    "image_path": "verification/preview-architecture.png",
+    "plan_version": "0.2"
+  },
+  {
+    "diagram": "use-cases",
+    "exit_code": 0,
+    "screenshot_bytes": 222526,
+    "image_path": "verification/preview-use-cases.png",
+    "plan_version": "0.2"
+  },
+  {
+    "diagram": "user-flow",
+    "exit_code": 0,
+    "screenshot_bytes": 84608,
+    "image_path": "verification/preview-user-flow.png",
+    "plan_version": "0.2"
+  },
+  {
+    "diagram": "database",
+    "exit_code": 0,
+    "screenshot_bytes": 61874,
+    "image_path": "verification/preview-database.png",
+    "plan_version": "0.2"
+  }
+]

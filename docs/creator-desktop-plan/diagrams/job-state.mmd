@@ -1,0 +1,22 @@
+stateDiagram-v2
+ [*] --> PENDING
+ PENDING --> BLOCKED: missing required input/capability
+ PENDING --> READY: preflight pass
+ BLOCKED --> PENDING: reviewed input revision
+ READY --> WAITING_APPROVAL: effect requires grant
+ READY --> RUNNING: safe local node
+ WAITING_APPROVAL --> RUNNING: persist intent + reserve + consume grant
+ RUNNING --> SUCCEEDED: verified output
+ RUNNING --> FAILED: known failure
+ RUNNING --> UNKNOWN: dispatch outcome uncertain
+ RUNNING --> CANCEL_REQUESTED: user asks cancel
+ CANCEL_REQUESTED --> CANCELED: confirmed stop
+ CANCEL_REQUESTED --> UNKNOWN: remote outcome uncertain
+ CANCEL_REQUESTED --> SUCCEEDED: job finished before stop
+ UNKNOWN --> SUCCEEDED: reconcile existing output
+ UNKNOWN --> FAILED: proven known failure
+ UNKNOWN --> CANCELED: confirmed provider cancellation
+ SUCCEEDED --> [*]
+ FAILED --> [*]
+ CANCELED --> [*]
+ note right of UNKNOWN: No automatic redispatch or release of reservation

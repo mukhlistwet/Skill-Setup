@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 6,
+      "url": "https://sqlite.org/foreignkeys.html",
+      "title": "SQLite foreign keys",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 7,
+      "url": "https://sqlite.org/wal.html",
+      "title": "SQLite WAL and WAL-reset bug",
+      "accessed": "2026-11-28"
+    }
+  ]
+}

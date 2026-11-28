@@ -1,0 +1,70 @@
+SOURCE NOTES — 28 NOVEMBER 2026
+Status bukti: dokumentasi primer yang diambil lewat HTTP/search. Tidak ada live-account UI verification, dependency installation, browser connection atau provider generation.
+Design proposals pada dokumen lain adalah keputusan yang disarankan, bukan fakta vendor atau janji implementasi.
+
+SN-01 Tauri
+Tauri mendokumentasikan Rust core dengan web frontend dan capability/permission pada jembatan ke core. Dokumen capability juga menyatakan ini tidak menyelesaikan Rust code yang tidak aman atau salah scope. Maka Rust core tetap perlu application authorization.[1][2]
+
+SN-02 Chrome
+Native messaging memerlukan host manifest/allowed origins dan framed JSON. Extension membuka koneksi ke host; media besar sebaiknya tidak dipindahkan lewat control messages.[3]
+Chrome mendokumentasikan pembatasan remote debugging pada default data directory sejak Chrome 136. Karena itu existing daily profile attach tidak diasumsikan dapat dilakukan lewat flags biasa.[4]
+Dokumen DevTools juga mencatat existing-session auto-connect Chrome 144+ dengan aktivasi remote debugging dan dialog izin. Ini membatasi kesimpulan bahwa sesi existing hanya mungkin melalui extension; opsi auto-connect ada, tetapi belum diuji dan dapat mencakup data sesi luas.[20]
+activeTab tidak setara grant satu tugas; same-origin navigation dapat mempertahankan akses. App menegakkan revocation/expiry/navigation epoch sendiri.[21]
+Pilihan extension/native messaging dalam plan adalah inferensi desain untuk kebutuhan tab user; bukan bukti akses Flow/tab yang sudah berhasil.
+
+SN-03 MCP
+Repo official Rust SDK adalah kandidat dasar client. Spec transport yang diambil menjelaskan stdio dan Streamable HTTP; security guidance tetap relevan terhadap auth/origin/tool trust.[5][15][16]
+Advisory official SDK yang diambil perlu diperiksa pada dependency pin: custom HTTP headers dapat bocor pada redirect lintas origin pada versi terdampak. Selain menghindari rentang terdampak yang dilaporkan, test redirect/origin policy sendiri.[19]
+Tool annotations tidak menjadi otoritas safety; protocol error dan tool isError harus dibedakan. Kebijakan app tetap mengklasifikasikan efek operasi dan menolak unknown effect.[22]
+Protocol/SDK tersedia tidak berarti MCP server tertentu aman atau telah lolos handshake aplikasi ini.
+
+SN-04 SQLite
+FK perlu disetel per koneksi. WAL memiliki syarat/risiko deployment; dokumentasi mencantumkan WAL-reset corruption bug dan fix release. Exact runtime patch harus diperiksa pada build, bukan disimpulkan dari dukungan SQL saja.[6][7]
+Version Python yang menjalankan schema fixture dicatat di verification/schema-tests.json; bukan versi SQLite yang sudah dibundel app Rust.
+
+SN-05 FFmpeg
+Kombinasi build/configuration/library memengaruhi lisensi distribusi. Packaging executable perlu license/codec review; “menggunakan FFmpeg” saja bukan hasil legal review.[8]
+
+SN-06 Shopee Indonesia
+Dokumen program menyebut affiliate melalui media sosial, Shopee Video dan Live. Plan ini membatasi awal pada video/export manual.[12]
+Dokumen Shopee Video menjelaskan langkah Tambah Produk saat posting; export MP4/URL tidak melakukan product tagging tersebut.[11]
+Qualitative guidance menekankan produk jelas, detail, audio/visual baik dan konten original. Ini mendasari gate kejelasan/fidelity produk untuk jalur AI/hybrid maupun footage, bukan jaminan accepted/ranking/commission dari pilihan engine.[13]
+Panduan AI yang diambil mengharuskan penggunaan fitur Label AI untuk konten yang tercakup; disclosure manual tambahan tidak menggantikannya. Panduan juga melarang konten menyesatkan tentang produk. Recheck pada release dengan konteks Shopee Indonesia yang sama.[14]
+Tidak ada permission Shopee API, akses akun atau affiliate eligibility user diverifikasi. Aturan pasar lain tidak dipakai sebagai pengganti Indonesia. Informasi komisi dalam halaman program tidak dijadikan angka proyeksi bisnis.
+
+SN-07 Google Flow
+Help page video menjelaskan references/ingredients/frames sebagai fitur. Help model menjelaskan availability bergantung model/plan dan menyarankan check active model/settings/credit cost sebelum generation.[17][18]
+Plan tidak mengunci nama model lama, jumlah slot atau combination limits dari pengetahuan sebelumnya. Itu harus diverifikasi terhadap exact selected route/account dan observed UI. Supported documented features tidak sama dengan tested asset fidelity.
+
+SN-08 ENGINEERING 3D ROUTING
+Manual Three.js menjelaskan scene/camera/renderer, sedangkan manual Blender menjelaskan output animation/frame sequence. Keputusan memilih Three.js untuk procedural/interactive preview dan Blender untuk offline scene rendering adalah rekomendasi arsitektur yang tetap membutuhkan runtime/export spike; bukan hasil benchmark atau jaminan validitas mekanisme.[23][24]
+
+SN-09 KETERBATASAN RETRIEVAL
+Extractor otomatis pertama gagal karena backend search-only; error disimpan di arsip riset lokal yang tidak dipublikasikan. Fallback HTTP HTML extraction berhasil untuk sumber primer yang dikutip. Raw captures disimpan pada arsip riset lokal pembuat, tidak dibundel dalam publikasi Git; ledger URL dan catatan sumber tetap tersedia.
+Dua URL Shopee ber-slug awal dicatat sebagai attempts pada ledger IDs 9 dan 10, tetapi tidak digunakan sebagai sumber klaim. Halaman numeric official yang benar-benar diambil dipakai sebagai IDs 11 sampai 14.
+Tanggal pada dokumen ini adalah tanggal pengambilan, bukan asumsi tanggal publikasi/terakhir update seluruh halaman. Beberapa doc bersifat rolling; kompatibilitas/version pins harus direcheck saat implementation.
+Tidak ada bukti permintaan pasar, kecepatan render, peningkatan revenue, akses provider atau konsistensi visual production yang dihasilkan oleh riset dokumen ini.
+
+Sources:
+[1] https://v2.tauri.app/start — Tauri overview
+[2] https://v2.tauri.app/security/capabilities — Tauri security capabilities
+[3] https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Chrome native messaging
+[4] https://developer.chrome.com/blog/remote-debugging-port — Chrome remote debugging security change
+[5] https://github.com/modelcontextprotocol/rust-sdk — Official MCP Rust SDK
+[6] https://sqlite.org/foreignkeys.html — SQLite foreign keys
+[7] https://sqlite.org/wal.html — SQLite WAL and WAL-reset bug
+[8] https://ffmpeg.org/legal.html — FFmpeg license considerations
+[11] https://help.shopee.co.id/portal/4/article/81921 — Shopee ID: create video and attach products
+[12] https://help.shopee.co.id/portal/4/article/72053 — Shopee ID: affiliate program
+[13] https://help.shopee.co.id/portal/4/article/201244 — Shopee ID: qualitative video guidelines
+[14] https://help.shopee.co.id/portal/10/article/197077 — Shopee ID: AI content labelling
+[15] https://modelcontextprotocol.io/specification/2026-07-28/basic/transports — MCP 2026-07-28 transport overview
+[16] https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices — MCP security best practices
+[17] https://support.google.com/flow/answer/16353334?co=GENIE.Platform%3DDesktop&hl=en — Google Flow video creation and references
+[18] https://support.google.com/flow/answer/16352836?hl=en — Google Flow models and supported features
+[19] https://github.com/modelcontextprotocol/rust-sdk/security/advisories/GHSA-9g45-5xwm-f3wc — MCP Rust SDK redirect header advisory
+[20] https://developer.chrome.com/docs/devtools/agents/get-started/configuration — Chrome DevTools MCP configuration and autoConnect
+[21] https://developer.chrome.com/docs/extensions/develop/concepts/activeTab — Chrome activeTab temporary permission
+[22] https://modelcontextprotocol.io/specification/2026-07-28/server/tools — MCP tools errors and untrusted annotations
+[23] https://threejs.org/manual/pages/creating-a-scene.html — Three.js official manual: scene, camera and renderer
+[24] https://docs.blender.org/manual/en/latest/render/output/animation.html — Blender official manual: rendering animations

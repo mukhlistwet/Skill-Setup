@@ -1,0 +1,32 @@
+PRODUCTION LANES — USER DIRECTION ADDENDUM v0.2
+Status: plan-only. Tidak mengizinkan install, generation, upload atau pemakaian kredit.
+
+KEPUTUSAN EDITORIAL
+Affiliate product memakai jalur AI-assisted/hybrid sebagai default, bukan Blender. Istilah “tree.js” dari percakapan ditafsirkan sebagai Three.js; ejaan library yang dipakai dalam desain adalah Three.js, bukan library pembuat pohon.
+3D engineering memakai structured scene pipeline Blender atau Three.js sesuai kebutuhan, bukan memaksa semua video menjadi text-to-video.
+Addendum ini menggantikan rekomendasi editorial v0.1 bahwa real-footage composition harus menjadi satu-satunya jalur awal. Real footage tetap opsi dan bukti penting untuk klaim penggunaan/demonstrasi nyata. Perubahan prioritas editorial tidak membuktikan adapter generatif telah terpasang atau bekerja.
+
+LANE A — AFFILIATE AI / HYBRID
+Produk/varian + fakta/evidence + foto/video berizin -> AI script/storyboard -> reference-conditioned image/video generation atau generated background/B-roll -> authorized product composite bila diperlukan -> voice/captions -> composition -> product-fidelity/audiovisual QA -> export.
+Produk tidak boleh berubah merek/label/warna/varian/geometri penting. Jika generative route tidak mempertahankannya, gunakan canonical product layer/footage asli atau BLOCKED; jangan menganggap video yang tampak menarik sebagai demonstrasi faktual.
+AI human/host tidak boleh mengarang testimonial pemakaian. Pernyataan “lebih diterima audiens” adalah hipotesis kreatif yang perlu pilot dan data actual, bukan acceptance teknis yang sudah terbukti.
+Default ini tidak menjadikan foto/video produk wajib diambil sendiri apabila tersedia izin yang memadai; link seller saja tetap bukan izin reuse.
+
+LANE B — ENGINEERING 3D
+Blender direkomendasikan untuk authoring/animation dan offline rendered output dari scene terstruktur. Dokumentasi resminya menjelaskan animation frames dan pendekatan frame sequence untuk finishing video.[24]
+Three.js menjadi kandidat untuk scene/diagram/animasi procedural dan preview interaktif di lingkungan web. Manual resminya menggunakan scene, camera dan renderer; ini bukan jaminan exporter MP4 desktop siap atau compatibility WebView2/GPU telah diuji.[23]
+Pilih satu pemilik renderer per shot. Lane Three.js memerlukan desain deterministic timing/frame capture + encode dan smoke test tersendiri. Blender dan Three.js tidak otomatis menggantikan CAD/engineering solver atau membuktikan mekanisme benar.
+AI coding worker dapat membantu membuat script Blender atau Three.js; AI authoring tidak berarti output shot dibuat oleh video model generatif.
+
+LANE C — GENERAL / SHORT
+Pilih AI generatif, authorized footage, motion graphic atau structured 3D berdasarkan brief. SHORT adalah format, bukan engine. Jangan merutekan semua short ke satu renderer.
+
+BATAS TEKNIS YANG TETAP BERLAKU
+Satu exact AI video route harus melewati connection/capability/reference/quote dan reconciliation spike sebelum disebut operasional. Metadata connection atau menu model bukan bukti generation bekerja.
+Upload/generation membutuhkan persetujuan sesuai efek dan biaya; tidak ada silent fallback atau penggunaan kredit otomatis.
+Finishing/export terpisah dari engine pencipta scene; QA dan disclosure platform tetap wajib diperiksa.
+Baseline publikasi v0.2 mengikuti keputusan ini: satu exact AI/hybrid video route adalah MVP gate, sedangkan engineering 3D Blender/Three.js tetap lane terpisah. Tidak ada klaim app implemented.
+
+Sources:
+[23] https://threejs.org/manual/pages/creating-a-scene.html — Three.js official manual: scene, camera and renderer
+[24] https://docs.blender.org/manual/en/latest/render/output/animation.html — Blender official manual: rendering animations

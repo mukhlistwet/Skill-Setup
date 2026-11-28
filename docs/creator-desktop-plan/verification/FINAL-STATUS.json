@@ -1,0 +1,51 @@
+{
+  "status": "PLANNING_PACKAGE_COMPLETE_PENDING_USER_DECISIONS",
+  "completed_at": "2026-11-28T22:51:32.338165+07:00",
+  "application_implemented": false,
+  "plan_artifact_validation_passed": true,
+  "functional_requirements": 27,
+  "nonfunctional_requirements": 9,
+  "use_cases": 10,
+  "schema_tables": 34,
+  "schema_foreign_keys": 53,
+  "schema_tests_passed": 41,
+  "rendered_svg_diagrams": 4,
+  "cited_primary_sources": 22,
+  "entrypoint": "index.html",
+  "diagrams": "diagrams.html",
+  "scope_limits": [
+    "Rust/Tauri implementation/build",
+    "Desktop UI E2E",
+    "Live Chrome/Flow connection",
+    "Live MCP handshake",
+    "Provider generation/upload",
+    "Production video render and audiovisual QA",
+    "Multi-process concurrency",
+    "Full media workspace migration/restore",
+    "PlantUML or Mermaid runtime rendering",
+    "Commission/revenue validation"
+  ],
+  "review_decisions": [
+    "Affiliate default is AI-assisted/hybrid with canonical authorized product/variant assets and evidence",
+    "One exact AI video route is an MVP acceptance gate, not an implemented capability claim",
+    "Real footage is optional except where needed to prove real-use claims; Blender is not the default affiliate renderer",
+    "Engineering 3D uses structured Blender or Three.js lanes with separate preview/export/domain validation",
+    "Provider/model registration does not prove capability; upload/cost approvals and UNKNOWN reconciliation remain mandatory",
+    "Audience acceptance and commission outcomes are unverified hypotheses"
+  ],
+  "repo_status": "Planning validation snapshot; publication commit/branch are recorded by Git history. No application implementation or main merge is implied.",
+  "user_decisions_required": [
+    "Tauri web UI plus Rust core or all-Rust UI",
+    "New app repository/path/name",
+    "Initial actual provider/model/account",
+    "First authorized product/reference-asset sample",
+    "Permission and scope for Chrome/MCP spike",
+    "Provider budgets/privacy/backup policy"
+  ],
+  "plan_version": "0.2",
+  "updated_at": "2026-11-28T23:13:17.296891+07:00",
+  "documents": 9,
+  "validator_regression_tests": 3,
+  "existing_bundle_regression_tests": 14,
+  "review_gate": "PASS: independent re-review; no blocking findings"
+}

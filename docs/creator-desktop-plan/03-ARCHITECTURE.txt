@@ -1,0 +1,104 @@
+TECHNICAL DESIGN & STACK — v0.2
+Semua keputusan di bawah adalah proposal; belum dependency/runtime terpasang atau benchmark.
+
+1. PILIHAN ARSITEKTUR
+Modular monolith local-first, satu Rust domain core, Tauri UI, subprocess untuk media/native messaging. Bukan microservices, bukan server localhost yang membuka database untuk browser, bukan LLM bebas menjalankan OS.
+Tauri mendukung Rust core dan frontend web; permission/capability membatasi jembatan UI ke core. Itu tidak melindungi dari Rust core yang berbahaya atau salah mengimplementasikan scope.[1][2]
+
+2. STACK YANG DIREKOMENDASIKAN
+  Desktop shell: Tauri 2.x; exact compatible patched releases dikunci saat bootstrap dan dicatat ADR/lockfile.
+  Core: Rust stable pinned toolchain, Tokio async, Serde typed DTOs, structured tracing with redaction.
+  UI: React + TypeScript + Vite, form validation schema, lightweight local state/query layer. Versi tepat dan library UI dipilih setelah spike WebView2, bukan otomatis mengejar latest.
+  Storage: SQLite via rusqlite (candidate) dalam dedicated DB worker/single logical writer; migrations versioned SQL. Jangan memanggil blocking SQL/file I/O langsung pada UI thread.
+  Rendering lanes: affiliate memakai AI/hybrid media adapter, bukan Blender default. Engineering 3D memilih Blender atau Three.js; Three.js scene/camera/renderer perlu pipeline deterministic frame capture/encode tersendiri sebelum disebut video exporter yang bekerja.[23][24]
+  Media: FFmpeg + ffprobe sebagai reviewed sidecars atau executable yang dipilih user dan diverifikasi. Codec/build/distribution license harus ditinjau; FFmpeg tidak memiliki satu lisensi binary universal untuk semua build.[8]
+  MCP: official Rust SDK rmcp sebagai kandidat, client mode stdio dan Streamable HTTP; feature/version negotiation dan dependency advisory check wajib.[5][15]
+  HTTP providers: reqwest with explicit timeout, no cross-origin credential forwarding, schema validation, bounded redirects/size. Per-protocol adapter, bukan universal “semua OpenAI-compatible pasti bekerja”.
+  Credentials: OS credential store melalui reviewed Rust library atau broker native; DB hanya menyimpan credential_ref. Validasi implementasi Windows saat spike; tidak mengklaim sudah aman hanya karena nama library.
+  Chrome: MV3 companion extension + native messaging host Rust sebagai kandidat untuk tab user. CDP dedicated profile alternatif untuk sandbox/testing, bukan mengambil cookie profil harian.
+  QA/testing: cargo test, UI component tests, disposable SQLite tests, adapter contract fixtures, E2E desktop yang kompatibel dengan WebView2; tool E2E tepat ditentukan dalam spike.
+  Packaging: Windows installer + native-host registration per-user, signed release candidate setelah sertifikat/proses tersedia; signed update manifest dan rollback-safe migration.
+  No default: Redis, Kubernetes, Postgres server, Docker wajib, vector DB, browser cookie importer, embedded cloud agent runtime.
+Pure Rust UI (egui/Slint/iced) adalah alternatif jika user mengharuskan semua UI Rust. Pilihan Tauri adalah rekomendasi karena workspace/forms/media panels; belum perbandingan benchmark. Keputusan ini masih terbuka.
+
+3. MODUL DAN OWNERSHIP
+  ui: local bundled assets; data presentation, editing and explicit trusted approval interaction.
+  application: typed commands, workspace auth/scope, optimistic concurrency/revision checks.
+  domain/projects: taxonomy, product versions, claims, assets, scenes, template versions.
+  domain/planning: capability resolver, prompt/compiler, source/skill version pins; LLM menghasilkan proposal saja.
+  domain/workflows: graph validation, dependencies, state transitions, retries and schedule policy.
+  domain/policy: effect registry, rights/release gates, grants, budget reservations, revocation.
+  infrastructure/db: migrations, transactional repository, single-writer scheduling; tidak bocorkan SQL ke UI.
+  infrastructure/adapters: text/media APIs, MCP client and browser adapter. Satu normalized Adapter contract.
+  infrastructure/media: argv-only process launch, probe/decode, safe temp/output handling, bounded concurrency.
+  infrastructure/secrets: credential lifecycle, masking, endpoint scoping, no credential dump to JS.
+  operations: redacted events, recovery/reconciliation, backups/restore and dependency diagnostics.
+Skill importer/read-only library tidak mengubah ~/.hermes atau profil lain. Jika skill Hermes diadopsi, snapshot bagian guidance+metadata yang ditinjau, sumber/license/revision dicatat; bukan menjalankan seluruh folder sebagai plugin.
+
+4. DATAFLOW DAN TRUST BOUNDARY
+  Local UI -> typed Tauri command -> scope validation -> domain policy -> DB transaction/outbox-like intent -> adapter -> exact provider/Chrome/MCP route -> validated response -> asset filesystem -> QA -> export.
+  Renderer tidak mendapat credential provider. Remote HTML tidak dimuat ke privileged Tauri WebView; referensi situs dibuka di browser eksternal atau ditampilkan sebagai sanitized text.
+  UI state tidak menjadi otoritas biaya; grant disimpan dan dikonsumsi di core. Prompt/hasil model/seller text/tool descriptions adalah data tidak tepercaya.
+  Three.js scene preview dari authoring code ditempatkan dalam konteks isolated tanpa privileged Tauri IPC; script yang dihasilkan AI tetap untrusted sampai ditinjau. Blender Python juga tidak memperoleh hak OS tambahan hanya karena dibuat AI.
+  Core menolak arbitrary filesystem path, executable, shell arguments, origin/endpoint dan network targets yang tidak disetujui. Signed/allowlisted adapter binary tetap bukan sandbox; executable MCP membawa risiko hak OS.
+  Native host ke core memakai named pipe per-user dengan restrictive ACL, pairing token dan session binding; desain ini harus diuji, bukan menganggap native messaging langsung mencapai proses desktop yang sedang berjalan.
+  One writer per browser tab/project; lease memiliki expiry, connection epoch dan fencing token; stale worker ditolak.
+
+5. CHROME INTEGRATION DECISION
+Chrome native messaging mendefinisikan host manifest, allowed_origins dan framing JSON; transport ini untuk kontrol/metadata, bukan pengiriman file video besar. Extension memulai koneksi; app tidak dapat seenaknya mengirim ke semua tab Chrome.[3]
+Google mendokumentasikan perubahan sejak Chrome 136: remote-debugging flags tidak berlaku pada default data directory; custom user-data-dir diperlukan untuk jalur itu. Karena itu “otomatis attach ke Chrome harian via port” bukan asumsi yang sah.[4]
+Mode M0: read-only/manual-assisted. User memilih satu tab+domain dan consent; koneksi dapat menampilkan URL/model/selected assets yang boleh dibaca. Tidak auto-login, tidak cookie export, tidak full HAR.
+Setelah gate: site-specific Flow adapter dengan versioned selectors dan prepare/readback, sebagai route pertama M0 jika dipilih atau ekspansi M1. Sebelum gate lolos, browser tetap read-only/manual-assisted. Koneksi umum Chrome tidak membuktikan Flow adapter dapat mengunggah aset atau generate aman.
+CDP dedicated profile tetap opsi testing. Dokumentasi Chrome juga menyediakan existing-session auto-connect pada Chrome 144+ dengan --autoConnect, remote debugging yang diaktifkan user dan dialog izin Chrome. Jadi existing session tidak mustahil, tetapi akses sesi luas memerlukan review khusus dan tidak membuktikan isolasi per-tab.[20]
+Native extension tetap kandidat default untuk scope tab yang terkontrol; pilih satu controller saja. Jangan disable browser security untuk mengejar akses.
+Native host registration/unregistration, upgrade paths dan extension distribution membutuhkan spike Windows sebelum keputusan final.
+
+6. CAPABILITY-BASED ROUTING
+Candidate route = provider instance(account alias + surface + endpoint) + exact model identifier/observed UI label + adapter revision + capability evidence.
+Hard constraints: media/reference kind and count, combination support, size/duration/aspect, product fidelity strategy, rights/scope, account eligibility, budget/quote, region/plan, upload consent.
+Soft preferences: cost, estimated latency, quality preference. Tidak memilih cheapest route sebelum hard constraints lolos.
+Unknown != unsupported != verified. Declared/manual/documented/observed/fixture/live verification dibedakan. Bukti expired atau scope berubah memerlukan revalidation.
+Google Flow menyatakan fitur bergantung pada model dan subscription; aktif model, resolution dan credit cost perlu diperiksa sebelum generate. Karena itu katalog lama atau API capabilities tidak membuktikan UI account tertentu mendukung kombinasi aset.[18]
+Routing tidak auto-fallback saat error, tidak transfer native asset ID antarprovider dan tidak menjumlahkan saldo credits lintas vendor.
+
+7. EXECUTION / RECOVERY
+  Local deterministic node -> bounded retry hanya jika proses sebelumnya dipastikan berhenti dan output temp belum dipromosikan.
+  Remote effect -> persist stable intent, canonical request hash, single-use grant dan reservation dalam satu transaksi sebelum dispatch.
+  Crash before dispatch record sent: recovery konservatif; jika mungkin sudah keluar, UNKNOWN, reconcile dahulu. Local DB tidak memberi provider exactly-once delivery.
+  Event cursor memungkinkan UI reconnect/reload tanpa mengulang run. Duplicate command dengan key sama/payload beda = IDEMPOTENCY_CONFLICT.
+  Concurrent run dibatasi setting dan resource checks; MVP default satu media job berat. Itu policy konservatif, bukan angka kapasitas hardware terukur.
+  Output ditulis ke temp dalam workspace, diverifikasi hash/probe/decode, lalu atomic rename pada filesystem yang sama. Database merujuk artifact yang sudah ada; janitor menandai missing/orphan, tidak menghapus otomatis tanpa retention policy.
+
+8. NFR / TARGET PROPOSED — BELUM HASIL UJI
+  NFR-01 Local project/catalog/settings dapat dibaca dan diedit tanpa internet. AI call yang offline menunjukkan explicit unavailable.
+  NFR-02 Pilot target input feedback di UI <=150 ms dan daftar 100 project <=1 s pada reference device; ukur p95 dengan dataset/OS/WebView2 dicatat. Angka ini target desain, bukan benchmark/jaminan.
+  NFR-03 Power-loss/crash tidak menyebabkan implicit paid retry atau corrupt accepted artifact; diuji fault injection dan restore.
+  NFR-04 No secrets in JS state/SQLite/export/log/backup. Negative tests terhadap prompt injection, path traversal, malicious endpoint, wrong tab/origin, revoked grants.
+  NFR-05 Keyboard/focus/error labels/reduced-motion lulus walkthrough aksesibilitas pada task utama.
+  NFR-06 Workspace backup explicit termasuk DB consistent snapshot + assets manifest; restore diuji sebelum mengklaim migrasi device.
+  NFR-07 Redacted structured events: correlation_id/run/node/intent, state, error code, timings; raw prompts/media/headers disabled by default. Tidak mengklaim tracing saja sudah audit-tamper-proof.
+  NFR-08 Exact dependency lock, advisory scan dan signed release/update gating. Tidak ada download+execute adapter otomatis.
+  NFR-09 Compatibility target Windows/WebView2 dan codec packaging diverifikasi di clean VM; macOS/Linux bukan acceptance M0.
+
+9. ADR RINGKAS
+  ADR-01 Rust/Tauri modular monolith vs pure Rust UI/Electron: Tauri proposed; pure Rust decision masih terbuka.
+  ADR-02 SQLite+filesystem vs server DB: lokal satu operator; server tidak dibutuhkan M0. Tidak membuka runtime DB di sync/network drive.
+  ADR-03 Rust native workflow runner vs embedding arbitrary agent runtime: runner typed/allowlisted; skill adalah guidance, bukan executor.
+  ADR-04 Browser extension/native host vs unrestricted CDP attach: opt-in tab scope lebih sesuai user session; live spike masih wajib.
+  ADR-05 Manual product entry/authorized import vs scraping auto: manual M0, no API access assumptions.
+  ADR-06 Default affiliate AI/hybrid sesuai arah user, dengan canonical product assets, evidence dan QA. Real-footage alternatif; synthetic host bukan izin mengarang pengalaman/hasil produk. Satu exact video route menjadi MVP gate.
+  ADR-07 No cloud sync/multiuser/plugin marketplace in M0: menekan trust/operational surface.
+  ADR-08 Datastore runtime di LocalAppData di luar OneDrive; plan dan backup immutable boleh di folder dokumen/sync setelah snapshot konsisten.
+
+Sources:
+[1] https://v2.tauri.app/start — Tauri overview
+[2] https://v2.tauri.app/security/capabilities — Tauri security capabilities
+[3] https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Chrome native messaging
+[4] https://developer.chrome.com/blog/remote-debugging-port — Chrome remote debugging security change
+[5] https://github.com/modelcontextprotocol/rust-sdk — Official MCP Rust SDK
+[8] https://ffmpeg.org/legal.html — FFmpeg license considerations
+[15] https://modelcontextprotocol.io/specification/2026-07-28/basic/transports — MCP 2026-07-28 transport overview
+[18] https://support.google.com/flow/answer/16352836?hl=en — Google Flow models and supported features
+[20] https://developer.chrome.com/docs/devtools/agents/get-started/configuration — Chrome DevTools MCP configuration and autoConnect
+[23] https://threejs.org/manual/pages/creating-a-scene.html — Three.js official manual: scene, camera and renderer
+[24] https://docs.blender.org/manual/en/latest/render/output/animation.html — Blender official manual: rendering animations

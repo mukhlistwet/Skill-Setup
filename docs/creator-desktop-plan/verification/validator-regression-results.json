@@ -1,0 +1,13 @@
+{
+  "scope": "Disposable negative verification fixtures only",
+  "passed": true,
+  "command": "python -B verification/test_verify_plan.py",
+  "output": "test_normal_interpreter_rejects_malformed_requirement (__main__.OptimizedVerifierChecks.test_normal_interpreter_rejects_malformed_requirement) ... ok\ntest_optimized_flags_rejected_before_validation_or_evidence_writes (__main__.OptimizedVerifierChecks.test_optimized_flags_rejected_before_validation_or_evidence_writes) ... ok\ntest_pythonoptimize_rejected_before_validation_or_evidence_writes (__main__.OptimizedVerifierChecks.test_pythonoptimize_rejected_before_validation_or_evidence_writes) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.781s\n\nOK\n",
+  "optimization_modes": [
+    "-O",
+    "-OO",
+    "PYTHONOPTIMIZE=1",
+    "PYTHONOPTIMIZE=2"
+  ],
+  "invalid_input_did_not_write_evidence": true
+}

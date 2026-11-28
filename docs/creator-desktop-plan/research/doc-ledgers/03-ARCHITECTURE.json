@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://v2.tauri.app/start",
+      "title": "Tauri overview",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 2,
+      "url": "https://v2.tauri.app/security/capabilities",
+      "title": "Tauri security capabilities",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 3,
+      "url": "https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging",
+      "title": "Chrome native messaging",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 4,
+      "url": "https://developer.chrome.com/blog/remote-debugging-port",
+      "title": "Chrome remote debugging security change",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 5,
+      "url": "https://github.com/modelcontextprotocol/rust-sdk",
+      "title": "Official MCP Rust SDK",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 8,
+      "url": "https://ffmpeg.org/legal.html",
+      "title": "FFmpeg license considerations",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 15,
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports",
+      "title": "MCP 2026-07-28 transport overview",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 18,
+      "url": "https://support.google.com/flow/answer/16352836?hl=en",
+      "title": "Google Flow models and supported features",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 20,
+      "url": "https://developer.chrome.com/docs/devtools/agents/get-started/configuration",
+      "title": "Chrome DevTools MCP configuration and autoConnect",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 23,
+      "url": "https://threejs.org/manual/pages/creating-a-scene.html",
+      "title": "Three.js official manual: scene, camera and renderer",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 24,
+      "url": "https://docs.blender.org/manual/en/latest/render/output/animation.html",
+      "title": "Blender official manual: rendering animations",
+      "accessed": "2026-11-28"
+    }
+  ]
+}

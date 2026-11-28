@@ -1,0 +1,363 @@
+erDiagram
+  app_settings {
+    string key PK
+    string value_json
+    int revision
+  }
+  approvals {
+    string id PK
+    string node_id FK
+    string prepared_receipt_id FK
+    string request_sha256
+    string receipt_sha256
+    string effect
+    string budget_id FK
+    int max_amount_u
+    int approved_at_ms
+    int expires_at_ms
+    int consumed_at_ms
+    int revoked_at_ms
+  }
+  artifacts {
+    string id PK
+    string node_id FK
+    string kind
+    string relpath
+    string content_sha256
+    string metadata_json
+    int created_at_ms
+  }
+  asset_versions {
+    string id PK
+    string asset_id FK
+    int revision
+    string product_version_id FK
+    string media_kind
+    string relpath
+    string content_sha256
+    string metadata_json
+    string rights_state
+    string rights_evidence
+    string consent_json
+    string parent_version_id FK
+    int created_at_ms
+  }
+  assets {
+    string id PK
+    string title
+    int created_at_ms
+  }
+  audit_events {
+    int id PK
+    string run_id FK
+    string node_id FK
+    string intent_id FK
+    string event_type
+    string redacted_json
+    int occurred_at_ms
+  }
+  budgets {
+    string id PK
+    string project_id FK
+    string wallet_id FK
+    int limit_u
+    int reserved_u
+    int spent_u
+  }
+  capability_snapshots {
+    string id PK
+    string route_id FK
+    string connection_id FK
+    string source_kind
+    string adapter_version
+    string scope_json
+    string capability_json
+    string evidence_json
+    int captured_at_ms
+    int expires_at_ms
+  }
+  claims {
+    string id PK
+    string product_version_id FK
+    string claim_text
+    string evidence_id FK
+    string review_state
+    int reviewed_at_ms
+  }
+  connections {
+    string id PK
+    string provider_id FK
+    string kind
+    string state
+    string scope_json
+    int session_epoch
+    int observed_at_ms
+  }
+  evidence {
+    string id PK
+    string product_version_id FK
+    string source_kind
+    string source_uri
+    int captured_at_ms
+    string excerpt
+    string content_sha256
+  }
+  external_jobs {
+    string id PK
+    string intent_id FK,UK
+    string provider_id FK
+    string remote_job_id
+    string state
+    string evidence_json
+    int observed_at_ms
+  }
+  generation_intents {
+    string id PK
+    string node_id FK
+    string idempotency_key UK
+    string request_sha256
+    string approval_id FK,UK
+    string state
+    int dispatch_recorded_at_ms
+    int created_at_ms
+  }
+  model_routes {
+    string id PK
+    string provider_id FK
+    string external_model_id
+    string display_name
+    string roles_json
+    int enabled
+  }
+  prepared_receipts {
+    string id PK
+    string node_id FK
+    string route_id FK
+    string connection_id FK
+    string capability_snapshot_id FK
+    string body_json
+    string request_sha256
+    string receipt_sha256
+    int prepared_at_ms
+    int expires_at_ms
+  }
+  product_versions {
+    string id PK
+    string product_id FK
+    int revision
+    string title
+    string seller_label
+    string variant_key
+    string variant_label
+    int observed_at_ms
+    string facts_json
+    int price_minor
+    string price_currency
+    int price_expires_at_ms
+  }
+  products {
+    string id PK
+    string marketplace
+    string canonical_url
+    string external_item_id
+    string external_shop_id
+    int created_at_ms
+  }
+  project_products {
+    string project_id PK,FK
+    string product_version_id PK,FK
+    string role
+    string attribution_mode
+    string affiliate_url
+    string affiliate_link_source
+    int affiliate_link_verified_at_ms
+  }
+  projects {
+    string id PK
+    string title
+    string intent
+    string format
+    string platform
+    string production_style
+    string template_version_id FK
+    string settings_json
+    int revision
+    int created_at_ms
+    int archived_at_ms
+  }
+  providers {
+    string id PK
+    string name
+    string account_alias
+    string surface
+    string adapter_key
+    string adapter_version
+    string base_url
+    string credential_ref
+    int enabled
+    string config_json
+    int created_at_ms
+  }
+  remote_asset_bindings {
+    string id PK
+    string asset_version_id FK
+    string provider_id FK
+    string connection_id FK
+    string project_id FK
+    string remote_project_locator
+    string route_id FK
+    string remote_asset_id
+    string observed_label
+    string evidence_json
+    string state
+    int observed_at_ms
+  }
+  reservations {
+    string id PK
+    string intent_id FK,UK
+    string budget_id FK
+    int amount_u
+    string state
+    int actual_amount_u
+  }
+  reviews {
+    string id PK
+    string artifact_id FK
+    string kind
+    string decision
+    string evidence_json
+    string reviewer_label
+    int reviewed_at_ms
+  }
+  run_nodes {
+    string id PK
+    string run_id FK
+    string node_key
+    string effect
+    string route_id FK
+    string state
+    int revision
+  }
+  runs {
+    string id PK
+    string project_id FK
+    string template_version_id FK
+    string workflow_version_id FK
+    string snapshot_json
+    string request_sha256
+    string state
+    int created_at_ms
+  }
+  scene_assets {
+    string scene_id PK,FK
+    string slot_key PK
+    string asset_version_id FK
+    string role
+    int required
+  }
+  scene_claims {
+    string scene_id PK,FK
+    string claim_id PK,FK
+    string usage
+  }
+  scenes {
+    string id PK
+    string project_id FK
+    string scene_key
+    int revision
+    string spec_json
+    string content_sha256
+  }
+  schema_migrations {
+    int version PK
+    int applied_at_ms
+  }
+  skill_versions {
+    string id PK
+    string skill_key
+    string revision
+    string content_sha256
+    string origin
+    string license_note
+    string guidance_relpath
+  }
+  template_versions {
+    string id PK
+    string template_key
+    int revision
+    string workflow_version_id FK
+    string constraints_json
+    string defaults_json
+  }
+  wallets {
+    string id PK
+    string provider_id FK
+    string unit
+    int unit_scale
+    int available_u
+    int observed_at_ms
+  }
+  workflow_skills {
+    string workflow_version_id PK,FK
+    string skill_version_id PK,FK
+  }
+  workflow_versions {
+    string id PK
+    string workflow_key
+    int revision
+    string spec_json
+    string content_sha256
+  }
+  budgets |o..o{ approvals : "budget_id"
+  prepared_receipts ||..o{ approvals : "prepared_receipt_id"
+  run_nodes ||..o{ approvals : "node_id"
+  run_nodes ||..o{ artifacts : "node_id"
+  asset_versions |o..o{ asset_versions : "parent_version_id"
+  product_versions |o..o{ asset_versions : "product_version_id"
+  assets ||..o{ asset_versions : "asset_id"
+  generation_intents |o..o{ audit_events : "intent_id"
+  run_nodes |o..o{ audit_events : "node_id"
+  runs |o..o{ audit_events : "run_id"
+  wallets ||..o{ budgets : "wallet_id"
+  projects ||..o{ budgets : "project_id"
+  connections |o..o{ capability_snapshots : "connection_id"
+  model_routes ||..o{ capability_snapshots : "route_id"
+  evidence |o..o{ claims : "evidence_id"
+  product_versions ||..o{ claims : "product_version_id"
+  providers |o..o{ connections : "provider_id"
+  product_versions |o..o{ evidence : "product_version_id"
+  providers ||..o{ external_jobs : "provider_id"
+  generation_intents ||..o| external_jobs : "intent_id"
+  approvals ||..o| generation_intents : "approval_id"
+  run_nodes ||..o{ generation_intents : "node_id"
+  providers ||..o{ model_routes : "provider_id"
+  capability_snapshots |o..o{ prepared_receipts : "capability_snapshot_id"
+  connections |o..o{ prepared_receipts : "connection_id"
+  model_routes |o..o{ prepared_receipts : "route_id"
+  run_nodes ||..o{ prepared_receipts : "node_id"
+  products ||..o{ product_versions : "product_id"
+  product_versions ||--o{ project_products : "product_version_id"
+  projects ||--o{ project_products : "project_id"
+  template_versions ||..o{ projects : "template_version_id"
+  model_routes |o..o{ remote_asset_bindings : "route_id"
+  projects ||..o{ remote_asset_bindings : "project_id"
+  connections ||..o{ remote_asset_bindings : "connection_id"
+  providers ||..o{ remote_asset_bindings : "provider_id"
+  asset_versions ||..o{ remote_asset_bindings : "asset_version_id"
+  budgets ||..o{ reservations : "budget_id"
+  generation_intents ||..o| reservations : "intent_id"
+  artifacts ||..o{ reviews : "artifact_id"
+  model_routes |o..o{ run_nodes : "route_id"
+  runs ||..o{ run_nodes : "run_id"
+  workflow_versions ||..o{ runs : "workflow_version_id"
+  template_versions ||..o{ runs : "template_version_id"
+  projects ||..o{ runs : "project_id"
+  asset_versions ||..o{ scene_assets : "asset_version_id"
+  scenes ||--o{ scene_assets : "scene_id"
+  claims ||--o{ scene_claims : "claim_id"
+  scenes ||--o{ scene_claims : "scene_id"
+  projects ||..o{ scenes : "project_id"
+  workflow_versions ||..o{ template_versions : "workflow_version_id"
+  providers ||..o{ wallets : "provider_id"
+  skill_versions ||--o{ workflow_skills : "skill_version_id"
+  workflow_versions ||--o{ workflow_skills : "workflow_version_id"

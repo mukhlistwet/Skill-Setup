@@ -1,0 +1,101 @@
+DATABASE DESIGN — v0.2
+Status: schema usulan, bukan database aplikasi produksi. File SQL dapat diuji pada DB disposable.
+
+1. PILIHAN DAN LOKASI
+SQLite metadata + filesystem untuk media. Ini untuk satu operator lokal dengan satu logical writer, bukan shared DB di network drive. Runtime root yang diusulkan: %LOCALAPPDATA%/CreatorDesktop/workspaces/<workspace-id>/.
+  db/workspace.sqlite
+  assets/<asset-id>/<revision>/<safe-filename>
+  artifacts/<run-id>/<node-id>/<artifact-id>.<extension>
+  evidence/<evidence-id>/...
+  cache/ dan temp/ dapat dibersihkan sesuai policy, bukan source assets.
+  logs/ redacted dengan retention yang disetujui.
+Folder rencana yang berada di OneDrive bukan lokasi runtime yang disarankan.
+Foreign keys harus diaktifkan pada setiap koneksi; SQLite menjelaskan enforcement FK bersifat per-connection dan tidak boleh diasumsikan aktif dari default.[6]
+WAL adalah opsi saat implementasi setelah runtime patch/compatibility diperiksa. Dokumentasi SQLite saat diambil mencatat WAL-reset bug diperbaiki pada 3.51.3 dan beberapa backport. Jangan menyamakan dukungan SQL STRICT dengan versi yang aman untuk semua pola WAL.[7]
+DDL ini tidak mengaktifkan WAL dan tes utama menggunakan DB disposable. Exact bundled SQLite akan diverifikasi terpisah dari versi Python fixture.
+
+2. LOGICAL ERD / KELOMPOK
+Configuration: providers -> model_routes -> capability_snapshots; connections -> scoped observations.
+Recipes: skill_versions <- workflow_skills -> workflow_versions <- template_versions.
+Content: projects -> project_products -> product_versions -> products; product_versions -> evidence -> claims.
+Assets: assets -> asset_versions; scenes -> scene_assets -> asset_versions; scenes -> scene_claims -> claims.
+Remote binding: exact asset_version + provider + connection + local project + remote_project_locator (+ model route jika relevan). Remote ID nullable; tidak diciptakan bila UI tidak mengekspos.
+Execution: projects -> runs -> run_nodes -> prepared_receipts -> approvals -> generation_intents -> external_jobs/artifacts.
+Costs: providers -> wallets; projects+wallets -> budgets; generation_intents -> reservations -> budgets.
+Quality: artifacts -> reviews; audit_events menelusuri run/node/intent.
+Full FK relationship diagram di diagrams/database-full.mmd dihasilkan dari SQLite PRAGMA, bukan digambar ulang dari ingatan. Visual kelompok yang lebih terbaca ada di diagrams.html.
+
+3. KAMUS DATA INTI
+providers: satu config layanan/account alias/surface. credential_ref bukan API key. enabled default false.
+model_routes: exact identifier per provider, role list dan enabled. ID model vendor bukan PK lintas vendor.
+connections: transport kind, scoped state, session epoch, last observation. Tidak menyimpan session browser/cookie.
+capability_snapshots: sourceKind, adapter version, scope, captured/expiry, capability JSON dan evidence references. Live readiness tidak diturunkan dari manual declaration.
+skill_versions: guidance path+hash, source/license/revision; version frozen.
+workflow_versions: immutable validated spec JSON+hash; DAG semantics dipastikan app.
+workflow_skills: normalized FK untuk exact skill version dependencies.
+template_versions: immutable workflow binding, hard constraints dan defaults.
+projects: intent/format/platform/style, selected template, mutable draft settings, optimistic revision dan timestamps.
+products: local library identity, Shopee market, canonical URL, external IDs nullable.
+product_versions: immutable title/seller/variant/facts/observedAt; optional price in currency minor units with expiry. New fact/variant = new version.
+project_products: project memilih exact version, attribution_mode dan optional affiliate_url/source/verified_at. Maksimum satu PRIMARY product melalui partial unique index. Draft affiliate boleh belum punya primary/link; final readiness mengharuskan primary dan attribution path valid oleh core. Canonical URL produk bukan tracking link affiliate otomatis.
+evidence: immutable source kind/URI/time/excerpt/hash jika byte tersedia. URL bukan bukti rights; content dan origin juga divalidasi.
+claims: product version+claim text+evidence canonical FK; review can become revoked. Evidence product scope harus sama. Beberapa evidence tambahan dapat menjadi ekspansi claim_evidence; M0 memilih satu canonical evidence per claim, bukan array dangling IDs.
+assets/asset_versions: immutable source file/hash/media metadata/product version linkage/derivative parent; lifecycle rights_state dan review evidence terpisah dari source bytes.
+scenes: immutable scene revision/spec hash. spec berisi narration, duration estimate, locked/delta attributes, role routes yang diusulkan.
+scene_assets: explicit slot+role+required+exact asset version; product binding harus versi yang terhubung ke project.
+scene_claims: explicit approved-claim references untuk narration/on-screen; product scope diperiksa DB, current approval diperiksa preflight.
+remote_asset_bindings: native ID/visible label/evidence/context; SELECTED_VISIBLE bukan guarantee model fidelity. Mark STALE saat connection/account/project/model scope berubah.
+runs: immutable full snapshot of product/scene/asset/claim/settings/recipe/route references dan hash; mutable aggregate state hanya. Relasi di JSON harus divalidasi app terhadap versi yang ada.
+run_nodes: node key+effect/route/state/revision; typed node inputs/outputs berada pada spec/run snapshot dan artifact records.
+prepared_receipts: immutable readback body dan hashes, route/connection/capability evidence, expiry. Upload preparation dapat memerlukan grant terpisah.
+approvals: single-use exact node/request/receipt/effect/cap/expiry; grant terms immutable. Tidak boleh dibuat oleh output LLM.
+generation_intents: durable external-effect journal (nama meliputi metered text/upload juga), unique stable idempotency key dan approval, request hash immutable. UNKNOWN disimpan bukan dihapus.
+wallets: per-provider account+unit+integer scale, nullable observed balance. Observed balance bukan escrow uang provider.
+budgets: per project+wallet limit/reserved/spent integer; CHECK prohibits local over-limit counters. Tidak menggabungkan wallet berbeda.
+reservations: one per intent; amount <= grant; scope project/provider/wallet consistent. Settlement/counter update dalam satu app transaction; schema tidak otomatis merekonsiliasi semua spending eksternal.
+external_jobs: nullable remote handle, observed outcome/evidence/time; remote handle uniqueness provider/account-scoped.
+artifacts: exact file path/hash/kind/metadata/node; output temporary baru dipromosikan setelah pemeriksaan actual bytes.
+reviews: technical/product-fidelity/audiovisual/release, decision/evidence/reviewer/time. App release gate menentukan kebutuhan kombinasi reviews, bukan SQL default PASS.
+audit_events: append-oriented sequence, typed redacted payload; local log tidak diklaim tamper-proof.
+app_settings: non-secret allowlisted JSON value with revision; project override ada di project/run snapshot.
+schema_migrations: applied version/time; production migrator baru dibuat pada build phase.
+Detail semua kolom, nullable/default/PK/FK tersedia di schema/data-dictionary.csv yang digenerate dari SQL.
+
+4. REPRESENTASI DAN INVARIANTS
+ID: application-generated opaque UUID string. Fixture tests memakai ID pendek yang sengaja synthetic. PK SQLite tidak membuktikan format UUID; parser app wajib.
+Time: epoch milliseconds UTC INTEGER; UI menampilkan locale dan timezone. Expiry memakai trusted core clock, bukan teks model.
+Money: IDR integer minor-unit convention dengan currency metadata yang benar; vendor credits integer amount_u + unit_scale dari wallet. Jangan float untuk accounting.
+Hash: lowercase SHA-256 raw source/canonical serialization bytes; snapshot canonicalization version dipin. Sumber normalized text diberi format berbeda, tidak dianggap raw file digest.
+JSON: json_valid checks syntax saja; DTO JSON schema/business rules diuji core. Required asset limits, DAG acyclic dan valid output aspect bukan otomatis benar karena JSON valid.
+Deletion: FK default RESTRICT/NO ACTION untuk history. Archive/disable/revoke daripada cascade. Penghapusan workspace eksplisit memerlukan confirmation+backup policy; evidence/history berisi data sensitif dan harus dapat diekspor/dihapus sesuai pilihan user dan kewajiban yang relevan.
+Integrity subset di DB: FK, enum/check, one-primary product, immutable versions/bytes/request, evidence product match, product scene scope, template/workflow match, receipt/grant match, single-use approval/intent uniqueness, reservation scope/cap.
+App invariants yang masih wajib: authorized OS/operator action, canonical hash benar, live readback freshness, required inputs/rights/consent, full state transition validity, current claims/assets revocation, budget ledger reconciliation, no arbitrary path/network/secret injection, immutable scene binding after finalization, no secret values in JSON.
+SQL path checks hanya baseline. App harus reject symlink/junction/reparse-point escape, absolute/UNC/device paths, traversal after decoding, reserved names dan alternate data streams; tidak menganggap CHECK relpath sebagai filesystem sandbox.
+
+5. WORKLOAD DAN INDEX ASSUMPTIONS
+Workload awal: operator membuka catalog, recent projects/runs, scenes, pending jobs/UNKNOWN intents dan event tail. Volume nyata belum diketahui; belum ada throughput/size benchmark.
+Indexes awal mengikuti lookup tersebut; jangan menambah FTS/vector database sebelum kebutuhan pencarian dan biaya indexing terukur. Reference index sudah ada pada project time, run/project, node state, intent state, event cursor, asset hash dan capabilities.
+Large blobs tidak disimpan ke SQLite. Metadata JSON bounded di app. Media cache/temp punya retention policy dan kebutuhan free-space checks.
+
+6. TRANSACTION SKETCH
+BEGIN IMMEDIATE;
+  Verify immutable run/node/revision/request+receipt and current consent/rights.
+  Claim stable intent key; same key different body rejected.
+  Verify grant exact hash+effect+scope+expiry, not consumed/revoked.
+  Conditional budget UPDATE ... WHERE reserved+spent+new_amount <= limit;
+  Insert intent (trigger consumes grant), insert reservation, append redacted event;
+COMMIT;
+Only then call adapter. No cross-provider transaction/exactly-once promise. On possible dispatched failure keep intent UNKNOWN and reservation intact until reconciliation.
+If any preflight/insert fails, rollback counters+intent+grant consumption together. Actual provider cost can exceed an estimate externally; stop scheduling, surface variance and reconcile actual spend, never silently under-report to satisfy local CHECK.
+
+7. MIGRATION / BACKUP / RESTORE
+Migrations run while scheduler stopped and no native host writer active; check schema version and app compatibility first. Backup consistent DB before destructive migration.
+Use SQLite backup API or reviewed consistent snapshot method, plus assets/evidence/artifacts manifest under a paused/quiesced workspace. Copying workspace.sqlite alone while WAL writer is active is not accepted backup design.
+Restore defaults dry-run to a new root; reject path escapes, verify every included file/hash, apply schema check, PRAGMA integrity_check/foreign_key_check, then open read-only preview before switching active root.
+Secrets/browser profiles/session/cookies excluded; model/provider configs restore disabled until credential rebind and connection validation. Target path and dependencies resolved anew.
+Default backup policy proposed: manual before upgrades and optional daily when idle; retention/size/RPO/RTO remain user decisions and must be measured. Schema-fixture backup test is not full media-workspace restore acceptance.
+Rollback after irreversible schema/data changes means restore reviewed snapshot or forward-fix; do not fabricate a safe down migration.
+
+Sources:
+[6] https://sqlite.org/foreignkeys.html — SQLite foreign keys
+[7] https://sqlite.org/wal.html — SQLite WAL and WAL-reset bug

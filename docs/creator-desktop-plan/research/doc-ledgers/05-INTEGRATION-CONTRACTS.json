@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 3,
+      "url": "https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging",
+      "title": "Chrome native messaging",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 5,
+      "url": "https://github.com/modelcontextprotocol/rust-sdk",
+      "title": "Official MCP Rust SDK",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 15,
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports",
+      "title": "MCP 2026-07-28 transport overview",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 16,
+      "url": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices",
+      "title": "MCP security best practices",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 19,
+      "url": "https://github.com/modelcontextprotocol/rust-sdk/security/advisories/GHSA-9g45-5xwm-f3wc",
+      "title": "MCP Rust SDK redirect header advisory",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 21,
+      "url": "https://developer.chrome.com/docs/extensions/develop/concepts/activeTab",
+      "title": "Chrome activeTab temporary permission",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 22,
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+      "title": "MCP tools errors and untrusted annotations",
+      "accessed": "2026-11-28"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+requirement_id,priority,feature,acceptance_criterion,use_case,design_ref,planned_test_id,implementation_status,verification_status
+FR-01,M0,Workspace & projects,Create/edit/archive local project; scope path and preserve history.,UC-01;UC-03,02-FLOWS-AND-USE-CASES.txt,E2E-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-02,M0,Independent taxonomy,AFFILIATE+SHORT allowed; format AFFILIATE invalid; compatible template filter.,UC-03,01-PRD.txt,E2E-02,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-03,M0,Versioned packaged templates,"Template binds exact workflow/skills, inputs/defaults and QA; old runs unchanged.",UC-03,05-INTEGRATION-CONTRACTS.txt,CONTRACT-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-04,M0,Product/variant library,Affiliate readiness requires exact Shopee ID product version/variant and verified attribution path; no guessed item IDs or tracking link.,UC-04,01-PRD.txt,E2E-03,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-05,M0,Assets & rights,Hash/version every source; missing/revoked rights prevents upload/final export.,UC-04,04-DATABASE.txt,SEC-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-06,M0,Evidence/claims,No approved product claim without same-version evidence; experience claims need corresponding footage.,UC-04;UC-05,01-PRD.txt,E2E-04,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-07,M0,Provider management,Add/edit/disable supported adapter provider; OS credential reference; metadata-only test.,UC-02,05-INTEGRATION-CONTRACTS.txt,CONTRACT-02,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-08,M0,Model registry/picker,Catalog or manual exact ID; role/route capabilities separated; unknown not generate-ready.,UC-02,05-INTEGRATION-CONTRACTS.txt,CONTRACT-03,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-09,M0,Workflow runner,DAG with typed nodes; cycle/unknown effect/missing gates rejected; skills cannot authorize effects.,UC-05,05-INTEGRATION-CONTRACTS.txt,CONTRACT-04,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-10,M0,Route resolution & preflight,Hard constraints before ranking; no silent fallback/asset dropping; explain blocked reasons.,UC-02;UC-06,03-ARCHITECTURE.txt,CONTRACT-05,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-11,M0,Script/storyboard editor,"Editable typed planner output, evidence links and explicit scene/reference revisions.",UC-05,02-FLOWS-AND-USE-CASES.txt,E2E-05,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-12,M0,Human approvals,Grant bound to immutable payload/receipt/effect/amount; setting changes or expiry invalidate it.,UC-05;UC-06,05-INTEGRATION-CONTRACTS.txt,SEC-02,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-13,M0,Chrome read-only/manual assist,Pair selected tab/domain only; revoke on scope change; no upload/generate on inspect.,UC-06,03-ARCHITECTURE.txt,SPIKE-CHROME,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-14,M0,MCP diagnostics,One reviewed server client handshake/tools metadata; unknown-effect tool denied.,UC-06,05-INTEGRATION-CONTRACTS.txt,SPIKE-MCP,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-15,M0,Local media finishing,Compose authorized sources; low-res preview and final export chosen independently; validate actual output.,UC-07,02-FLOWS-AND-USE-CASES.txt,MEDIA-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-16,M0,Durable jobs/recovery,Crash after dispatch -> UNKNOWN; no blind retry; pause/cancel semantics truthful.,UC-09,05-INTEGRATION-CONTRACTS.txt,FAULT-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-17,M0,Budget/wallet/intent journal,Atomically reserve per-provider units and consume grant; UNKNOWN retains reservation.,UC-02;UC-06;UC-09,04-DATABASE.txt,FAULT-02,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-18,M0,Technical and human QA,Probe/decode + audiovisual/product/claims review required before release.,UC-07,02-FLOWS-AND-USE-CASES.txt,MEDIA-02,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-19,M0,Export package,MP4/captions/caption text/product link/release checklist; EXPORTED != published.,UC-08,02-FLOWS-AND-USE-CASES.txt,E2E-06,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-20,M0,Layered settings,Aspect/resolution/duration/fps/audio/captions/role models/budgets; precedence explained; run snapshot locked.,UC-01;UC-03,02-FLOWS-AND-USE-CASES.txt,E2E-07,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-21,M0,Backup/restore,Consistent DB + assets hash manifest; dry-run restore excludes secrets/browser state.,UC-01;UC-09,04-DATABASE.txt,RECOVERY-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-22,M0,Security/privacy,No secrets in JS/log/export; permission allowlists; no arbitrary skill execution.,UC-01;UC-06,03-ARCHITECTURE.txt,SEC-03,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-23,M2,Analytics import,Record window/source/estimated vs paid commission; profit never inferred from views.,UC-10,06-DELIVERY-AND-QA.txt,ANALYTICS-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-24,M2,Engineering 3D lane,"Version mesh/rig/material/timing; choose approved Blender or Three.js renderer, verify capture/export and domain correctness.",UC-10,06-DELIVERY-AND-QA.txt,3D-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-25,M2,Template authoring,Allowlisted node types only; graph/policy validation; no arbitrary shell imports.,UC-10,05-INTEGRATION-CONTRACTS.txt,TEMPLATE-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-26,DEFER,Auto publishing,"Disabled M0; official permission/policy/current API, independent approval and target readback required.",UC-08,06-DELIVERY-AND-QA.txt,PUBLISH-01,NOT_IMPLEMENTED,DESIGN_ONLY
+FR-27,M0,Asset-conditioned generation,"Default AI/hybrid affiliate uses one verified exact video route with real product reference/readback, quote/consent/recovery and actual output QA; unknown requirements block.",UC-06,05-INTEGRATION-CONTRACTS.txt,GEN-01,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-01,M0,Offline local metadata/editing,Project/product/settings usable offline; remote operations explicitly unavailable.,CROSS_CUTTING,03-ARCHITECTURE.txt,OFFLINE-01,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-02,M0,Measured UI responsiveness,Proposed p95 <=150ms feedback and <=1s list of 100 projects on documented reference setup; not yet measured.,CROSS_CUTTING,03-ARCHITECTURE.txt,PERF-01,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-03,M0,Crash durability,No implicit paid retry or corruption of accepted artifacts during fault injection.,CROSS_CUTTING,03-ARCHITECTURE.txt,FAULT-03,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-04,M0,Secret and trust boundaries,"Negative tests for secret leakage, arbitrary IPC/tool effect, malicious URLs/files and wrong tab.",CROSS_CUTTING,03-ARCHITECTURE.txt,SEC-04,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-05,M0,Accessibility,"Keyboard flow, focus, labeled errors and reduced-motion walkthrough passes primary tasks.",CROSS_CUTTING,03-ARCHITECTURE.txt,A11Y-01,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-06,M0,Portable consistent backup,DB plus all selected assets manifest restores to fresh root with secrets excluded.,CROSS_CUTTING,03-ARCHITECTURE.txt,RECOVERY-02,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-07,M0,Redacted observability,Correlated run/node/intent events with bounded retention; no prompt/media/header logging by default.,CROSS_CUTTING,03-ARCHITECTURE.txt,OBS-01,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-08,M0,Supply-chain release gates,Exact lockfiles/advisory review/license review and signed release/update strategy; no auto-execute download.,CROSS_CUTTING,03-ARCHITECTURE.txt,RELEASE-01,NOT_IMPLEMENTED,DESIGN_ONLY
+NFR-09,M0,Windows packaging compatibility,Clean Windows VM/WebView2/native-host install-upgrade-uninstall tested; other OS deferred.,CROSS_CUTTING,03-ARCHITECTURE.txt,INSTALL-01,NOT_IMPLEMENTED,DESIGN_ONLY

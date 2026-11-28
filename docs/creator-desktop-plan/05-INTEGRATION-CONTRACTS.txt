@@ -1,0 +1,123 @@
+INTEGRATION CONTRACTS — v0.2
+Status: PROPOSED internal contract, bukan API/service yang telah diimplementasikan.
+
+1. DEFINISI YANG TIDAK BOLEH DICAMPUR
+Provider: instance layanan/account/surface; dapat memiliki endpoint dan credential_ref. Flow UI dan API dari vendor yang sama adalah dua route berbeda.
+Model: exact identifier atau UI label pada provider instance; family name bukan identifier universal.
+Adapter: kode terverifikasi yang menerjemahkan operasi domain ke API/MCP/browser/local process.
+MCP: protocol client/server untuk tools/resources/prompts, bukan generator video atau sumber permission otomatis.
+Skill: guidance dan struktur editorial/domain versioned. Dapat dipakai pada node planner; tidak boleh menjalankan shell/call MCP hanya karena teks skill menyuruhnya.
+Workflow: DAG allowlisted node types, inputs/outputs typed, effect classes, retry/approval/recovery rules.
+Template: user-facing recipe yang mengikat workflow version, skill revisions, input schema, defaults dan QA.
+Connection: sesi transport yang sudah dipasangkan; connection sehat tidak sama dengan model/reference/quote valid.
+
+2. PROVIDER REGISTRY
+ProviderConfig
+  providerId: opaque UUID string local.
+  name, accountAlias: nama lokal, tanpa cookie/token.
+  surface: API | BROWSER | LOCAL | MCP.
+  adapterKey, adapterVersion: harus cocok installed allowlist.
+  baseUrl: nullable; HTTPS untuk remote; loopback/local khusus user-approved explicit dev/local route.
+  credentialRef: nullable reference opaque ke OS broker; bukan secret actual.
+  allowedOrigins, state, metadataDiscoveredAt, consentScope.
+Tambah provider hanya membuat konfigurasi. Tidak memasang plugin atau menjalankan discovery yang menghabiskan kredit.
+Secret entry melalui native Rust/OS-owned credential prompt atau pemilihan credential reference yang sudah ada, bukan React password input. Library yang mewajibkan nilai secret melintasi JS tidak memenuhi kontrak no-secret-in-JS dan harus ditolak/didesain ulang pada spike.
+Endpoint validation: URL parser, forbid URL userinfo, restricted redirect policy, no private/link-local/network pivot kecuali explicit local allowlist; DNS/rebinding protections dibahas pada implementation review. Model/provider dapat disabled, tidak dihapus jika ada history.
+
+3. MODEL/CAPABILITY REGISTRY
+ModelRoute
+  routeId, providerId, externalModelId, displayName, roles[], enabled.
+  Katalog boleh manual/discovery; source dan waktu observasi disimpan.
+CapabilitySnapshot
+  routeId, adapterVersion, connection/account/project scope, sourceKind: DECLARED|DOCUMENTED|FIXTURE|OBSERVED|LIVE_TESTED.
+  capturedAt, expiresAt, evidenceReferences[]; expiry opsional hanya untuk immutable documentary evidence, live preflight selalu re-check.
+  modes, accepted input types, output types, supported role combinations, reference limits, aspect/resolutions, durations, audio/voice features, max outputs.
+  supportsIdempotency, supportsStatusLookup, supportsCancel, quoteMethod, retention/upload terms pointer.
+  each field: SUPPORTED | UNSUPPORTED | UNKNOWN; gunakan actual values hanya bila diketahui.
+Katalog AI tidak boleh menganggap nama model yang populer masih tersedia. UI picker menampilkan hanya routes yang memenuhi kebutuhan tahap, plus disabled reasons untuk others.
+
+4. NORMALIZED ADAPTER PORT
+Tidak semua metode wajib didukung; UnsupportedOperation adalah hasil valid, bukan fabricated success.
+  describe() -> adapter metadata, installed version, supported operation/effect registry.
+  discoverMetadata(scope) -> models/capabilities metadata; tidak generation/voice preview.
+  inspectContext(scope) -> observed account alias/tab/project/model/settings.
+  resolveAssets(sceneRevision, scope) -> resolved required asset bindings atau conflicts.
+  prepare(plan, uploadGrant?) -> PreparedReceipt; dapat memerlukan upload, sehingga bukan intrinsik read-only.
+  inspectPrepared(receiptId) -> actual readback settings, selected references, quote/provenance, readiness.
+  dispatch(intent, singleUseGrant) -> ACK(jobHandle) | KNOWN_REJECTED | UNKNOWN.
+  reconcile(intent) -> RUNNING | SUCCEEDED | KNOWN_FAILED | UNKNOWN + evidence.
+  fetchArtifacts(jobHandle) -> local candidate files with provenance.
+  requestCancel(jobHandle) -> REQUESTED | CONFIRMED | UNSUPPORTED | UNKNOWN.
+Mode M0 browser hanya describe/inspectContext dengan scoped permissions dan manual assistant. prepare/dispatch tidak ditampilkan aktif sampai spike lolos.
+MCP tools dibungkus adapter yang sama. Tool name/descriptions/annotations tidak menjadi approval. Unknown effect -> DENY, bukan default read. MCP menganggap tool annotations tidak tepercaya kecuali berasal dari server tepercaya; adapter juga membedakan protocol error dari tool result isError dan memvalidasi hasilnya sebelum node sukses.[22]
+
+5. MCP CLIENT BOUNDARY
+MCP client berada di Rust core, stdio child executable allowlisted atau Streamable HTTP exact approved origin. App bukan MCP server pada MVP, sehingga tidak membuka command endpoint aplikasi ke semua agent.
+Official SDK rmcp adalah kandidat integrasi; transport negotiation dan lifecycle perlu diuji terhadap server nyata yang dipilih.[5][15]
+Stdio environment minimum, tidak mewarisi semua API keys/SSH credentials. argv terstruktur tanpa shell string; executable/version/hash dan license ditinjau. User dapat mencabut koneksi dan terminate child yang dimiliki app.
+Remote authorization mengikuti requirement server dan spec; tidak menaruh client secret permanen di bundled desktop config. Jangan token passthrough, jangan forward credentials ke origin lain; policy redirect explicit dan audience/scope check.[16]
+Advisory rmcp yang diambil melaporkan custom-header leakage pada cross-origin redirects dan mencantumkan versi terdampak <=1.7.0 serta perbaikan 2.1.0. Ini alasan dependency pin/advisory review saat implementasi, bukan pernyataan bahwa satu versi tersebut bebas semua kerentanan.[19]
+“MCP tools/list sukses” hanya handshake/metadata evidence; bukan izin menjalankan tool atau bukti renderer/provider siap.
+
+6. CHROME BRIDGE CONTRACT
+Native message envelope: protocolVersion, connectionId, sessionEpoch, requestId, action, tabLeaseId, allowedOrigin, payload, expiresAt, authentication tag/session binding.
+Host tidak menerima arbitrary JS/shell/file path command. Action allowlist: INSPECT_TAB_CONTEXT, READ_ALLOWED_MODEL_SETTINGS, READ_SELECTED_REFERENCE_LABELS, SHOW_USER_REVIEW_PROMPT. Future PREPARE/SUBMIT actions dirilis terpisah setelah review.
+Content script hasil DOM adalah untrusted data; origin, tabId dan document/navigation epoch dicek core sebelum dan setelah action. One controller lock dan fencing mencegah stale tab worker.
+activeTab memberikan akses sementara setelah tindakan user, tetapi akses dapat bertahan pada navigasi same-origin. Karena itu app harus menggugurkan grant tugasnya sendiri saat navigasi, expiry atau revoke; jangan menganggap permission Chrome identik dengan consent satu tugas.[21]
+Native messaging framing/allowed_origins adalah mekanisme Chrome yang terdokumentasi; app perlu host executable dan registration tersendiri, bukan cukup Tauri window.[3]
+Bulk media tidak melewati JSON control messages. File upload browser adalah uncertainty terpisah: uji izin, ukuran dan site workflow; jangan mengklaim content script bisa mengambil arbitrary local path. Jika tidak sah/aman, operator memilih file manual.
+Forbidden: all-tab monitoring by default, exporting cookies/tokens, recording authorization headers/full HAR, automatic account login, CAPTCHA bypass, uploading tanpa consent, arbitrary scripting.
+
+7. WORKFLOW/TEMPLATE CONTRACT
+WorkflowSpec
+  schemaVersion, workflowId, revision, contentSha256, nodes[], edges[], requiredSkillVersions[].
+NodeSpec
+  key, type, inputSchema, outputSchema, effectClass, requiredCapabilities, timeoutPolicy, retryPolicy, approvalPolicy, artifactRoles.
+Allowed M0 types: input.product, evidence.review, asset.review, planner.text, script.review, scene.plan, route.preflight, source.select, compose.local, qa.technical, qa.human, export.local.
+M0 generative lane: media.prepare, media.dispatch, media.reconcile, media.download hanya setelah controls/spike siap; satu approved video route adalah MVP acceptance, bukan jaminan sudah terpasang. M1 memperluas adapter/template.
+ENGINEERING_3D memilih renderer Blender atau Three.js lewat local renderer adapter, bukan mendaftarkan nama renderer sebagai model AI. AI authoring script dan generative video inference adalah operasi berbeda.
+Graph validator: unique node keys, edges valid, DAG/no cycles, reachable outputs, compatible ports, mandatory gates dominate side-effect/export nodes, missing required skill/version fail closed.
+Tidak menjalankan workflow yang dihasilkan AI sebelum schema+policy validation dan operator menyetujui plan.
+TemplateSpec
+  templateId/revision, workflowVersionId, compatibleIntents/formats/platforms, requiredProductCount, assetRequirements, defaults, overridableFields, outputSchema, releaseChecklist.
+Required assets tidak boleh dihapus compiler agar muat model; konflik dikembalikan ke UI.
+
+8. APPROVAL, BUDGET DAN IDEMPOTENCY
+Canonical request material mencakup project/run/node revision, product version/variant, approved claims, asset version/hash, route/provider/account/model, parameters, prompt/skill/workflow versions, effect scope, quote/unit/outputCount dan receipt hash.
+Canonical serialization version dipin, hash dihitung pada raw canonical bytes; tidak pakai unordered JSON/string manipulation ad hoc.
+Grant: exact request hash, node, effect, amount/credit unit/scale, receipt hash, expiry, user approval event; single use. LLM tool reply tidak bisa membuat grant.
+Dalam satu transaksi DB: validasi grant dan current revision -> enforce unconsumed+unexpired -> conditional budget reservation -> create unique intent -> consume grant -> commit. Barulah dispatch.
+  Key sama + hash sama: return existing intent/status, tidak dispatch ulang.
+  Key sama + hash beda: IDEMPOTENCY_CONFLICT.
+  UNKNOWN: retain reservation dan block duplicate/reroute hingga reconciliation; failed retry membutuhkan intent dan grant baru bila ada potensi biaya baru.
+Satu wallet per provider/account/unit; amount_u integer dengan unit_scale eksplisit. Tidak menyamakan 10 credits vendor A dengan vendor B atau kurs uang yang tidak diperbarui.
+Metered text/TTS: approved maximum harus punya basis (input/output limits + verified unit price); jangan menampilkan “gratis” hanya karena test metadata tidak menagih.
+Tidak mengklaim local reservation sebagai bank/provider hard spending cap. External UI/manual actions di luar app tetap bisa memakai saldo.
+
+9. IPC COMMAND CATALOG
+Semua command v1 memakai CommandEnvelope{requestId,workspaceId,expectedRevision?,idempotencyKey?,payload}.
+Response: Result{data,revision} atau Error{code,message,fieldErrors?,retryability,correlationId}. Jangan sertakan raw provider error yang mengandung secret.
+  workspace.open / workspace.diagnostics / settings.patch
+  project.create / project.get / project.update / project.list(cursor,limit)
+  product.save_version / product.link / evidence.record / claim.review
+  asset.import / asset.review_rights / asset.list / scene.save_revision
+  template.list / workflow.inspect
+  provider.save / provider.test_metadata / provider.disable
+  model.register / model.capabilities / route.resolve
+  connection.pair / connection.inspect / connection.revoke
+  run.plan / run.start / run.pause / run.cancel / run.reconcile / run.get
+  approval.issue / approval.revoke
+  export.create / export.inspect / backup.create / backup.restore_preview
+Commands mutating records honor revision and idempotency per operation. IPC tidak dibuka untuk remote webpages. Cursor list max configurable dan bounded; gunakan stable ordering id+created_at.
+Stable errors: VALIDATION_ERROR, CONFLICT, IDEMPOTENCY_CONFLICT, UNSUPPORTED_OPERATION, CAPABILITY_UNKNOWN, MISSING_PRODUCT, RIGHTS_REQUIRED, EVIDENCE_REQUIRED, STALE_RECEIPT, APPROVAL_REQUIRED, APPROVAL_EXPIRED, BUDGET_EXCEEDED, TAB_SCOPE_CHANGED, CONNECTION_LOST, PROVIDER_OUTCOME_UNKNOWN, OUTPUT_QA_FAILED, DEPENDENCY_MISSING.
+Event: EventEnvelope{eventId,workspaceId,runId?,nodeKey?,intentId?,eventType,occurredAt,payloadRedacted}; consumers resume from eventId, not rerun dispatch.
+Ini catalog kontrak awal. Exact Rust DTO/JSON schemas per command akan menjadi deliverable vertical slice sebelum build paralel, bukan dianggap sudah lengkap atau implementasi stub siap dipakai.
+
+Sources:
+[3] https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Chrome native messaging
+[5] https://github.com/modelcontextprotocol/rust-sdk — Official MCP Rust SDK
+[15] https://modelcontextprotocol.io/specification/2026-07-28/basic/transports — MCP 2026-07-28 transport overview
+[16] https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices — MCP security best practices
+[19] https://github.com/modelcontextprotocol/rust-sdk/security/advisories/GHSA-9g45-5xwm-f3wc — MCP Rust SDK redirect header advisory
+[21] https://developer.chrome.com/docs/extensions/develop/concepts/activeTab — Chrome activeTab temporary permission
+[22] https://modelcontextprotocol.io/specification/2026-07-28/server/tools — MCP tools errors and untrusted annotations

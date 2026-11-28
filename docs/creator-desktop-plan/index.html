@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creator Desktop — Plan v0.2</title>
+<style>body{margin:0;background:#081020;color:#e2e8f0;font:16px/1.65 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:30px}h1{color:#22d3ee}a{color:#67e8f9}nav{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}nav a{padding:8px 12px;border:1px solid #334155;border-radius:8px;text-decoration:none}article{margin:35px 0;padding:24px;border:1px solid #334155;border-radius:12px;background:#0f172a}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.8 Consolas,monospace}.status{color:#fbbf24}</style>
+</head>
+<body>
+<main>
+<h1>Creator Desktop / Plan v0.2</h1>
+<p class="status">PROPOSED · 28 November 2026 · Plan-only, not a built application.</p>
+<p>Affiliate: AI/hybrid + canonical product references. Engineering 3D: Blender or Three.js as a separate lane.</p>
+<nav>
+<a href="diagrams.html">Visual diagrams</a>
+<a href="requirements.csv">Requirements CSV</a>
+<a href="schema/001-initial.sql">Proposed SQLite DDL</a>
+<a href="schema/data-dictionary.csv">Data dictionary</a>
+<a href="verification/FINAL-STATUS.json">Verification scope</a>
+</nav>
+<nav>
+<a href="#doc-0">00-README</a>
+<a href="#doc-1">01-PRD</a>
+<a href="#doc-2">02-FLOWS-AND-USE-CASES</a>
+<a href="#doc-3">03-ARCHITECTURE</a>
+<a href="#doc-4">04-DATABASE</a>
+<a href="#doc-5">05-INTEGRATION-CONTRACTS</a>
+<a href="#doc-6">06-DELIVERY-AND-QA</a>
+<a href="#doc-7">07-SOURCE-NOTES</a>
+<a href="#doc-8">08-PRODUCTION-LANES</a>
+</nav>
+<article id="doc-0">
+<h2>00-README</h2>
+<pre>CREATOR DESKTOP — PAKET RENCANA v0.2
+Tanggal: 28 November 2026, UTC+07:00
+Status: PROPOSED / BELUM DISETUJUI UNTUK IMPLEMENTASI
+Nama kerja: Creator Desktop; bukan nama produk yang sudah diputuskan.
+Pemilik produk/pemberi persetujuan: ayah keren.
+
+1. RINGKASAN
+Aplikasi desktop Windows-first dengan Rust sebagai domain core dan Tauri sebagai shell yang diusulkan. Aplikasi mengubah brief dan aset menjadi rencana video, menjalankan workflow terkontrol melalui adapter/API/MCP/Chrome yang tersedia, lalu mengomposisi, meninjau dan mengekspor hasil.
+Fokus vertical slice pertama: affiliate Shopee Indonesia AI-assisted/hybrid berbasis produk/varian nyata dan aset berizin. Blender bukan default affiliate; structured 3D engineering menjadi lane terpisah dengan Blender atau Three.js sesuai kebutuhan.
+Shopee menjelaskan program affiliate melalui media sosial, Shopee Video dan Shopee Live; paket ini memilih video dan export manual, bukan live commerce.[12]
+
+2. KEPUTUSAN DESAIN INTI — MASIH USULAN
+  Tujuan: AFFILIATE, EDUCATIONAL, STORYTELLING, GENERAL.
+  Format: SHORT, LONG, CUSTOM — terpisah dari tujuan.
+  Platform output: Shopee Video, TikTok, YouTube Shorts/Video, Instagram Reels, Custom.
+  Gaya produksi: product footage, product explainer, narrative/B-roll, motion graphic; 3D engineering kemudian.
+  Template: mengunci workflow version, skill revisions, kebutuhan aset, opsi konfigurasi dan QA.
+Contoh valid: AFFILIATE + SHORT + Shopee Video + Product Explainer.
+Contoh valid: EDUCATIONAL + LONG + YouTube + Engineering 3D.
+Sidebar boleh menyediakan shortcut Affiliate / Short / Video Biasa, tetapi shortcut tidak menjadi enum kategori yang saling meniadakan di database.
+
+3. APA YANG SUDAH DIKETAHUI
+  User ingin desktop berbasis Rust, MCP/adapter/Chrome, template routing, setting video, menu provider/model dan pemilihan model pada generator.
+  Konteks konten: Shopee Indonesia; distribusi juga TikTok, YouTube dan Instagram.
+  Skill editorial affiliate dan skill setup 3D sudah ada dalam pekerjaan sebelumnya. Skill bukan renderer, koneksi provider, maupun bukti aplikasi siap berjalan.
+  Aplikasi ini belum dibangun. Tidak ada login, upload aset, render produksi atau kredit dipakai dalam pekerjaan perencanaan ini.
+
+4. ASUMSI UNTUK DISETUJUI
+  Single operator, single local workspace aktif, offline-first untuk metadata dan editing rencana.
+  Windows menjadi target pertama; target hardware lama adalah laporan pengguna, bukan hasil benchmark aplikasi ini.
+  UI web dalam Tauri diperbolehkan; “Rust desktop” bukan berarti semua UI harus pure Rust.
+  Tidak ada akun cloud milik aplikasi, subscription server, kolaborasi multiuser atau marketplace plugin pada MVP.
+  API resmi diprioritaskan; Chrome assistant bersifat opt-in. Tidak mengasumsikan akses Shopee OpenAPI/affiliate API atau Google Flow API tersedia.
+
+5. BACA DOKUMEN
+  01-PRD.txt                  overview, masalah, tujuan, core features, scope/non-goals.
+  02-FLOWS-AND-USE-CASES.txt   use case, user flow, screen flow, state/error/approval flow.
+  03-ARCHITECTURE.txt         tech stack, modul, trust boundary, ADR, NFR.
+  04-DATABASE.txt             schema overview, kamus data, invariants, backup/migrasi.
+  05-INTEGRATION-CONTRACTS.txt  provider/model, adapter, MCP, Chrome, workflow contracts.
+  06-DELIVERY-AND-QA.txt       roadmap vertical slice, acceptance, risiko, decision log.
+  07-SOURCE-NOTES.txt          temuan primer dan batas bukti.
+  08-PRODUCTION-LANES.txt      keputusan user: affiliate AI/hybrid; engineering Blender/Three.js.
+  requirements.csv           functional/NFR IDs, prioritas, acceptance, traceability.
+  schema/001-initial.sql       DDL usulan SQLite; belum migrasi aplikasi nyata.
+  schema/verify_schema.py      pemeriksaan executable terhadap DDL pada DB disposable.
+  diagrams.html               diagram visual offline: arsitektur, use case, flow, ERD kelompok.
+  diagrams/*.mmd              sumber diagram flow/ERD.
+  diagrams/use-cases.puml      sumber UML use case.
+  verification/               hasil validasi artefak perencanaan, bukan tes app.
+  research/                  ledger URL sumber resmi; raw page captures tidak dipublikasikan.
+
+6. BATAS DONE
+Selesai di tahap ini berarti dokumen dan diagram tersedia, source references tervalidasi, DDL dapat dieksekusi dan constraint diuji, serta requirement dapat ditelusuri. Itu tidak membuktikan UI, model AI, Shopee integration, MCP handshake atau Chrome/Flow automation bekerja.
+Jangan menyalin database runtime ke folder OneDrive yang sedang disinkronisasi. Lokasi paket rencana ini bukan lokasi runtime yang diusulkan.
+Publikasi Git paket ini hanya menerbitkan rencana dan pemeriksa artefak. Tidak mengimplementasikan aplikasi, memasang dependency, mengekspor secret atau memberi izin generation/publishing.
+
+7. KEPUTUSAN TERBUKA TERPENTING
+  A. Setujui Windows-first + Tauri/Rust core + UI TypeScript, atau wajib pure Rust UI?
+  B. Arah editorial disepakati: AI/hybrid affiliate dengan canonical product assets. Exact video provider/model/route pertama masih perlu dipilih dan diuji; footage asli tetap opsi/evidence.
+  C. Provider text pertama ditentukan dari akun/model yang benar-benar dimiliki, bukan nama model yang diasumsikan tersedia.
+  D. Jalur Chrome: manual-assisted lebih dahulu; extension native messaging hanya setelah spike read-only disetujui.
+  E. Penyimpanan produk: lokal/manual dahulu; API/import Shopee hanya jika izin dan akses resmi terverifikasi.
+Pertanyaan ini tidak menghalangi penyusunan plan, tetapi memblokir keputusan implementasi terkait.
+
+Sources:
+[12] https://help.shopee.co.id/portal/4/article/72053 — Shopee ID: affiliate program
+</pre>
+</article>
+<article id="doc-1">
+<h2>01-PRD</h2>
+<pre>PRD — CREATOR DESKTOP v0.2
+Status: usulan; belum aplikasi berjalan. Sumber kebutuhan utama: permintaan ayah keren.
+
+1. MASALAH DAN OPPORTUNITY
+Saat ini brief, produk, aset, skill, provider AI, browser dan renderer terpisah. Risiko: produk/varian tertukar, klaim tidak berdasar, pilihan model tidak mendukung referensi, workflow dipilih berdasarkan nama skill saja, biaya tidak terlihat dan hasil tidak memiliki jejak asal.
+Hipotesis produk: satu workspace yang mengikat semua itu mengurangi kerja ulang dan kesalahan. Belum ada user study atau benchmark yang membuktikan penghematan waktu atau peningkatan komisi. Jangan memakai “viral” atau “menguntungkan” sebagai acceptance teknis.
+
+2. USER DAN JOB TO BE DONE
+Persona primer: kreator/affiliate solo yang memiliki link produk, aset sendiri/berizin, akun layanan sendiri, dan ingin membuat beberapa format tanpa mengatur ulang tool dari nol.
+Job primer: “Pilih produk yang tepat, buat naskah yang jujur, gunakan aset produk yang sesuai, pilih tool/model yang bisa memenuhi brief, review, lalu dapatkan paket video siap diperiksa sebelum posting.”
+Persona sekunder: pembuat educational/narrative content. Engineer 3D adalah lane terpisah, bukan prasyarat affiliate.
+Aktor pendukung: penyedia AI, MCP server, Chrome extension/host, filesystem dan compositor lokal. Mereka bukan pengguna yang berhak memberikan persetujuan bisnis.
+
+3. OBJECTIVES DAN PENGUKURAN
+  O1 Menghasilkan satu proyek affiliate yang dapat ditelusuri dari produk/varian sampai file export.
+     Ukur: seluruh klaim yang tampil punya evidence dan approval; seluruh aset punya hak penggunaan yang ditinjau.
+  O2 Memilih jalur yang kompatibel tanpa mengubah kebutuhan diam-diam.
+     Ukur: semua negative capability cases menghasilkan BLOCKED dengan alasan, bukan submit terdegradasi.
+  O3 Aman dilanjutkan setelah crash atau timeout.
+     Ukur: fault-injection tidak membuat dispatch ulang untuk intent UNKNOWN.
+  O4 Membuat konfigurasi provider/model bisa dipahami.
+     Ukur: user dapat membedakan terdaftar, terhubung, teruji dan berhak generate dalam usability pilot.
+  O5 Mengurangi waktu kerja ulang.
+     Ukur: bandingkan waktu operator dan accepted-shot cost pada task yang sama dengan proses manual; target angka ditetapkan setelah baseline.
+Outcome bisnis lanjutan: komisi tervalidasi, biaya produksi, conversion bila tersedia. View count tidak menggantikan revenue evidence; hasil belum dapat dijanjikan.
+
+4. TAKSONOMI PRODUK
+Jangan membuat kategori Affiliate vs Short vs Video Biasa sebagai tiga pilihan eksklusif.
+  Intent = tujuan konten.
+  Format = short/long/custom + durasi target.
+  Platform = tujuan export/policy profile.
+  Style = gaya produksi.
+  Template = resep versioned yang kompatibel dengan dimensi di atas.
+  Project = instance brief + settings + produk/aset.
+  Run = eksekusi rencana yang telah disnapshot dan disetujui.
+Pilihan model dilakukan per tahap (planner/vision/image/video/voice), bukan satu model yang diasumsikan bisa semua. Renderer FFmpeg/Blender bukan model AI.
+
+5. CORE FEATURES
+  Project Studio: brief, bahasa, tujuan, format, platform, template, output settings.
+  Product Library: link produk, seller, item identifier bila terverifikasi, varian, spesifikasi, sumber dan waktu observasi.
+  Evidence &amp; Asset Library: foto/video asli, rights review, voice/likeness consent, claim-to-evidence map, versi immutable.
+  Templates &amp; Workflows: packaged read-only presets, version pins, DAG, required inputs, human gates.
+  Providers &amp; Models: provider instances, adapter/protocol support, credential reference, model catalog, role/capability matrix, test status.
+  Connections: MCP transport, Chrome pairing/tab consent, dependency diagnostics; tidak menyamakan connected dengan safe-to-generate.
+  Generator: scene plan, selected routes, reference binding, estimated costs/units, prepare/readback, approval.
+  Jobs &amp; Recovery: queue, node state, immutable intent, event log, pause/cancel, reconcile unknown results.
+  Finishing &amp; QA: trim/order, captions/narration/music authorized, export preset, product-fidelity review, technical probe/full decode.
+  Export Center: MP4, captions, approved caption/CTA text, product/affiliate link, provenance report dan posting checklist.
+  Settings: project/global settings terpisah, budgets, allowed paths/endpoints, privacy, retention, preview quality, backups.
+
+6. AFFILIATE SHOPEE: DOMAIN RULES
+Wajib ada produk yang dipromosikan, tetapi tidak selalu harus memegang sampel fisik. Kebutuhan sampel/rekaman nyata bergantung pada jenis klaim dan template. Demonstrasi hasil/ulasan pemakaian harus didukung bukti nyata yang sesuai, bukan video AI yang berpura-pura sebagai pengalaman pribadi.
+Link produk saja bukan izin memakai semua media seller. Imported seller image berstatus REVIEW_REQUIRED sampai hak komersial dan scope pemakaian ditinjau.
+Data wajib: marketplace=SHOPEE_ID, judul, seller/display identity, product URL, varian yang dipilih (atau single-variant yang dikonfirmasi), claim evidence, aset produk, rights review.
+Attribution mode dipilih eksplisit: EXTERNAL_LINK memakai affiliate link yang dimasukkan/diverifikasi user; PLATFORM_PRODUCT_TAG memakai pemasangan produk native saat posting manual. Canonical product URL tidak boleh otomatis disebut affiliate tracking link atau menjamin komisi. Jangan mengarang kode affiliate atau status keanggotaan.
+Nomor item/shop hanya diisi bila sumber benar-benar memberikan; jangan menebak dari shortlink. Resolusi shortlink harus tervalidasi, membatasi redirect dan tidak mengambil cookie.
+Harga, promo, stok dan komisi adalah snapshot berwaktu, nullable bila belum diketahui. MVP default tidak menampilkan angka harga/promo agar tidak mengarang atau cepat basi. Jika dipakai, perlu sumber, timestamp dan expiry; expiry tidak disamakan untuk semua marketplace.
+Shopee mendokumentasikan penambahan produk ke video pada langkah posting. File MP4 dan teks URL yang diekspor aplikasi tidak otomatis membuat product tag/keranjang di Shopee.[11]
+Kebijakan Shopee yang diambil membedakan kewajiban Label AI dari tambahan disclosure manual; release checklist harus mengingatkan operator mengaktifkan pengaturan platform ketika diwajibkan, bukan menganggap caption “AI” sudah cukup.[14]
+
+7. TEMPLATE CATALOG YANG DIRENCANAKAN
+M0 — PRODUCT_AI_HYBRID_EXPLAINER v1 (DEFAULT)
+  Produk: 1 produk/varian; foto/video canonical dengan izin dan facts verified. Footage rekaman sendiri tidak wajib untuk factual explainer, tetapi klaim penggunaan/hasil aktual harus didukung bukti yang sesuai.
+  Tahap: evidence/rights review -&gt; AI script/storyboard -&gt; exact route/capability/quote -&gt; approval upload/generation -&gt; reference-conditioned visual atau AI background/B-roll + product composite -&gt; voice/captions -&gt; compose -&gt; QA -&gt; export.
+  Satu exact generative video route menjadi acceptance MVP; tidak dianggap selesai hanya dari model dropdown, mock result atau export slideshow. Jika automation belum aman, tampilkan manual-assisted handoff secara jujur dan jangan mengklaim automatic generation terverifikasi.
+  AI host/karakter boleh sebagai penyaji dengan hak/consent/disclosure sesuai; tidak boleh menjadi fake testimonial atau demonstrasi palsu. Produk tidak boleh berubah. Preview rendah dan final spec tetap dipilih user.
+M0 — PRODUCT_EXPLAINER_REAL_FOOTAGE v1 (ALTERNATIF)
+  Footage asli/berizin tetap dapat memakai core yang sama untuk bukti hands-on dan detail produk. Blender tidak menjadi syarat salah satu template affiliate.
+M0 — GENERAL_NARRATED_SHORT v1
+  Memakai core yang sama, produk opsional, tetap butuh asset rights dan factual review bila menyampaikan fakta.
+M1 — PRODUCT_STILL_MOTION v1
+  Animasi crop/pan/fakta dari foto berizin. Label “product explainer”, bukan hands-on review. Jangan mengklaim memenuhi penilaian kualitas platform hanya karena export sukses.
+M0 — PRODUCT_WITH_GENERATED_BACKGROUND v1
+  Produk canonical tidak boleh berubah; komposit diperiksa manusia. Jika model tidak menjaga bentuk/label/varian, pilih compositor berbasis aset asli atau BLOCKED.
+M2 — NARRATIVE_MULTI_SCENE / ENGINEERING_3D
+  Aset karakter/lokasi/voice atau mesh/rig/material versioned, gates tambahan. Engineering memakai Blender atau Three.js yang dipilih per shot; bukan “pakai semua engine sekaligus”.
+
+8. SCOPE PRIORITY
+M0 (MVP release candidate): project/product/assets/evidence, locked AI/hybrid affiliate template, provider/model menu, satu text route dan satu exact generative video route yang dipilih setelah spike, workflow runner, Chrome read-only/manual-assisted sebelum automation gate lolos, satu MCP diagnostic connection yang ditinjau, FFmpeg finishing, approvals, durable recovery, product-fidelity QA/export dan backup.
+UI lengkap tidak berarti semua provider production adapter tersedia. Registrasi provider dengan protocol yang belum didukung harus menampilkan UNSUPPORTED, bukan tombol Generate palsu.
+M0 generation gate: exact video route membutuhkan asset binding + live capability/quote + upload consent + reconciliation; API atau UI dipilih setelah spike. Jika Chrome prepare tidak bisa dibuktikan aman, gunakan manual-assisted dan laporkan batas automation.
+M1: perluas template dan adapter setelah route pertama lulus pilot dengan output nyata dan biaya semua percobaan tercatat.
+M2: template authoring terkontrol, batch/A-B variants, 3D/Blender, analytics imports dengan provenance, adapter tambahan.
+Out of scope awal: auto publish Shopee/TikTok/YouTube/Instagram; API scraping tanpa izin; CAPTCHA/anti-bot bypass; cookie export; cloud GPU auto-rental; plugin arbitrary code; marketplace; team/cloud sync; e-commerce order/payment management; full professional NLE editor.
+
+9. MVP RELEASE ACCEPTANCE
+Satu project affiliate AI/hybrid dapat dibuat dengan produk/aset yang sah, review script/scene, generation melalui satu exact approved route dengan reference readback, compose lokal, lalu actual export/probe/full decode dan audiovisual/product-fidelity review. Tidak ada generation dalam tugas perencanaan ini.
+Bukti produk yang hilang memblokir final export; bukti klaim yang hilang memblokir approval naskah.
+Satu model incompatible, stale quote, revoked asset, wrong variant dan changed settings masing-masing menggagalkan preflight pada tes.
+Crash setelah dispatch eksternal menjadi UNKNOWN dan tidak auto-retry. Cancel lokal tidak boleh menyatakan biaya provider berhenti.
+Tidak ada secret di SQLite, log, backup proyek atau frontend store. Tidak ada operasi generation/upload/publish saat “Test connection”.
+Hasil visual/audio dan konten tetap harus ditinjau operator; checker teknis tidak membuktikan kebenaran demo produk atau keuntungan affiliate.
+
+10. TRADE-OFF DAN RISIKO BISNIS
+Aplikasi orchestrator dapat berubah menjadi wrapper besar tanpa produk yang bagus. Karena itu vertical slice produk-ke-export didahulukan daripada puluhan model/MCP.
+Kelebihan Rust: domain core terstruktur dan integrasi native; tidak menjamin adapter browser stabil atau rendering lebih cepat. Biaya maintenance tiap provider dan perubahan UI harus dimiliki jelas.
+Official Shopee qualitative guidance menekankan produk terlihat jelas, informasi detail, kualitas audio/visual dan konten original. Tidak ada dasar untuk menjamin video AI atau slideshow otomatis lolos penilaian atau menghasilkan komisi.[13]
+Preferensi user adalah AI/hybrid untuk affiliate. Klaim “lebih diterima audiens” tetap hipotesis; bandingkan hasil aktual, kejelasan produk, kualitas dan outcome tanpa menganggap engine menentukan penerimaan.
+
+Sources:
+[11] https://help.shopee.co.id/portal/4/article/81921 — Shopee ID: create video and attach products
+[13] https://help.shopee.co.id/portal/4/article/201244 — Shopee ID: qualitative video guidelines
+[14] https://help.shopee.co.id/portal/10/article/197077 — Shopee ID: AI content labelling
+</pre>
+</article>
+<article id="doc-2">
+<h2>02-FLOWS-AND-USE-CASES</h2>
+<pre>FUNCTIONAL SPEC — FLOWS &amp; USE CASES v0.2
+Status: PROPOSED. Requirement IDs bersumber dari requirements.csv.
+
+1. NAVIGASI APLIKASI
+Dashboard | Projects | Products | Assets | Templates | Generator | Jobs | Exports | Connections | Providers &amp; Models | Settings.
+Generator dan Jobs selalu menunjukkan project/workspace aktif. Detail produk/scene dibuka sebagai panel agar konteks tidak hilang.
+M0 memakai packaged templates, bukan visual workflow builder bebas. Basic trim/order/captions cukup; editor timeline profesional di luar scope.
+
+2. AKTOR DAN PERMISSION
+Operator lokal: membuat proyek, meninjau bukti/aset, mengubah konfigurasi, mengizinkan upload/generation/export.
+App core: memvalidasi, merencanakan dan mengeksekusi hanya grant yang sah.
+AI provider/LLM: menghasilkan proposal; tidak boleh mengotorisasi tool, menambah provider diam-diam atau mengesahkan klaimnya sendiri.
+MCP server dan Chrome extension: sistem eksternal/pendukung yang tidak dipercaya untuk menentukan hak/approval.
+Local renderer: proses terkontrol untuk komposisi; tidak mendapat secret provider.
+Tidak ada auth multiuser app pada M0; keamanan akun OS bukan janji perlindungan dari administrator/malware yang telah menguasai mesin.
+
+3. UC-01 SETUP WORKSPACE / FR-01,20,21,22
+Precondition: app baru dibuka atau workspace dipilih.
+Main: pilih root data lokal -&gt; lihat izin path dan ruang bebas -&gt; pilih bahasa/default output/preview -&gt; set backup destination -&gt; tampilkan workspace readiness.
+Failure: direktori read-only/remote sync -&gt; jelaskan dan pilih folder lain. File obstruction/path escape ditolak. Tidak auto migrasi profil Hermes.
+Postcondition: workspace id dan setting valid tersimpan; belum ada provider terhubung.
+
+4. UC-02 TAMBAH PROVIDER DAN MODEL / FR-07,08,10,17
+  Pilih adapter/protocol yang didukung -&gt; beri nama provider/account alias -&gt; endpoint divalidasi -&gt; secret disimpan melalui credential broker OS -&gt; Test metadata connection (scope terlihat) -&gt; pilih model dari discovery bila ada atau masukkan exact identifier manual -&gt; deklarasikan capability -&gt; test read-only/fixture yang relevan -&gt; simpan.
+  Catalog status: REGISTERED, CONNECTED, CAPABILITY_UNVERIFIED, VERIFIED, DEGRADED, UNSUPPORTED.
+  Manual model entry diperbolehkan tetapi bukan bukti capability. Browser route memilih label/model yang terbaca di UI, bukan ID API yang dikarang.
+  Set default model per role. Pengaturan default tidak mengubah run yang sudah dibuat.
+Alt: generic compatible endpoint beda contract -&gt; adapter reports CONTRACT_MISMATCH; jangan mengatakan connected karena HTTP 200 saja.
+Alt: tidak ada discovery endpoint -&gt; input manual + verified capability evidence setelah pilot.
+Secrets tidak tampil di daftar/model picker/log. Hapus provider yang direferensikan run lama = disable, bukan cascade delete.
+
+5. UC-03 BUAT PROJECT / FR-01,02,03,20
+  New Project -&gt; tujuan konten -&gt; platform -&gt; format/durasi -&gt; jenis/gaya -&gt; template kompatibel -&gt; project name/brief/bahasa/CTA -&gt; output aspect/resolution/fps -&gt; product step bila affiliate -&gt; simpan draft.
+  Shortcut “Affiliate” membuka wizard dengan intent AFFILIATE; “Short” mengisi format SHORT; “Video Biasa” memilih GENERAL. User masih dapat membuat affiliate short maupun affiliate long.
+  Preset boleh di-override dengan validasi; platform-specific duration/resolution limits harus punya source/version dan diperbarui, bukan dianggap universal.
+  Global defaults &lt; template defaults &lt; project overrides &lt; reviewed scene overrides; konflik hard requirement template tidak dapat di-override tanpa mengganti template/version.
+
+6. UC-04 TAMBAH PRODUK DAN BUKTI / FR-04,05,06
+  Paste link atau input manual -&gt; confirm domain/market -&gt; isi judul/seller/varian -&gt; import aset berizin -&gt; record source/owner/license/consent -&gt; review candidate facts -&gt; approve claims -&gt; link project ke exact product version.
+  Input minimal boleh tersimpan sebagai draft; generate final script dan export affiliate diblokir sampai mandatory fields terpenuhi.
+  URL/import page berstatus UNTRUSTED_DATA. Teks seller tidak pernah menjadi instruksi tool.
+  Produk baru dari versi lama tidak menimpa run historis. Perubahan harga/varian menambah product version dan invalidates dependent approvals.
+Alt: shortlink unresolved -&gt; user membuka sendiri lalu menyalin canonical URL; jangan meminta cookie/password.
+Alt: aset rights belum jelas -&gt; dapat menginventaris draft, tidak boleh upload/generate/export final dengannya.
+Alt: tidak punya sample -&gt; pilih product explainer berbasis facts, bukan template review pengalaman/demonstrasi hasil.
+
+7. UC-05 BRIEF -&gt; SCRIPT -&gt; STORYBOARD / FR-09,11,12
+  Core resolve template/workflow/skill versions -&gt; build evidence pack -&gt; operator pilih model planner -&gt; tampilkan estimasi scope/biaya termasuk text call -&gt; approval bila data dikirim/biaya -&gt; planner menghasilkan typed proposal -&gt; validate -&gt; editor script dan claim references -&gt; review -&gt; scenes.
+  Setiap scene memiliki narration/text, durasi estimasi, visual source, product/asset binding, locked attributes dan intended changes.
+  AI “review saya setelah 7 hari” tidak boleh otomatis lolos; klaim pengalaman harus punya rekaman/bukti yang sesuai atau ditolak.
+  Character/background/product/voice adalah peran aset berbeda. Nama aset di prompt tidak menggantikan binding file/version.
+
+8. UC-06 PREFLIGHT, PREPARE DAN GENERATE / FR-10,12,13,14,17,22,27
+  Select role routes -&gt; hard constraints filter -&gt; user memilih dari compatible routes -&gt; resolve references -&gt; inspect live capability/context -&gt; classify effects -&gt; jika upload perlu approval upload terpisah -&gt; prepare -&gt; read back provider state -&gt; show settings/reference/quote receipt -&gt; approve exact request -&gt; reserve budget+consume grant+persist intent atomically -&gt; dispatch once -&gt; track/reconcile -&gt; download and validate -&gt; human QA.
+  Effect classes: READ_LOCAL, READ_REMOTE, UPLOAD, PAID_GENERATION, LOCAL_RENDER, PUBLISH, ARBITRARY_EXEC.
+  Test connection hanya metadata read; prepare yang memindahkan data tidak otomatis termasuk read-only. Tool annotations tidak menggantikan registry effect policy.
+  Jika harga tidak diketahui: tidak membolehkan arbitrary spend; user dapat menyetujui bounded maximum dengan quote basis yang sah untuk API metered, atau route BLOCKED. UI route butuh quote/readback yang bisa diperiksa.
+  Jika Chrome tab berganti URL/project/account/model -&gt; revoke prepared receipt dan grant. Satu controller/lease per tab.
+  UI prepare otomatis tetap disabled sampai accidental-submit prevention teruji; manual-assisted path tetap tersedia.
+Alt: required product reference unsupported -&gt; BLOCKED. Tidak menurunkan requirement menjadi text prompt.
+Alt: grant expired atau payload berubah -&gt; minta approval baru, bukan reuse.
+Alt: timeout setelah dispatch -&gt; UNKNOWN, keep reservation -&gt; reconcile; tidak auto retry/reroute.
+
+9. UC-07 FINISHING &amp; REVIEW / FR-15,18
+  Select approved source clips -&gt; arrange/trim -&gt; recorded narration/TTS output authorized -&gt; captions -&gt; music with rights -&gt; preview -&gt; correct -&gt; export candidate -&gt; technical checks -&gt; watch audiovisual review -&gt; release decision.
+  Checks teknis: actual codec/container, dimensions/aspect, timestamps/duration, missing media, decode errors; loudness/black/freeze checks menjadi warnings dengan sampling disclosed.
+  Checks manusia: product geometry/label/warna/varian, klaim benar, visual bukan demo palsu, suara/caption jelas, consent/disclosure sesuai.
+  Product fidelity score/vision similarity adalah triage; tidak boleh otomatis menggantikan review audiovisual manusia.
+  REVIEW_FAILED -&gt; edit/re-render local, atau generate baru dengan intent/approval/budget baru. Output lama dipertahankan.
+
+10. UC-08 EXPORT DAN POSTING MANUAL / FR-19,26
+  Pilih attribution mode. External link memerlukan affiliate URL dan sumber/verifikasi user; native platform tagging memerlukan langkah manual di akun yang memenuhi ketentuan. Link produk biasa bukan otomatis link affiliate.
+  Setelah QA pass -&gt; export MP4 + SRT/VTT bila dipilih + approved caption/CTA + affiliate/product links + release report.
+  User membuka aplikasi/platform tujuan sendiri, memasang product tag/keranjang dan disclosure melalui fitur resmi, lalu opsional mencatat published URL manual.
+  Status EXPORTED tidak diubah menjadi PUBLISHED atau MONETIZED tanpa evidence terpisah. Auto publish = M2+/out of scope M0.
+
+11. UC-09 RECOVER / CANCEL / FR-16,17,21
+  Startup scans non-terminal runs -&gt; local running processes re-check -&gt; externally dispatched intents unresolved = RECONCILE_REQUIRED -&gt; check status read-only on same scoped route/account -&gt; associate existing output -&gt; reconcile cost -&gt; resume safe dependent nodes.
+  User pause stops scheduling new nodes; tidak menjamin provider berhenti.
+  Cancel remote = CANCEL_REQUESTED sampai provider readback confirms. Kalau API tidak mendukung cancel, jangan memalsukan cancellation success.
+  Disable connection stops new dispatch; unresolved job tetap dapat dipulihkan lewat approved diagnostic/reconnect.
+
+12. UC-10 SHORT/GENERAL/3D DAN ANALYTICS / FR-23,24,25
+  Template lain memakai core yang sama, tetapi mengubah required inputs, adapters dan QA. Educational tidak memerlukan product; affiliate selalu memerlukannya.
+  3D mengunci mesh/material/rig/camera/timing, dependency check dan domain QA. Blender dipakai untuk scene/offline render dan Three.js untuk procedural/interactive scene sesuai kebutuhan, dengan export timing/capture teruji; bukan image-to-video dengan nama “engineering”.
+  Import analytics berisi source/date/window/cost/commission state; jangan menghitung profit dari views atau estimated unpaid commission saja.
+  M2 template editor hanya memakai allowlisted node types, tidak menjalankan arbitrary shell dari teks skill.
+
+13. STATE MACHINES
+Project: DRAFT -&gt; INPUTS_READY -&gt; PLANNED -&gt; REVIEWING -&gt; READY_TO_EXECUTE -&gt; PRODUCING -&gt; READY_FOR_QA -&gt; EXPORTED -&gt; ARCHIVED.
+  REVISIONS_NEEDED dapat kembali ke input/plan; run historis immutable. Status project adalah agregat UI, bukan sumber kebenaran transaksi job.
+Node: PENDING -&gt; BLOCKED/READY -&gt; WAITING_APPROVAL -&gt; RUNNING -&gt; SUCCEEDED/FAILED/UNKNOWN/CANCEL_REQUESTED/CANCELED.
+  UNKNOWN hanya keluar melalui reconciliation yang berbukti atau manual resolution yang diaudit; tidak langsung READY.
+  Hanya local deterministic nodes tanpa side effect eksternal yang boleh retry otomatis dengan bounded policy.
+Asset rights: REVIEW_REQUIRED -&gt; APPROVED -&gt; REVOKED. Revocation menghalangi new runs/final exports terkait, tidak menghapus audit history.
+Approval: ISSUED -&gt; CONSUMED atau EXPIRED/REVOKED. Perubahan material membuat approval tidak sah meski belum expired.
+
+14. SCREEN STATES DAN AKSESIBILITAS
+Setiap list: loading dengan cancel; empty dengan langkah berikutnya; error dengan stable code dan recovery; denied dengan izin yang dibutuhkan; success dengan state aktual.
+Generator: BLOCKED(reason+fix), READY_FOR_REVIEW, AWAITING_APPROVAL, RUNNING, UNKNOWN, QA_REQUIRED, COMPLETED. Tombol Generate tidak aktif saat compatibility/rights/quote gagal.
+Form: field error inline, keyboard navigation, focus restoration, status tidak bergantung warna saja, reduce motion, shortcut yang tidak men-trigger spend.
+Tidak ada hotkey Enter/Space global yang dapat menyetujui paid generation dari dialog lain.
+
+15. DIAGRAM
+Lihat diagrams.html untuk visual offline dan diagrams/use-cases.puml untuk sumber UML aktor/use case. Detailed flows dicatat di diagrams/user-flow.mmd dan diagrams/job-state.mmd.
+</pre>
+</article>
+<article id="doc-3">
+<h2>03-ARCHITECTURE</h2>
+<pre>TECHNICAL DESIGN &amp; STACK — v0.2
+Semua keputusan di bawah adalah proposal; belum dependency/runtime terpasang atau benchmark.
+
+1. PILIHAN ARSITEKTUR
+Modular monolith local-first, satu Rust domain core, Tauri UI, subprocess untuk media/native messaging. Bukan microservices, bukan server localhost yang membuka database untuk browser, bukan LLM bebas menjalankan OS.
+Tauri mendukung Rust core dan frontend web; permission/capability membatasi jembatan UI ke core. Itu tidak melindungi dari Rust core yang berbahaya atau salah mengimplementasikan scope.[1][2]
+
+2. STACK YANG DIREKOMENDASIKAN
+  Desktop shell: Tauri 2.x; exact compatible patched releases dikunci saat bootstrap dan dicatat ADR/lockfile.
+  Core: Rust stable pinned toolchain, Tokio async, Serde typed DTOs, structured tracing with redaction.
+  UI: React + TypeScript + Vite, form validation schema, lightweight local state/query layer. Versi tepat dan library UI dipilih setelah spike WebView2, bukan otomatis mengejar latest.
+  Storage: SQLite via rusqlite (candidate) dalam dedicated DB worker/single logical writer; migrations versioned SQL. Jangan memanggil blocking SQL/file I/O langsung pada UI thread.
+  Rendering lanes: affiliate memakai AI/hybrid media adapter, bukan Blender default. Engineering 3D memilih Blender atau Three.js; Three.js scene/camera/renderer perlu pipeline deterministic frame capture/encode tersendiri sebelum disebut video exporter yang bekerja.[23][24]
+  Media: FFmpeg + ffprobe sebagai reviewed sidecars atau executable yang dipilih user dan diverifikasi. Codec/build/distribution license harus ditinjau; FFmpeg tidak memiliki satu lisensi binary universal untuk semua build.[8]
+  MCP: official Rust SDK rmcp sebagai kandidat, client mode stdio dan Streamable HTTP; feature/version negotiation dan dependency advisory check wajib.[5][15]
+  HTTP providers: reqwest with explicit timeout, no cross-origin credential forwarding, schema validation, bounded redirects/size. Per-protocol adapter, bukan universal “semua OpenAI-compatible pasti bekerja”.
+  Credentials: OS credential store melalui reviewed Rust library atau broker native; DB hanya menyimpan credential_ref. Validasi implementasi Windows saat spike; tidak mengklaim sudah aman hanya karena nama library.
+  Chrome: MV3 companion extension + native messaging host Rust sebagai kandidat untuk tab user. CDP dedicated profile alternatif untuk sandbox/testing, bukan mengambil cookie profil harian.
+  QA/testing: cargo test, UI component tests, disposable SQLite tests, adapter contract fixtures, E2E desktop yang kompatibel dengan WebView2; tool E2E tepat ditentukan dalam spike.
+  Packaging: Windows installer + native-host registration per-user, signed release candidate setelah sertifikat/proses tersedia; signed update manifest dan rollback-safe migration.
+  No default: Redis, Kubernetes, Postgres server, Docker wajib, vector DB, browser cookie importer, embedded cloud agent runtime.
+Pure Rust UI (egui/Slint/iced) adalah alternatif jika user mengharuskan semua UI Rust. Pilihan Tauri adalah rekomendasi karena workspace/forms/media panels; belum perbandingan benchmark. Keputusan ini masih terbuka.
+
+3. MODUL DAN OWNERSHIP
+  ui: local bundled assets; data presentation, editing and explicit trusted approval interaction.
+  application: typed commands, workspace auth/scope, optimistic concurrency/revision checks.
+  domain/projects: taxonomy, product versions, claims, assets, scenes, template versions.
+  domain/planning: capability resolver, prompt/compiler, source/skill version pins; LLM menghasilkan proposal saja.
+  domain/workflows: graph validation, dependencies, state transitions, retries and schedule policy.
+  domain/policy: effect registry, rights/release gates, grants, budget reservations, revocation.
+  infrastructure/db: migrations, transactional repository, single-writer scheduling; tidak bocorkan SQL ke UI.
+  infrastructure/adapters: text/media APIs, MCP client and browser adapter. Satu normalized Adapter contract.
+  infrastructure/media: argv-only process launch, probe/decode, safe temp/output handling, bounded concurrency.
+  infrastructure/secrets: credential lifecycle, masking, endpoint scoping, no credential dump to JS.
+  operations: redacted events, recovery/reconciliation, backups/restore and dependency diagnostics.
+Skill importer/read-only library tidak mengubah ~/.hermes atau profil lain. Jika skill Hermes diadopsi, snapshot bagian guidance+metadata yang ditinjau, sumber/license/revision dicatat; bukan menjalankan seluruh folder sebagai plugin.
+
+4. DATAFLOW DAN TRUST BOUNDARY
+  Local UI -&gt; typed Tauri command -&gt; scope validation -&gt; domain policy -&gt; DB transaction/outbox-like intent -&gt; adapter -&gt; exact provider/Chrome/MCP route -&gt; validated response -&gt; asset filesystem -&gt; QA -&gt; export.
+  Renderer tidak mendapat credential provider. Remote HTML tidak dimuat ke privileged Tauri WebView; referensi situs dibuka di browser eksternal atau ditampilkan sebagai sanitized text.
+  UI state tidak menjadi otoritas biaya; grant disimpan dan dikonsumsi di core. Prompt/hasil model/seller text/tool descriptions adalah data tidak tepercaya.
+  Three.js scene preview dari authoring code ditempatkan dalam konteks isolated tanpa privileged Tauri IPC; script yang dihasilkan AI tetap untrusted sampai ditinjau. Blender Python juga tidak memperoleh hak OS tambahan hanya karena dibuat AI.
+  Core menolak arbitrary filesystem path, executable, shell arguments, origin/endpoint dan network targets yang tidak disetujui. Signed/allowlisted adapter binary tetap bukan sandbox; executable MCP membawa risiko hak OS.
+  Native host ke core memakai named pipe per-user dengan restrictive ACL, pairing token dan session binding; desain ini harus diuji, bukan menganggap native messaging langsung mencapai proses desktop yang sedang berjalan.
+  One writer per browser tab/project; lease memiliki expiry, connection epoch dan fencing token; stale worker ditolak.
+
+5. CHROME INTEGRATION DECISION
+Chrome native messaging mendefinisikan host manifest, allowed_origins dan framing JSON; transport ini untuk kontrol/metadata, bukan pengiriman file video besar. Extension memulai koneksi; app tidak dapat seenaknya mengirim ke semua tab Chrome.[3]
+Google mendokumentasikan perubahan sejak Chrome 136: remote-debugging flags tidak berlaku pada default data directory; custom user-data-dir diperlukan untuk jalur itu. Karena itu “otomatis attach ke Chrome harian via port” bukan asumsi yang sah.[4]
+Mode M0: read-only/manual-assisted. User memilih satu tab+domain dan consent; koneksi dapat menampilkan URL/model/selected assets yang boleh dibaca. Tidak auto-login, tidak cookie export, tidak full HAR.
+Setelah gate: site-specific Flow adapter dengan versioned selectors dan prepare/readback, sebagai route pertama M0 jika dipilih atau ekspansi M1. Sebelum gate lolos, browser tetap read-only/manual-assisted. Koneksi umum Chrome tidak membuktikan Flow adapter dapat mengunggah aset atau generate aman.
+CDP dedicated profile tetap opsi testing. Dokumentasi Chrome juga menyediakan existing-session auto-connect pada Chrome 144+ dengan --autoConnect, remote debugging yang diaktifkan user dan dialog izin Chrome. Jadi existing session tidak mustahil, tetapi akses sesi luas memerlukan review khusus dan tidak membuktikan isolasi per-tab.[20]
+Native extension tetap kandidat default untuk scope tab yang terkontrol; pilih satu controller saja. Jangan disable browser security untuk mengejar akses.
+Native host registration/unregistration, upgrade paths dan extension distribution membutuhkan spike Windows sebelum keputusan final.
+
+6. CAPABILITY-BASED ROUTING
+Candidate route = provider instance(account alias + surface + endpoint) + exact model identifier/observed UI label + adapter revision + capability evidence.
+Hard constraints: media/reference kind and count, combination support, size/duration/aspect, product fidelity strategy, rights/scope, account eligibility, budget/quote, region/plan, upload consent.
+Soft preferences: cost, estimated latency, quality preference. Tidak memilih cheapest route sebelum hard constraints lolos.
+Unknown != unsupported != verified. Declared/manual/documented/observed/fixture/live verification dibedakan. Bukti expired atau scope berubah memerlukan revalidation.
+Google Flow menyatakan fitur bergantung pada model dan subscription; aktif model, resolution dan credit cost perlu diperiksa sebelum generate. Karena itu katalog lama atau API capabilities tidak membuktikan UI account tertentu mendukung kombinasi aset.[18]
+Routing tidak auto-fallback saat error, tidak transfer native asset ID antarprovider dan tidak menjumlahkan saldo credits lintas vendor.
+
+7. EXECUTION / RECOVERY
+  Local deterministic node -&gt; bounded retry hanya jika proses sebelumnya dipastikan berhenti dan output temp belum dipromosikan.
+  Remote effect -&gt; persist stable intent, canonical request hash, single-use grant dan reservation dalam satu transaksi sebelum dispatch.
+  Crash before dispatch record sent: recovery konservatif; jika mungkin sudah keluar, UNKNOWN, reconcile dahulu. Local DB tidak memberi provider exactly-once delivery.
+  Event cursor memungkinkan UI reconnect/reload tanpa mengulang run. Duplicate command dengan key sama/payload beda = IDEMPOTENCY_CONFLICT.
+  Concurrent run dibatasi setting dan resource checks; MVP default satu media job berat. Itu policy konservatif, bukan angka kapasitas hardware terukur.
+  Output ditulis ke temp dalam workspace, diverifikasi hash/probe/decode, lalu atomic rename pada filesystem yang sama. Database merujuk artifact yang sudah ada; janitor menandai missing/orphan, tidak menghapus otomatis tanpa retention policy.
+
+8. NFR / TARGET PROPOSED — BELUM HASIL UJI
+  NFR-01 Local project/catalog/settings dapat dibaca dan diedit tanpa internet. AI call yang offline menunjukkan explicit unavailable.
+  NFR-02 Pilot target input feedback di UI &lt;=150 ms dan daftar 100 project &lt;=1 s pada reference device; ukur p95 dengan dataset/OS/WebView2 dicatat. Angka ini target desain, bukan benchmark/jaminan.
+  NFR-03 Power-loss/crash tidak menyebabkan implicit paid retry atau corrupt accepted artifact; diuji fault injection dan restore.
+  NFR-04 No secrets in JS state/SQLite/export/log/backup. Negative tests terhadap prompt injection, path traversal, malicious endpoint, wrong tab/origin, revoked grants.
+  NFR-05 Keyboard/focus/error labels/reduced-motion lulus walkthrough aksesibilitas pada task utama.
+  NFR-06 Workspace backup explicit termasuk DB consistent snapshot + assets manifest; restore diuji sebelum mengklaim migrasi device.
+  NFR-07 Redacted structured events: correlation_id/run/node/intent, state, error code, timings; raw prompts/media/headers disabled by default. Tidak mengklaim tracing saja sudah audit-tamper-proof.
+  NFR-08 Exact dependency lock, advisory scan dan signed release/update gating. Tidak ada download+execute adapter otomatis.
+  NFR-09 Compatibility target Windows/WebView2 dan codec packaging diverifikasi di clean VM; macOS/Linux bukan acceptance M0.
+
+9. ADR RINGKAS
+  ADR-01 Rust/Tauri modular monolith vs pure Rust UI/Electron: Tauri proposed; pure Rust decision masih terbuka.
+  ADR-02 SQLite+filesystem vs server DB: lokal satu operator; server tidak dibutuhkan M0. Tidak membuka runtime DB di sync/network drive.
+  ADR-03 Rust native workflow runner vs embedding arbitrary agent runtime: runner typed/allowlisted; skill adalah guidance, bukan executor.
+  ADR-04 Browser extension/native host vs unrestricted CDP attach: opt-in tab scope lebih sesuai user session; live spike masih wajib.
+  ADR-05 Manual product entry/authorized import vs scraping auto: manual M0, no API access assumptions.
+  ADR-06 Default affiliate AI/hybrid sesuai arah user, dengan canonical product assets, evidence dan QA. Real-footage alternatif; synthetic host bukan izin mengarang pengalaman/hasil produk. Satu exact video route menjadi MVP gate.
+  ADR-07 No cloud sync/multiuser/plugin marketplace in M0: menekan trust/operational surface.
+  ADR-08 Datastore runtime di LocalAppData di luar OneDrive; plan dan backup immutable boleh di folder dokumen/sync setelah snapshot konsisten.
+
+Sources:
+[1] https://v2.tauri.app/start — Tauri overview
+[2] https://v2.tauri.app/security/capabilities — Tauri security capabilities
+[3] https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Chrome native messaging
+[4] https://developer.chrome.com/blog/remote-debugging-port — Chrome remote debugging security change
+[5] https://github.com/modelcontextprotocol/rust-sdk — Official MCP Rust SDK
+[8] https://ffmpeg.org/legal.html — FFmpeg license considerations
+[15] https://modelcontextprotocol.io/specification/2026-07-28/basic/transports — MCP 2026-07-28 transport overview
+[18] https://support.google.com/flow/answer/16352836?hl=en — Google Flow models and supported features
+[20] https://developer.chrome.com/docs/devtools/agents/get-started/configuration — Chrome DevTools MCP configuration and autoConnect
+[23] https://threejs.org/manual/pages/creating-a-scene.html — Three.js official manual: scene, camera and renderer
+[24] https://docs.blender.org/manual/en/latest/render/output/animation.html — Blender official manual: rendering animations
+</pre>
+</article>
+<article id="doc-4">
+<h2>04-DATABASE</h2>
+<pre>DATABASE DESIGN — v0.2
+Status: schema usulan, bukan database aplikasi produksi. File SQL dapat diuji pada DB disposable.
+
+1. PILIHAN DAN LOKASI
+SQLite metadata + filesystem untuk media. Ini untuk satu operator lokal dengan satu logical writer, bukan shared DB di network drive. Runtime root yang diusulkan: %LOCALAPPDATA%/CreatorDesktop/workspaces/&lt;workspace-id&gt;/.
+  db/workspace.sqlite
+  assets/&lt;asset-id&gt;/&lt;revision&gt;/&lt;safe-filename&gt;
+  artifacts/&lt;run-id&gt;/&lt;node-id&gt;/&lt;artifact-id&gt;.&lt;extension&gt;
+  evidence/&lt;evidence-id&gt;/...
+  cache/ dan temp/ dapat dibersihkan sesuai policy, bukan source assets.
+  logs/ redacted dengan retention yang disetujui.
+Folder rencana yang berada di OneDrive bukan lokasi runtime yang disarankan.
+Foreign keys harus diaktifkan pada setiap koneksi; SQLite menjelaskan enforcement FK bersifat per-connection dan tidak boleh diasumsikan aktif dari default.[6]
+WAL adalah opsi saat implementasi setelah runtime patch/compatibility diperiksa. Dokumentasi SQLite saat diambil mencatat WAL-reset bug diperbaiki pada 3.51.3 dan beberapa backport. Jangan menyamakan dukungan SQL STRICT dengan versi yang aman untuk semua pola WAL.[7]
+DDL ini tidak mengaktifkan WAL dan tes utama menggunakan DB disposable. Exact bundled SQLite akan diverifikasi terpisah dari versi Python fixture.
+
+2. LOGICAL ERD / KELOMPOK
+Configuration: providers -&gt; model_routes -&gt; capability_snapshots; connections -&gt; scoped observations.
+Recipes: skill_versions &lt;- workflow_skills -&gt; workflow_versions &lt;- template_versions.
+Content: projects -&gt; project_products -&gt; product_versions -&gt; products; product_versions -&gt; evidence -&gt; claims.
+Assets: assets -&gt; asset_versions; scenes -&gt; scene_assets -&gt; asset_versions; scenes -&gt; scene_claims -&gt; claims.
+Remote binding: exact asset_version + provider + connection + local project + remote_project_locator (+ model route jika relevan). Remote ID nullable; tidak diciptakan bila UI tidak mengekspos.
+Execution: projects -&gt; runs -&gt; run_nodes -&gt; prepared_receipts -&gt; approvals -&gt; generation_intents -&gt; external_jobs/artifacts.
+Costs: providers -&gt; wallets; projects+wallets -&gt; budgets; generation_intents -&gt; reservations -&gt; budgets.
+Quality: artifacts -&gt; reviews; audit_events menelusuri run/node/intent.
+Full FK relationship diagram di diagrams/database-full.mmd dihasilkan dari SQLite PRAGMA, bukan digambar ulang dari ingatan. Visual kelompok yang lebih terbaca ada di diagrams.html.
+
+3. KAMUS DATA INTI
+providers: satu config layanan/account alias/surface. credential_ref bukan API key. enabled default false.
+model_routes: exact identifier per provider, role list dan enabled. ID model vendor bukan PK lintas vendor.
+connections: transport kind, scoped state, session epoch, last observation. Tidak menyimpan session browser/cookie.
+capability_snapshots: sourceKind, adapter version, scope, captured/expiry, capability JSON dan evidence references. Live readiness tidak diturunkan dari manual declaration.
+skill_versions: guidance path+hash, source/license/revision; version frozen.
+workflow_versions: immutable validated spec JSON+hash; DAG semantics dipastikan app.
+workflow_skills: normalized FK untuk exact skill version dependencies.
+template_versions: immutable workflow binding, hard constraints dan defaults.
+projects: intent/format/platform/style, selected template, mutable draft settings, optimistic revision dan timestamps.
+products: local library identity, Shopee market, canonical URL, external IDs nullable.
+product_versions: immutable title/seller/variant/facts/observedAt; optional price in currency minor units with expiry. New fact/variant = new version.
+project_products: project memilih exact version, attribution_mode dan optional affiliate_url/source/verified_at. Maksimum satu PRIMARY product melalui partial unique index. Draft affiliate boleh belum punya primary/link; final readiness mengharuskan primary dan attribution path valid oleh core. Canonical URL produk bukan tracking link affiliate otomatis.
+evidence: immutable source kind/URI/time/excerpt/hash jika byte tersedia. URL bukan bukti rights; content dan origin juga divalidasi.
+claims: product version+claim text+evidence canonical FK; review can become revoked. Evidence product scope harus sama. Beberapa evidence tambahan dapat menjadi ekspansi claim_evidence; M0 memilih satu canonical evidence per claim, bukan array dangling IDs.
+assets/asset_versions: immutable source file/hash/media metadata/product version linkage/derivative parent; lifecycle rights_state dan review evidence terpisah dari source bytes.
+scenes: immutable scene revision/spec hash. spec berisi narration, duration estimate, locked/delta attributes, role routes yang diusulkan.
+scene_assets: explicit slot+role+required+exact asset version; product binding harus versi yang terhubung ke project.
+scene_claims: explicit approved-claim references untuk narration/on-screen; product scope diperiksa DB, current approval diperiksa preflight.
+remote_asset_bindings: native ID/visible label/evidence/context; SELECTED_VISIBLE bukan guarantee model fidelity. Mark STALE saat connection/account/project/model scope berubah.
+runs: immutable full snapshot of product/scene/asset/claim/settings/recipe/route references dan hash; mutable aggregate state hanya. Relasi di JSON harus divalidasi app terhadap versi yang ada.
+run_nodes: node key+effect/route/state/revision; typed node inputs/outputs berada pada spec/run snapshot dan artifact records.
+prepared_receipts: immutable readback body dan hashes, route/connection/capability evidence, expiry. Upload preparation dapat memerlukan grant terpisah.
+approvals: single-use exact node/request/receipt/effect/cap/expiry; grant terms immutable. Tidak boleh dibuat oleh output LLM.
+generation_intents: durable external-effect journal (nama meliputi metered text/upload juga), unique stable idempotency key dan approval, request hash immutable. UNKNOWN disimpan bukan dihapus.
+wallets: per-provider account+unit+integer scale, nullable observed balance. Observed balance bukan escrow uang provider.
+budgets: per project+wallet limit/reserved/spent integer; CHECK prohibits local over-limit counters. Tidak menggabungkan wallet berbeda.
+reservations: one per intent; amount &lt;= grant; scope project/provider/wallet consistent. Settlement/counter update dalam satu app transaction; schema tidak otomatis merekonsiliasi semua spending eksternal.
+external_jobs: nullable remote handle, observed outcome/evidence/time; remote handle uniqueness provider/account-scoped.
+artifacts: exact file path/hash/kind/metadata/node; output temporary baru dipromosikan setelah pemeriksaan actual bytes.
+reviews: technical/product-fidelity/audiovisual/release, decision/evidence/reviewer/time. App release gate menentukan kebutuhan kombinasi reviews, bukan SQL default PASS.
+audit_events: append-oriented sequence, typed redacted payload; local log tidak diklaim tamper-proof.
+app_settings: non-secret allowlisted JSON value with revision; project override ada di project/run snapshot.
+schema_migrations: applied version/time; production migrator baru dibuat pada build phase.
+Detail semua kolom, nullable/default/PK/FK tersedia di schema/data-dictionary.csv yang digenerate dari SQL.
+
+4. REPRESENTASI DAN INVARIANTS
+ID: application-generated opaque UUID string. Fixture tests memakai ID pendek yang sengaja synthetic. PK SQLite tidak membuktikan format UUID; parser app wajib.
+Time: epoch milliseconds UTC INTEGER; UI menampilkan locale dan timezone. Expiry memakai trusted core clock, bukan teks model.
+Money: IDR integer minor-unit convention dengan currency metadata yang benar; vendor credits integer amount_u + unit_scale dari wallet. Jangan float untuk accounting.
+Hash: lowercase SHA-256 raw source/canonical serialization bytes; snapshot canonicalization version dipin. Sumber normalized text diberi format berbeda, tidak dianggap raw file digest.
+JSON: json_valid checks syntax saja; DTO JSON schema/business rules diuji core. Required asset limits, DAG acyclic dan valid output aspect bukan otomatis benar karena JSON valid.
+Deletion: FK default RESTRICT/NO ACTION untuk history. Archive/disable/revoke daripada cascade. Penghapusan workspace eksplisit memerlukan confirmation+backup policy; evidence/history berisi data sensitif dan harus dapat diekspor/dihapus sesuai pilihan user dan kewajiban yang relevan.
+Integrity subset di DB: FK, enum/check, one-primary product, immutable versions/bytes/request, evidence product match, product scene scope, template/workflow match, receipt/grant match, single-use approval/intent uniqueness, reservation scope/cap.
+App invariants yang masih wajib: authorized OS/operator action, canonical hash benar, live readback freshness, required inputs/rights/consent, full state transition validity, current claims/assets revocation, budget ledger reconciliation, no arbitrary path/network/secret injection, immutable scene binding after finalization, no secret values in JSON.
+SQL path checks hanya baseline. App harus reject symlink/junction/reparse-point escape, absolute/UNC/device paths, traversal after decoding, reserved names dan alternate data streams; tidak menganggap CHECK relpath sebagai filesystem sandbox.
+
+5. WORKLOAD DAN INDEX ASSUMPTIONS
+Workload awal: operator membuka catalog, recent projects/runs, scenes, pending jobs/UNKNOWN intents dan event tail. Volume nyata belum diketahui; belum ada throughput/size benchmark.
+Indexes awal mengikuti lookup tersebut; jangan menambah FTS/vector database sebelum kebutuhan pencarian dan biaya indexing terukur. Reference index sudah ada pada project time, run/project, node state, intent state, event cursor, asset hash dan capabilities.
+Large blobs tidak disimpan ke SQLite. Metadata JSON bounded di app. Media cache/temp punya retention policy dan kebutuhan free-space checks.
+
+6. TRANSACTION SKETCH
+BEGIN IMMEDIATE;
+  Verify immutable run/node/revision/request+receipt and current consent/rights.
+  Claim stable intent key; same key different body rejected.
+  Verify grant exact hash+effect+scope+expiry, not consumed/revoked.
+  Conditional budget UPDATE ... WHERE reserved+spent+new_amount &lt;= limit;
+  Insert intent (trigger consumes grant), insert reservation, append redacted event;
+COMMIT;
+Only then call adapter. No cross-provider transaction/exactly-once promise. On possible dispatched failure keep intent UNKNOWN and reservation intact until reconciliation.
+If any preflight/insert fails, rollback counters+intent+grant consumption together. Actual provider cost can exceed an estimate externally; stop scheduling, surface variance and reconcile actual spend, never silently under-report to satisfy local CHECK.
+
+7. MIGRATION / BACKUP / RESTORE
+Migrations run while scheduler stopped and no native host writer active; check schema version and app compatibility first. Backup consistent DB before destructive migration.
+Use SQLite backup API or reviewed consistent snapshot method, plus assets/evidence/artifacts manifest under a paused/quiesced workspace. Copying workspace.sqlite alone while WAL writer is active is not accepted backup design.
+Restore defaults dry-run to a new root; reject path escapes, verify every included file/hash, apply schema check, PRAGMA integrity_check/foreign_key_check, then open read-only preview before switching active root.
+Secrets/browser profiles/session/cookies excluded; model/provider configs restore disabled until credential rebind and connection validation. Target path and dependencies resolved anew.
+Default backup policy proposed: manual before upgrades and optional daily when idle; retention/size/RPO/RTO remain user decisions and must be measured. Schema-fixture backup test is not full media-workspace restore acceptance.
+Rollback after irreversible schema/data changes means restore reviewed snapshot or forward-fix; do not fabricate a safe down migration.
+
+Sources:
+[6] https://sqlite.org/foreignkeys.html — SQLite foreign keys
+[7] https://sqlite.org/wal.html — SQLite WAL and WAL-reset bug
+</pre>
+</article>
+<article id="doc-5">
+<h2>05-INTEGRATION-CONTRACTS</h2>
+<pre>INTEGRATION CONTRACTS — v0.2
+Status: PROPOSED internal contract, bukan API/service yang telah diimplementasikan.
+
+1. DEFINISI YANG TIDAK BOLEH DICAMPUR
+Provider: instance layanan/account/surface; dapat memiliki endpoint dan credential_ref. Flow UI dan API dari vendor yang sama adalah dua route berbeda.
+Model: exact identifier atau UI label pada provider instance; family name bukan identifier universal.
+Adapter: kode terverifikasi yang menerjemahkan operasi domain ke API/MCP/browser/local process.
+MCP: protocol client/server untuk tools/resources/prompts, bukan generator video atau sumber permission otomatis.
+Skill: guidance dan struktur editorial/domain versioned. Dapat dipakai pada node planner; tidak boleh menjalankan shell/call MCP hanya karena teks skill menyuruhnya.
+Workflow: DAG allowlisted node types, inputs/outputs typed, effect classes, retry/approval/recovery rules.
+Template: user-facing recipe yang mengikat workflow version, skill revisions, input schema, defaults dan QA.
+Connection: sesi transport yang sudah dipasangkan; connection sehat tidak sama dengan model/reference/quote valid.
+
+2. PROVIDER REGISTRY
+ProviderConfig
+  providerId: opaque UUID string local.
+  name, accountAlias: nama lokal, tanpa cookie/token.
+  surface: API | BROWSER | LOCAL | MCP.
+  adapterKey, adapterVersion: harus cocok installed allowlist.
+  baseUrl: nullable; HTTPS untuk remote; loopback/local khusus user-approved explicit dev/local route.
+  credentialRef: nullable reference opaque ke OS broker; bukan secret actual.
+  allowedOrigins, state, metadataDiscoveredAt, consentScope.
+Tambah provider hanya membuat konfigurasi. Tidak memasang plugin atau menjalankan discovery yang menghabiskan kredit.
+Secret entry melalui native Rust/OS-owned credential prompt atau pemilihan credential reference yang sudah ada, bukan React password input. Library yang mewajibkan nilai secret melintasi JS tidak memenuhi kontrak no-secret-in-JS dan harus ditolak/didesain ulang pada spike.
+Endpoint validation: URL parser, forbid URL userinfo, restricted redirect policy, no private/link-local/network pivot kecuali explicit local allowlist; DNS/rebinding protections dibahas pada implementation review. Model/provider dapat disabled, tidak dihapus jika ada history.
+
+3. MODEL/CAPABILITY REGISTRY
+ModelRoute
+  routeId, providerId, externalModelId, displayName, roles[], enabled.
+  Katalog boleh manual/discovery; source dan waktu observasi disimpan.
+CapabilitySnapshot
+  routeId, adapterVersion, connection/account/project scope, sourceKind: DECLARED|DOCUMENTED|FIXTURE|OBSERVED|LIVE_TESTED.
+  capturedAt, expiresAt, evidenceReferences[]; expiry opsional hanya untuk immutable documentary evidence, live preflight selalu re-check.
+  modes, accepted input types, output types, supported role combinations, reference limits, aspect/resolutions, durations, audio/voice features, max outputs.
+  supportsIdempotency, supportsStatusLookup, supportsCancel, quoteMethod, retention/upload terms pointer.
+  each field: SUPPORTED | UNSUPPORTED | UNKNOWN; gunakan actual values hanya bila diketahui.
+Katalog AI tidak boleh menganggap nama model yang populer masih tersedia. UI picker menampilkan hanya routes yang memenuhi kebutuhan tahap, plus disabled reasons untuk others.
+
+4. NORMALIZED ADAPTER PORT
+Tidak semua metode wajib didukung; UnsupportedOperation adalah hasil valid, bukan fabricated success.
+  describe() -&gt; adapter metadata, installed version, supported operation/effect registry.
+  discoverMetadata(scope) -&gt; models/capabilities metadata; tidak generation/voice preview.
+  inspectContext(scope) -&gt; observed account alias/tab/project/model/settings.
+  resolveAssets(sceneRevision, scope) -&gt; resolved required asset bindings atau conflicts.
+  prepare(plan, uploadGrant?) -&gt; PreparedReceipt; dapat memerlukan upload, sehingga bukan intrinsik read-only.
+  inspectPrepared(receiptId) -&gt; actual readback settings, selected references, quote/provenance, readiness.
+  dispatch(intent, singleUseGrant) -&gt; ACK(jobHandle) | KNOWN_REJECTED | UNKNOWN.
+  reconcile(intent) -&gt; RUNNING | SUCCEEDED | KNOWN_FAILED | UNKNOWN + evidence.
+  fetchArtifacts(jobHandle) -&gt; local candidate files with provenance.
+  requestCancel(jobHandle) -&gt; REQUESTED | CONFIRMED | UNSUPPORTED | UNKNOWN.
+Mode M0 browser hanya describe/inspectContext dengan scoped permissions dan manual assistant. prepare/dispatch tidak ditampilkan aktif sampai spike lolos.
+MCP tools dibungkus adapter yang sama. Tool name/descriptions/annotations tidak menjadi approval. Unknown effect -&gt; DENY, bukan default read. MCP menganggap tool annotations tidak tepercaya kecuali berasal dari server tepercaya; adapter juga membedakan protocol error dari tool result isError dan memvalidasi hasilnya sebelum node sukses.[22]
+
+5. MCP CLIENT BOUNDARY
+MCP client berada di Rust core, stdio child executable allowlisted atau Streamable HTTP exact approved origin. App bukan MCP server pada MVP, sehingga tidak membuka command endpoint aplikasi ke semua agent.
+Official SDK rmcp adalah kandidat integrasi; transport negotiation dan lifecycle perlu diuji terhadap server nyata yang dipilih.[5][15]
+Stdio environment minimum, tidak mewarisi semua API keys/SSH credentials. argv terstruktur tanpa shell string; executable/version/hash dan license ditinjau. User dapat mencabut koneksi dan terminate child yang dimiliki app.
+Remote authorization mengikuti requirement server dan spec; tidak menaruh client secret permanen di bundled desktop config. Jangan token passthrough, jangan forward credentials ke origin lain; policy redirect explicit dan audience/scope check.[16]
+Advisory rmcp yang diambil melaporkan custom-header leakage pada cross-origin redirects dan mencantumkan versi terdampak &lt;=1.7.0 serta perbaikan 2.1.0. Ini alasan dependency pin/advisory review saat implementasi, bukan pernyataan bahwa satu versi tersebut bebas semua kerentanan.[19]
+“MCP tools/list sukses” hanya handshake/metadata evidence; bukan izin menjalankan tool atau bukti renderer/provider siap.
+
+6. CHROME BRIDGE CONTRACT
+Native message envelope: protocolVersion, connectionId, sessionEpoch, requestId, action, tabLeaseId, allowedOrigin, payload, expiresAt, authentication tag/session binding.
+Host tidak menerima arbitrary JS/shell/file path command. Action allowlist: INSPECT_TAB_CONTEXT, READ_ALLOWED_MODEL_SETTINGS, READ_SELECTED_REFERENCE_LABELS, SHOW_USER_REVIEW_PROMPT. Future PREPARE/SUBMIT actions dirilis terpisah setelah review.
+Content script hasil DOM adalah untrusted data; origin, tabId dan document/navigation epoch dicek core sebelum dan setelah action. One controller lock dan fencing mencegah stale tab worker.
+activeTab memberikan akses sementara setelah tindakan user, tetapi akses dapat bertahan pada navigasi same-origin. Karena itu app harus menggugurkan grant tugasnya sendiri saat navigasi, expiry atau revoke; jangan menganggap permission Chrome identik dengan consent satu tugas.[21]
+Native messaging framing/allowed_origins adalah mekanisme Chrome yang terdokumentasi; app perlu host executable dan registration tersendiri, bukan cukup Tauri window.[3]
+Bulk media tidak melewati JSON control messages. File upload browser adalah uncertainty terpisah: uji izin, ukuran dan site workflow; jangan mengklaim content script bisa mengambil arbitrary local path. Jika tidak sah/aman, operator memilih file manual.
+Forbidden: all-tab monitoring by default, exporting cookies/tokens, recording authorization headers/full HAR, automatic account login, CAPTCHA bypass, uploading tanpa consent, arbitrary scripting.
+
+7. WORKFLOW/TEMPLATE CONTRACT
+WorkflowSpec
+  schemaVersion, workflowId, revision, contentSha256, nodes[], edges[], requiredSkillVersions[].
+NodeSpec
+  key, type, inputSchema, outputSchema, effectClass, requiredCapabilities, timeoutPolicy, retryPolicy, approvalPolicy, artifactRoles.
+Allowed M0 types: input.product, evidence.review, asset.review, planner.text, script.review, scene.plan, route.preflight, source.select, compose.local, qa.technical, qa.human, export.local.
+M0 generative lane: media.prepare, media.dispatch, media.reconcile, media.download hanya setelah controls/spike siap; satu approved video route adalah MVP acceptance, bukan jaminan sudah terpasang. M1 memperluas adapter/template.
+ENGINEERING_3D memilih renderer Blender atau Three.js lewat local renderer adapter, bukan mendaftarkan nama renderer sebagai model AI. AI authoring script dan generative video inference adalah operasi berbeda.
+Graph validator: unique node keys, edges valid, DAG/no cycles, reachable outputs, compatible ports, mandatory gates dominate side-effect/export nodes, missing required skill/version fail closed.
+Tidak menjalankan workflow yang dihasilkan AI sebelum schema+policy validation dan operator menyetujui plan.
+TemplateSpec
+  templateId/revision, workflowVersionId, compatibleIntents/formats/platforms, requiredProductCount, assetRequirements, defaults, overridableFields, outputSchema, releaseChecklist.
+Required assets tidak boleh dihapus compiler agar muat model; konflik dikembalikan ke UI.
+
+8. APPROVAL, BUDGET DAN IDEMPOTENCY
+Canonical request material mencakup project/run/node revision, product version/variant, approved claims, asset version/hash, route/provider/account/model, parameters, prompt/skill/workflow versions, effect scope, quote/unit/outputCount dan receipt hash.
+Canonical serialization version dipin, hash dihitung pada raw canonical bytes; tidak pakai unordered JSON/string manipulation ad hoc.
+Grant: exact request hash, node, effect, amount/credit unit/scale, receipt hash, expiry, user approval event; single use. LLM tool reply tidak bisa membuat grant.
+Dalam satu transaksi DB: validasi grant dan current revision -&gt; enforce unconsumed+unexpired -&gt; conditional budget reservation -&gt; create unique intent -&gt; consume grant -&gt; commit. Barulah dispatch.
+  Key sama + hash sama: return existing intent/status, tidak dispatch ulang.
+  Key sama + hash beda: IDEMPOTENCY_CONFLICT.
+  UNKNOWN: retain reservation dan block duplicate/reroute hingga reconciliation; failed retry membutuhkan intent dan grant baru bila ada potensi biaya baru.
+Satu wallet per provider/account/unit; amount_u integer dengan unit_scale eksplisit. Tidak menyamakan 10 credits vendor A dengan vendor B atau kurs uang yang tidak diperbarui.
+Metered text/TTS: approved maximum harus punya basis (input/output limits + verified unit price); jangan menampilkan “gratis” hanya karena test metadata tidak menagih.
+Tidak mengklaim local reservation sebagai bank/provider hard spending cap. External UI/manual actions di luar app tetap bisa memakai saldo.
+
+9. IPC COMMAND CATALOG
+Semua command v1 memakai CommandEnvelope{requestId,workspaceId,expectedRevision?,idempotencyKey?,payload}.
+Response: Result{data,revision} atau Error{code,message,fieldErrors?,retryability,correlationId}. Jangan sertakan raw provider error yang mengandung secret.
+  workspace.open / workspace.diagnostics / settings.patch
+  project.create / project.get / project.update / project.list(cursor,limit)
+  product.save_version / product.link / evidence.record / claim.review
+  asset.import / asset.review_rights / asset.list / scene.save_revision
+  template.list / workflow.inspect
+  provider.save / provider.test_metadata / provider.disable
+  model.register / model.capabilities / route.resolve
+  connection.pair / connection.inspect / connection.revoke
+  run.plan / run.start / run.pause / run.cancel / run.reconcile / run.get
+  approval.issue / approval.revoke
+  export.create / export.inspect / backup.create / backup.restore_preview
+Commands mutating records honor revision and idempotency per operation. IPC tidak dibuka untuk remote webpages. Cursor list max configurable dan bounded; gunakan stable ordering id+created_at.
+Stable errors: VALIDATION_ERROR, CONFLICT, IDEMPOTENCY_CONFLICT, UNSUPPORTED_OPERATION, CAPABILITY_UNKNOWN, MISSING_PRODUCT, RIGHTS_REQUIRED, EVIDENCE_REQUIRED, STALE_RECEIPT, APPROVAL_REQUIRED, APPROVAL_EXPIRED, BUDGET_EXCEEDED, TAB_SCOPE_CHANGED, CONNECTION_LOST, PROVIDER_OUTCOME_UNKNOWN, OUTPUT_QA_FAILED, DEPENDENCY_MISSING.
+Event: EventEnvelope{eventId,workspaceId,runId?,nodeKey?,intentId?,eventType,occurredAt,payloadRedacted}; consumers resume from eventId, not rerun dispatch.
+Ini catalog kontrak awal. Exact Rust DTO/JSON schemas per command akan menjadi deliverable vertical slice sebelum build paralel, bukan dianggap sudah lengkap atau implementasi stub siap dipakai.
+
+Sources:
+[3] https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Chrome native messaging
+[5] https://github.com/modelcontextprotocol/rust-sdk — Official MCP Rust SDK
+[15] https://modelcontextprotocol.io/specification/2026-07-28/basic/transports — MCP 2026-07-28 transport overview
+[16] https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices — MCP security best practices
+[19] https://github.com/modelcontextprotocol/rust-sdk/security/advisories/GHSA-9g45-5xwm-f3wc — MCP Rust SDK redirect header advisory
+[21] https://developer.chrome.com/docs/extensions/develop/concepts/activeTab — Chrome activeTab temporary permission
+[22] https://modelcontextprotocol.io/specification/2026-07-28/server/tools — MCP tools errors and untrusted annotations
+</pre>
+</article>
+<article id="doc-6">
+<h2>06-DELIVERY-AND-QA</h2>
+<pre>DELIVERY PLAN, QA DAN RISIKO — v0.2
+Status: rencana; tidak ada timeline/harga/benchmark yang telah dikonfirmasi.
+
+1. DELIVERY PRINCIPLE
+Bangun satu vertical slice product-to-export dahulu. Jangan memulai dengan puluhan model, visual DAG editor, cloud/team accounts atau Blender marketplace. App “bisa konek banyak tool” tidak bernilai jika produk salah dan export tidak dapat diperiksa.
+Owner product/approval: ayah keren. Owner implementasi per modul belum ditetapkan. Jika memakai worker agy, periksa CLI/model yang benar-benar tersedia setelah build disetujui; jangan mengasumsikan model lama masih aktif.
+Hasil setiap fase harus berupa evidence runnable, bukan screenshot tombol atau log sukses buatan.
+
+2. MILESTONE BERDASARKAN EXIT GATE, BUKAN JANJI TANGGAL
+D0 — PLAN REVIEW
+  Setujui taxonomy, Windows-first/Tauri vs pure Rust UI, template awal, batas API/Chrome/manual, budget/privacy dan lokasi repo.
+  Exit: signed-off assumptions/decisions; requirement IDs dan contracts baseline.
+  Tidak memerlukan generation atau dependency installation dalam tugas plan ini.
+D1 — TECHNICAL SPIKES (perlu izin build/probe terpisah)
+  S1 Tauri Windows/WebView2: buka app, typed IPC denied-by-default, diagnostics, safe local file access, version evidence.
+  S2 Media: FFmpeg discovery+license/build flags, synthetic short local encode/probe/full decode. Ini tes teknis, bukan produk nyata/quality proof.
+  S3 Credentials: OS store set/read/delete menggunakan dummy secret; cek JS/log/SQLite/backup tidak menerima nilainya.
+  S4 Chrome: explicit selected-tab consent + native messaging framing + per-user named-pipe pairing/revoke. Inspect mock page lalu allowed real tab read-only hanya jika disetujui. Buktikan tidak ada submit/upload/network mutation.
+  S5 MCP: official SDK client lifecycle/capability negotiation dan tools metadata (termasuk pagination) dengan satu reviewed fixture/server. Pin exact SDK/protocol/server revision dan uji lifecycle sesuai server, jangan otomatis memakai contoh initialize lama. Unknown-effect tool blocked; no inherited secrets, deny arbitrary executable. Tidak melakukan tools/call/model sampling saat diagnostic.
+  S6 Existing-session auto-connect optional: uji versi, izin browser, denial/revoke dan luas akses terpisah dari extension. Jangan menganggap dialog izin Chrome sebagai per-tab isolation.
+  Exit: tested choices atau documented fallback. Chrome failure -&gt; manual assistant, bukan mengaku existing session otomatis bisa.
+D2 — OFFLINE DOMAIN / REPOSITORY FOUNDATION
+  Rust domain project/product/variant/evidence/asset/scene/template versions + SQL migrator + baseline UI flows.
+  Exact typed IPC DTOs, JSON schema, command errors dan event stream untuk slice disepakati sebelum backend/UI paralel.
+  Exit: create affiliate short with real input (authorized), explicit missing-input gates; fixture and integration tests.
+D3 — AI/HYBRID AFFILIATE PRODUCT-TO-EXPORT / M0
+  First template PRODUCT_AI_HYBRID_EXPLAINER; import canonical authorized product image/video + evidence, AI script/storyboard, reference-conditioned visual/background/B-roll, voice/captions, compose, QA, export. Real footage tetap alternatif/evidence, bukan syarat umum factual explainer.
+  One text route dan satu exact generative video route dipilih dari akun/model aktual setelah D1, dengan upload/cost consent, reference binding/readback, durable intent, reconciliation dan download. Pengujian generation membutuhkan izin/budget terpisah; tidak dilakukan dalam pekerjaan plan.
+  Providers/models screen, read-only Chrome dahulu dan satu MCP diagnostic connector exposed dengan truthful readiness. UI automation tidak dibuka sebelum gate accidental-submit lolos; manual-assisted harus dilabeli, bukan disebut automatic generation.
+  Exit: actual AI/hybrid output dengan product/variant provenance, actual route/quote/all-attempt costs, technical decode + human audiovisual/product-fidelity review, serta full workspace backup/restore rehearsal. Dropdown/mock/slideshow saja tidak memenuhi generative-route acceptance.
+  No fake product demo/testimonial, auto publish atau mandatory Blender.
+D4 — DURABILITY / RELEASE HARDENING / M0 RELEASE GATE
+  Journal/approvals/budget/accounting/cancel/recovery, injection and malicious asset/URL tests, disk-full/crash updates/clean-VM installer and native host lifecycle.
+  Exit: fault-injection evidence, secret scan, accessibility task pass, license/dependency review, signed release path; no claims from mock-only tests.
+D5 — EXPAND VERIFIED GENERATIVE LANES / M1
+  Setelah route M0 lulus, tambah template/provider berdasarkan kebutuhan, bukan jumlah model. Tiap route baru membutuhkan capability/reference/rights/quote/consent dan own acceptance.
+  UI automation tetap gated; tidak memindahkan asset/native IDs atau fallback lintas provider diam-diam. Periksa cross-engine product/character/voice continuity jika dipakai.
+  Exit: actual representative outputs, audiovisual QA, all-attempt costs dan negative cases untuk tambahan yang benar-benar diaktifkan; bukan sekadar registered connection.
+D6 — EXPANSION / M2
+  Add short/general/narrative template presets, versioned template editor (allowlisted types), batch variants and analytics CSV imports.
+  Engineering 3D lane: canonical meshes/materials/rig/camera/time, pilih Blender atau Three.js per kebutuhan. Blender dependency/offline render dan Three.js isolated preview/deterministic frame-capture+encode masing-masing perlu spike/smoke/domain QA. AI dapat membantu authoring code; cloud GPU hanya setelah izin terpisah.
+  Auto publishing remains a separate product/security/policy decision; no assumed Shopee publish API.
+No duration estimate yet: integration constraints, repo/team, current accounts, representative assets and reference device data are missing. Estimate effort after D1 instead of inventing a multiweek promise.
+
+3. TEST STRATEGY / TRACEABILITY
+requirements.csv adalah sumber requirement/acceptance IDs; planned test IDs di sana bukan klaim implementasi lulus.
+  Unit: taxonomy, settings precedence, capability tri-state, recipe graph, prompt/evidence compiler, canonicalization, state transition reducer, grant/budget math.
+  Schema fixture: execute SQL/constraints/FKs/immutability/journal rollback on disposable SQLite; tests currently in schema/verify_schema.py.
+  Contract: adapter effect registry, unsupported operation, model discovery/manual config, API error validation, cursor events, malformed external responses.
+  Integration: real OS credential broker, workspace filesystem/symlink-junction containment, SQLite transactions, native host/extension, stdio+HTTP MCP, FFmpeg process lifecycle.
+  E2E: create affiliate short, add exact product variant, resolve missing rights/evidence, review script, export; create general short without product; model incompatibility; changed setting invalidates approval.
+  Fault injection: crash before/after dispatch; timeout with no job ID; user cancel while provider still running; disk full; orphan file; stale tab epoch; driver/renderer unavailable.
+  Security: malicious seller page/prompts, XSS/remote WebView IPC exposure, endpoint redirects/private addresses, unreviewed MCP executable, wrong extension ID, file traversal/UNC/junction, secret export/log, malicious ZIP/import path.
+  Media QA: actual file probe/full decode, caption timing/spelling, full audiovisual review and scene transition/product identity. Sampled frames are supplemental.
+  Performance: define reference hardware and dataset then p95 UI responsiveness, memory/disk use and render concurrency; not inferred from Rust language choice.
+  Recovery: consistent DB+assets backup, restore new root with dependency/credential rebind; downgrade/upgrade failure behavior.
+All actual app-level tests are NOT RUN in planning phase. A schema fixture result must not be reported as an application pass.
+
+4. ACCEPTANCE SCENARIOS UNTUK REVIEW
+A Product missing: affiliate project saves as draft; script approval/final export BLOCKED(MISSING_PRODUCT).
+B Wrong variant: second product version bound to scene without project link rejected; visual QA checks output matches actual variant.
+C Unsupported references: selected route cannot satisfy required product+background -&gt; BLOCKED, no dropping asset/switching model.
+D Upload consent: pressing Test connection cannot upload; prepare needing upload shows separate consent and data destination.
+E Unknown spending: click dispatched then timeout -&gt; journal UNKNOWN, wallet reservation retained, new click does not create second provider request.
+F Revocation: previously approved image rights revoked -&gt; new/final export blocked even if earlier run had approval; old audit remains.
+G Ordinary short: GENERAL+SHORT skips product step, same safe asset/QA/export machinery.
+H AI disclosure: release packet states required platform setting; app does not say burned-in text alone enables Shopee AI label.
+I Disabled integration: app supports provider config but installed adapter absent -&gt; UNSUPPORTED; no simulated generation result.
+J Restore: config without credentials restored disabled; no cookies/session restored; missing assets flagged, not regenerated silently.
+
+5. RISK REGISTER
+R1 Scope explosion (high): taxonomy/template/core before more providers; ship slice-first.
+R2 Chrome/UI churn (high): selectors versioned, manual fallback, read-only spike, capability drift detection; one controller.
+R3 Product hallucination/fake reviews (high): canonical assets and claim evidence, truthful templates, human QA; avoid generative alteration of core product geometry/text.
+R4 Credentials/tool exfiltration (high): core broker, no unrestricted shell/MCP/remote WebView, explicit effect registry and endpoint policy.
+R5 Duplicate charges (high): stable intent/hash, atomic local grant/reservation, UNKNOWN reconciliation; cannot promise provider exactly-once.
+R6 Disk/media and SQLite sync corruption (high): local workspace, file promotion+hash, consistent backup/restore; do not use active synced DB.
+R7 Model/account access and pricing change (high): route-specific live evidence, quote expiry, no silent fallback/free-tier assumption.
+R8 Media/stock/music/commercial rights (high): rights provenance/review; upload access does not prove reuse permission; license review for distributed binaries.
+R9 Platform AI/content/product-tag rules change (high): source/version/check date and manual posting checklist; no generic compliance badge.
+R10 Desktop packaging/update trust (medium/high): clean-VM tests, host registration cleanup, signed release/update, migrator backup.
+R11 Third-party skill/source license (medium/high): pin/review guidance, attribution, import no arbitrary code; no bulk profile modification.
+R12 Business value unproven (medium/high): compare manual baseline and accepted-shot/validated commission outcome, not model count or demo views.
+
+6. OPEN DECISION LOG
+OD-01 UI: approve Tauri+React with Rust core vs all-Rust UI. Blocks bootstrap UI decision.
+OD-02 Repository/path/name/license of the new app. Blocks creating implementation repo, not this plan.
+OD-03 Initial official text/video/voice provider and actual available model/account. Blocks first AI/hybrid MVP route, adapter selection and price verification.
+OD-04 First real product plus authorized footage/voice. Blocks representative production sample, not schema design.
+OD-05 Chrome manual-first vs companion extension install permission. Blocks live integration spike.
+OD-06 Budget per provider/unit, quote expiry and retention. Blocks paid pilot.
+OD-07 Reference machine/OS/available toolchain and minimum spec target. Blocks performance commitment.
+OD-08 Backup retention/RPO/RTO and privacy/telemetry preference. Blocks release operational claims.
+OD-09 Generative product-background dapat menjadi route M0 setelah capability/rights/quote dan izin terpisah terpenuhi; exact route/account masih perlu dipilih. Engineering 3D dan publishing tetap deferred. Persetujuan plan bukan izin generation atau publish.
+
+7. DEFINITION OF READY / DONE
+Ready for build: D0 decisions agreed, first slice acceptance testable, actual provider/API/browser limits researched, contracts versioned, no secret needed in chat.
+Done for a slice: code exercised, negative cases/recovery pass, actual artifact where applicable, evidence captured, residual blockers disclosed. User approval for install/login/upload/paid execution/publishing must remain separate where it changes scope or side effects.
+Done for this planning task: named documents+requirements+diagrams+schema exist, schema checks run, citations/links/traceability validated, remaining user decisions visible. Not “application delivered”.
+</pre>
+</article>
+<article id="doc-7">
+<h2>07-SOURCE-NOTES</h2>
+<pre>SOURCE NOTES — 28 NOVEMBER 2026
+Status bukti: dokumentasi primer yang diambil lewat HTTP/search. Tidak ada live-account UI verification, dependency installation, browser connection atau provider generation.
+Design proposals pada dokumen lain adalah keputusan yang disarankan, bukan fakta vendor atau janji implementasi.
+
+SN-01 Tauri
+Tauri mendokumentasikan Rust core dengan web frontend dan capability/permission pada jembatan ke core. Dokumen capability juga menyatakan ini tidak menyelesaikan Rust code yang tidak aman atau salah scope. Maka Rust core tetap perlu application authorization.[1][2]
+
+SN-02 Chrome
+Native messaging memerlukan host manifest/allowed origins dan framed JSON. Extension membuka koneksi ke host; media besar sebaiknya tidak dipindahkan lewat control messages.[3]
+Chrome mendokumentasikan pembatasan remote debugging pada default data directory sejak Chrome 136. Karena itu existing daily profile attach tidak diasumsikan dapat dilakukan lewat flags biasa.[4]
+Dokumen DevTools juga mencatat existing-session auto-connect Chrome 144+ dengan aktivasi remote debugging dan dialog izin. Ini membatasi kesimpulan bahwa sesi existing hanya mungkin melalui extension; opsi auto-connect ada, tetapi belum diuji dan dapat mencakup data sesi luas.[20]
+activeTab tidak setara grant satu tugas; same-origin navigation dapat mempertahankan akses. App menegakkan revocation/expiry/navigation epoch sendiri.[21]
+Pilihan extension/native messaging dalam plan adalah inferensi desain untuk kebutuhan tab user; bukan bukti akses Flow/tab yang sudah berhasil.
+
+SN-03 MCP
+Repo official Rust SDK adalah kandidat dasar client. Spec transport yang diambil menjelaskan stdio dan Streamable HTTP; security guidance tetap relevan terhadap auth/origin/tool trust.[5][15][16]
+Advisory official SDK yang diambil perlu diperiksa pada dependency pin: custom HTTP headers dapat bocor pada redirect lintas origin pada versi terdampak. Selain menghindari rentang terdampak yang dilaporkan, test redirect/origin policy sendiri.[19]
+Tool annotations tidak menjadi otoritas safety; protocol error dan tool isError harus dibedakan. Kebijakan app tetap mengklasifikasikan efek operasi dan menolak unknown effect.[22]
+Protocol/SDK tersedia tidak berarti MCP server tertentu aman atau telah lolos handshake aplikasi ini.
+
+SN-04 SQLite
+FK perlu disetel per koneksi. WAL memiliki syarat/risiko deployment; dokumentasi mencantumkan WAL-reset corruption bug dan fix release. Exact runtime patch harus diperiksa pada build, bukan disimpulkan dari dukungan SQL saja.[6][7]
+Version Python yang menjalankan schema fixture dicatat di verification/schema-tests.json; bukan versi SQLite yang sudah dibundel app Rust.
+
+SN-05 FFmpeg
+Kombinasi build/configuration/library memengaruhi lisensi distribusi. Packaging executable perlu license/codec review; “menggunakan FFmpeg” saja bukan hasil legal review.[8]
+
+SN-06 Shopee Indonesia
+Dokumen program menyebut affiliate melalui media sosial, Shopee Video dan Live. Plan ini membatasi awal pada video/export manual.[12]
+Dokumen Shopee Video menjelaskan langkah Tambah Produk saat posting; export MP4/URL tidak melakukan product tagging tersebut.[11]
+Qualitative guidance menekankan produk jelas, detail, audio/visual baik dan konten original. Ini mendasari gate kejelasan/fidelity produk untuk jalur AI/hybrid maupun footage, bukan jaminan accepted/ranking/commission dari pilihan engine.[13]
+Panduan AI yang diambil mengharuskan penggunaan fitur Label AI untuk konten yang tercakup; disclosure manual tambahan tidak menggantikannya. Panduan juga melarang konten menyesatkan tentang produk. Recheck pada release dengan konteks Shopee Indonesia yang sama.[14]
+Tidak ada permission Shopee API, akses akun atau affiliate eligibility user diverifikasi. Aturan pasar lain tidak dipakai sebagai pengganti Indonesia. Informasi komisi dalam halaman program tidak dijadikan angka proyeksi bisnis.
+
+SN-07 Google Flow
+Help page video menjelaskan references/ingredients/frames sebagai fitur. Help model menjelaskan availability bergantung model/plan dan menyarankan check active model/settings/credit cost sebelum generation.[17][18]
+Plan tidak mengunci nama model lama, jumlah slot atau combination limits dari pengetahuan sebelumnya. Itu harus diverifikasi terhadap exact selected route/account dan observed UI. Supported documented features tidak sama dengan tested asset fidelity.
+
+SN-08 ENGINEERING 3D ROUTING
+Manual Three.js menjelaskan scene/camera/renderer, sedangkan manual Blender menjelaskan output animation/frame sequence. Keputusan memilih Three.js untuk procedural/interactive preview dan Blender untuk offline scene rendering adalah rekomendasi arsitektur yang tetap membutuhkan runtime/export spike; bukan hasil benchmark atau jaminan validitas mekanisme.[23][24]
+
+SN-09 KETERBATASAN RETRIEVAL
+Extractor otomatis pertama gagal karena backend search-only; error disimpan di arsip riset lokal yang tidak dipublikasikan. Fallback HTTP HTML extraction berhasil untuk sumber primer yang dikutip. Raw captures disimpan pada arsip riset lokal pembuat, tidak dibundel dalam publikasi Git; ledger URL dan catatan sumber tetap tersedia.
+Dua URL Shopee ber-slug awal dicatat sebagai attempts pada ledger IDs 9 dan 10, tetapi tidak digunakan sebagai sumber klaim. Halaman numeric official yang benar-benar diambil dipakai sebagai IDs 11 sampai 14.
+Tanggal pada dokumen ini adalah tanggal pengambilan, bukan asumsi tanggal publikasi/terakhir update seluruh halaman. Beberapa doc bersifat rolling; kompatibilitas/version pins harus direcheck saat implementation.
+Tidak ada bukti permintaan pasar, kecepatan render, peningkatan revenue, akses provider atau konsistensi visual production yang dihasilkan oleh riset dokumen ini.
+
+Sources:
+[1] https://v2.tauri.app/start — Tauri overview
+[2] https://v2.tauri.app/security/capabilities — Tauri security capabilities
+[3] https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging — Chrome native messaging
+[4] https://developer.chrome.com/blog/remote-debugging-port — Chrome remote debugging security change
+[5] https://github.com/modelcontextprotocol/rust-sdk — Official MCP Rust SDK
+[6] https://sqlite.org/foreignkeys.html — SQLite foreign keys
+[7] https://sqlite.org/wal.html — SQLite WAL and WAL-reset bug
+[8] https://ffmpeg.org/legal.html — FFmpeg license considerations
+[11] https://help.shopee.co.id/portal/4/article/81921 — Shopee ID: create video and attach products
+[12] https://help.shopee.co.id/portal/4/article/72053 — Shopee ID: affiliate program
+[13] https://help.shopee.co.id/portal/4/article/201244 — Shopee ID: qualitative video guidelines
+[14] https://help.shopee.co.id/portal/10/article/197077 — Shopee ID: AI content labelling
+[15] https://modelcontextprotocol.io/specification/2026-07-28/basic/transports — MCP 2026-07-28 transport overview
+[16] https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices — MCP security best practices
+[17] https://support.google.com/flow/answer/16353334?co=GENIE.Platform%3DDesktop&amp;hl=en — Google Flow video creation and references
+[18] https://support.google.com/flow/answer/16352836?hl=en — Google Flow models and supported features
+[19] https://github.com/modelcontextprotocol/rust-sdk/security/advisories/GHSA-9g45-5xwm-f3wc — MCP Rust SDK redirect header advisory
+[20] https://developer.chrome.com/docs/devtools/agents/get-started/configuration — Chrome DevTools MCP configuration and autoConnect
+[21] https://developer.chrome.com/docs/extensions/develop/concepts/activeTab — Chrome activeTab temporary permission
+[22] https://modelcontextprotocol.io/specification/2026-07-28/server/tools — MCP tools errors and untrusted annotations
+[23] https://threejs.org/manual/pages/creating-a-scene.html — Three.js official manual: scene, camera and renderer
+[24] https://docs.blender.org/manual/en/latest/render/output/animation.html — Blender official manual: rendering animations
+</pre>
+</article>
+<article id="doc-8">
+<h2>08-PRODUCTION-LANES</h2>
+<pre>PRODUCTION LANES — USER DIRECTION ADDENDUM v0.2
+Status: plan-only. Tidak mengizinkan install, generation, upload atau pemakaian kredit.
+
+KEPUTUSAN EDITORIAL
+Affiliate product memakai jalur AI-assisted/hybrid sebagai default, bukan Blender. Istilah “tree.js” dari percakapan ditafsirkan sebagai Three.js; ejaan library yang dipakai dalam desain adalah Three.js, bukan library pembuat pohon.
+3D engineering memakai structured scene pipeline Blender atau Three.js sesuai kebutuhan, bukan memaksa semua video menjadi text-to-video.
+Addendum ini menggantikan rekomendasi editorial v0.1 bahwa real-footage composition harus menjadi satu-satunya jalur awal. Real footage tetap opsi dan bukti penting untuk klaim penggunaan/demonstrasi nyata. Perubahan prioritas editorial tidak membuktikan adapter generatif telah terpasang atau bekerja.
+
+LANE A — AFFILIATE AI / HYBRID
+Produk/varian + fakta/evidence + foto/video berizin -&gt; AI script/storyboard -&gt; reference-conditioned image/video generation atau generated background/B-roll -&gt; authorized product composite bila diperlukan -&gt; voice/captions -&gt; composition -&gt; product-fidelity/audiovisual QA -&gt; export.
+Produk tidak boleh berubah merek/label/warna/varian/geometri penting. Jika generative route tidak mempertahankannya, gunakan canonical product layer/footage asli atau BLOCKED; jangan menganggap video yang tampak menarik sebagai demonstrasi faktual.
+AI human/host tidak boleh mengarang testimonial pemakaian. Pernyataan “lebih diterima audiens” adalah hipotesis kreatif yang perlu pilot dan data actual, bukan acceptance teknis yang sudah terbukti.
+Default ini tidak menjadikan foto/video produk wajib diambil sendiri apabila tersedia izin yang memadai; link seller saja tetap bukan izin reuse.
+
+LANE B — ENGINEERING 3D
+Blender direkomendasikan untuk authoring/animation dan offline rendered output dari scene terstruktur. Dokumentasi resminya menjelaskan animation frames dan pendekatan frame sequence untuk finishing video.[24]
+Three.js menjadi kandidat untuk scene/diagram/animasi procedural dan preview interaktif di lingkungan web. Manual resminya menggunakan scene, camera dan renderer; ini bukan jaminan exporter MP4 desktop siap atau compatibility WebView2/GPU telah diuji.[23]
+Pilih satu pemilik renderer per shot. Lane Three.js memerlukan desain deterministic timing/frame capture + encode dan smoke test tersendiri. Blender dan Three.js tidak otomatis menggantikan CAD/engineering solver atau membuktikan mekanisme benar.
+AI coding worker dapat membantu membuat script Blender atau Three.js; AI authoring tidak berarti output shot dibuat oleh video model generatif.
+
+LANE C — GENERAL / SHORT
+Pilih AI generatif, authorized footage, motion graphic atau structured 3D berdasarkan brief. SHORT adalah format, bukan engine. Jangan merutekan semua short ke satu renderer.
+
+BATAS TEKNIS YANG TETAP BERLAKU
+Satu exact AI video route harus melewati connection/capability/reference/quote dan reconciliation spike sebelum disebut operasional. Metadata connection atau menu model bukan bukti generation bekerja.
+Upload/generation membutuhkan persetujuan sesuai efek dan biaya; tidak ada silent fallback atau penggunaan kredit otomatis.
+Finishing/export terpisah dari engine pencipta scene; QA dan disclosure platform tetap wajib diperiksa.
+Baseline publikasi v0.2 mengikuti keputusan ini: satu exact AI/hybrid video route adalah MVP gate, sedangkan engineering 3D Blender/Three.js tetap lane terpisah. Tidak ada klaim app implemented.
+
+Sources:
+[23] https://threejs.org/manual/pages/creating-a-scene.html — Three.js official manual: scene, camera and renderer
+[24] https://docs.blender.org/manual/en/latest/render/output/animation.html — Blender official manual: rendering animations
+</pre>
+</article>
+</main>
+</body>
+</html>

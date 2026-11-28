@@ -4,6 +4,10 @@
 
 Paket riset/setup video portabel tersedia di [portable/video-research/README.md](portable/video-research/README.md): dua skill authored, snapshot setting non-secret, target device yang dilaporkan pengguna, blueprint MCP yang tidak aktif, dan helper restore dry-run. Baca paket tersebut jika hendak menyamakan workflow video; jangan menjalankan installer global di bawah hanya untuk paket video. Akun, token, cookie dan state browser tidak disalin.
 
+# Rencana aplikasi Creator Desktop
+
+Paket PRD/desain aplikasi desktop Rust untuk affiliate Shopee, short/general video dan ekspansi 3D tersedia di [docs/creator-desktop-plan/README.md](docs/creator-desktop-plan/README.md). Berisi flow/use case, arsitektur, requirements, schema SQLite, roadmap dan pemeriksa artefak. Ini plan-only, bukan aplikasi yang sudah dibangun atau izin menjalankan generation.
+
 # Engineering Agent Setup
 
 Panduan operasional, manifest, policy, template, dan skrip otomasi untuk menyiapkan lingkungan **AI coding-agent** pada **Windows 11 + PowerShell** secara konsisten saat pindah device atau memulai project baru.

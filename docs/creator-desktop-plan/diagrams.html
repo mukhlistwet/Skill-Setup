@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creator Desktop — Planning diagrams</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#020617;color:#e2e8f0;font-family:Consolas,"JetBrains Mono",monospace;line-height:1.6}main{max-width:1500px;margin:auto;padding:32px}h1{font-size:28px;margin:0}.dot{display:inline-block;width:11px;height:11px;background:#22d3ee;border-radius:50%;margin-right:12px}p{color:#94a3b8}nav{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}a{color:#22d3ee}nav a{border:1px solid #334155;border-radius:8px;padding:7px 12px;text-decoration:none}.diagram{border:1px solid #1e293b;background:#081020;border-radius:14px;padding:16px;overflow-x:auto;margin:20px 0 40px}svg{width:100%;min-width:1050px;display:block}h2{font-size:20px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{padding:18px;background:#0f172a;border:1px solid #334155;border-radius:10px}.status{color:#fbbf24}footer{color:#64748b;margin-top:30px}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}</style>
+</head>
+<body>
+<main>
+<h1>
+<span class="dot">
+</span>Creator Desktop / Design v0.2</h1>
+<p>28 November 2026 · Windows-first · AI/hybrid affiliate MVP</p>
+<p class="status">PROPOSED — diagrams are design artifacts, not a working application.</p>
+<nav>
+<a href="#architecture">01 Architecture</a>
+<a href="#use-cases">02 Use case diagram</a>
+<a href="#user-flow">03 User flow</a>
+<a href="#database">04 Logical ERD</a>
+<a href="index.html">Full plan</a>
+</nav>
+<section id="architecture">
+<h2>01 Architecture</h2>
+<div class="diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 830" role="img" aria-label="Proposed architecture and trust boundaries">
+<defs>
+<marker id="arrow-architecture" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+<path d="M0 0L9 3.5L0 7" fill="#94a3b8"/>
+</marker>
+<pattern id="grid-architecture" width="40" height="40" patternUnits="userSpaceOnUse">
+<path d="M40 0H0V40" fill="none" stroke="#1e293b" stroke-width=".5"/>
+</pattern>
+</defs>
+<rect width="1400" height="830" fill="url(#grid-architecture)"/>
+<rect x="20" y="30" width="930" height="680" rx="14" fill="none" stroke="#fb7185" stroke-dasharray="7 5"/>
+<text x="35" y="55" font-size="14" fill="#fb7185" text-anchor="start">LOCAL TRUST BOUNDARY — Rust policy is authoritative</text>
+<rect x="990" y="30" width="385" height="680" rx="14" fill="none" stroke="#fbbf24" stroke-dasharray="7 5"/>
+<text x="1005" y="55" font-size="14" fill="#fbbf24" text-anchor="start">EXTERNAL / USER-CONTROLLED</text>
+<path d="M295 140H360" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M620 140H685" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M802 190V300" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M490 190V300" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M360 165H325V350H295" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M175 400V500" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M620 350H685" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M802 400V450H490V500" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M620 550H685" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-architecture)"/>
+<path d="M920 325H965V140H1020" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#arrow-architecture)"/>
+<text x="970" y="118" font-size="12" fill="#fb7185" text-anchor="middle">consent</text>
+<path d="M920 350H1020" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#arrow-architecture)"/>
+<path d="M920 375H965V550H1020" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#arrow-architecture)"/>
+<rect x="55" y="90" width="240" height="100" rx="8" fill="#0f172a"/>
+<rect x="55" y="90" width="240" height="100" rx="8" fill="#22d3ee" fill-opacity=".09" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="175.0" y="119" font-size="16" fill="#e2e8f0" text-anchor="middle">Desktop UI</text>
+<text x="175.0" y="143" font-size="12" fill="#94a3b8" text-anchor="middle">Tauri + TypeScript UI</text>
+<text x="175.0" y="163" font-size="12" fill="#94a3b8" text-anchor="middle">Projects / Generator / Settings</text>
+<rect x="360" y="90" width="260" height="100" rx="8" fill="#0f172a"/>
+<rect x="360" y="90" width="260" height="100" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="490.0" y="119" font-size="16" fill="#e2e8f0" text-anchor="middle">Rust application core</text>
+<text x="490.0" y="143" font-size="12" fill="#94a3b8" text-anchor="middle">Typed IPC + domain invariants</text>
+<text x="490.0" y="163" font-size="12" fill="#94a3b8" text-anchor="middle">One workflow scheduler</text>
+<rect x="685" y="90" width="235" height="100" rx="8" fill="#0f172a"/>
+<rect x="685" y="90" width="235" height="100" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="802.5" y="119" font-size="16" fill="#e2e8f0" text-anchor="middle">Policy &amp; approvals</text>
+<text x="802.5" y="143" font-size="12" fill="#94a3b8" text-anchor="middle">Rights / effect registry</text>
+<text x="802.5" y="163" font-size="12" fill="#94a3b8" text-anchor="middle">Budget / exact payload grants</text>
+<rect x="55" y="300" width="240" height="100" rx="8" fill="#0f172a"/>
+<rect x="55" y="300" width="240" height="100" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="175.0" y="329" font-size="16" fill="#e2e8f0" text-anchor="middle">SQLite metadata</text>
+<text x="175.0" y="353" font-size="12" fill="#94a3b8" text-anchor="middle">Versions / journal / events</text>
+<text x="175.0" y="373" font-size="12" fill="#94a3b8" text-anchor="middle">No secret values</text>
+<rect x="55" y="500" width="240" height="100" rx="8" fill="#0f172a"/>
+<rect x="55" y="500" width="240" height="100" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="175.0" y="529" font-size="16" fill="#e2e8f0" text-anchor="middle">Asset filesystem</text>
+<text x="175.0" y="553" font-size="12" fill="#94a3b8" text-anchor="middle">Canonical product / footage</text>
+<text x="175.0" y="573" font-size="12" fill="#94a3b8" text-anchor="middle">Hashes / evidence / artifacts</text>
+<rect x="360" y="300" width="260" height="100" rx="8" fill="#0f172a"/>
+<rect x="360" y="300" width="260" height="100" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="490.0" y="329" font-size="16" fill="#e2e8f0" text-anchor="middle">Templates &amp; registry</text>
+<text x="490.0" y="353" font-size="12" fill="#94a3b8" text-anchor="middle">Intent + format + platform</text>
+<text x="490.0" y="373" font-size="12" fill="#94a3b8" text-anchor="middle">Skill / workflow / model routes</text>
+<rect x="685" y="300" width="235" height="100" rx="8" fill="#0f172a"/>
+<rect x="685" y="300" width="235" height="100" rx="8" fill="#fb923c" fill-opacity=".09" stroke="#fb923c" stroke-width="1.5"/>
+<text x="802.5" y="329" font-size="16" fill="#e2e8f0" text-anchor="middle">Adapter ports</text>
+<text x="802.5" y="353" font-size="12" fill="#94a3b8" text-anchor="middle">API / MCP client / browser</text>
+<text x="802.5" y="373" font-size="12" fill="#94a3b8" text-anchor="middle">Inspect -&gt; prepare -&gt; dispatch</text>
+<rect x="360" y="500" width="260" height="100" rx="8" fill="#0f172a"/>
+<rect x="360" y="500" width="260" height="100" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="490.0" y="529" font-size="16" fill="#e2e8f0" text-anchor="middle">Local finishing</text>
+<text x="490.0" y="553" font-size="12" fill="#94a3b8" text-anchor="middle">FFmpeg + ffprobe</text>
+<text x="490.0" y="573" font-size="12" fill="#94a3b8" text-anchor="middle">Blender / Three.js later</text>
+<rect x="685" y="500" width="235" height="100" rx="8" fill="#0f172a"/>
+<rect x="685" y="500" width="235" height="100" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="802.5" y="529" font-size="16" fill="#e2e8f0" text-anchor="middle">QA -&gt; Export</text>
+<text x="802.5" y="553" font-size="12" fill="#94a3b8" text-anchor="middle">Technical + human review</text>
+<text x="802.5" y="573" font-size="12" fill="#94a3b8" text-anchor="middle">Manual posting packet</text>
+<rect x="1020" y="90" width="320" height="100" rx="8" fill="#0f172a"/>
+<rect x="1020" y="90" width="320" height="100" rx="8" fill="#94a3b8" fill-opacity=".09" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1180.0" y="119" font-size="16" fill="#e2e8f0" text-anchor="middle">Approved provider APIs</text>
+<text x="1180.0" y="143" font-size="12" fill="#94a3b8" text-anchor="middle">Exact account/model/surface</text>
+<text x="1180.0" y="163" font-size="12" fill="#94a3b8" text-anchor="middle">Upload + cost consent required</text>
+<rect x="1020" y="300" width="320" height="100" rx="8" fill="#0f172a"/>
+<rect x="1020" y="300" width="320" height="100" rx="8" fill="#94a3b8" fill-opacity=".09" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1180.0" y="329" font-size="16" fill="#e2e8f0" text-anchor="middle">Reviewed MCP servers</text>
+<text x="1180.0" y="353" font-size="12" fill="#94a3b8" text-anchor="middle">Stdio / Streamable HTTP</text>
+<text x="1180.0" y="373" font-size="12" fill="#94a3b8" text-anchor="middle">Tools are not auto-authorized</text>
+<rect x="1020" y="500" width="320" height="100" rx="8" fill="#0f172a"/>
+<rect x="1020" y="500" width="320" height="100" rx="8" fill="#94a3b8" fill-opacity=".09" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1180.0" y="529" font-size="16" fill="#e2e8f0" text-anchor="middle">Chrome selected tab</text>
+<text x="1180.0" y="553" font-size="12" fill="#94a3b8" text-anchor="middle">Opt-in extension + Rust host</text>
+<text x="1180.0" y="573" font-size="12" fill="#94a3b8" text-anchor="middle">Read-only/manual-assisted M0</text>
+<text x="30" y="755" font-size="14" fill="#94a3b8" text-anchor="start">Legend: cyan UI | green core | violet data | rose trust/approval | orange adapter | gray external</text>
+<text x="30" y="788" font-size="14" fill="#fb7185" text-anchor="start">No arbitrary skill execution. No cookie export. No silent fallback. One browser controller per tab.</text>
+</svg>
+</div>
+</section>
+<section id="use-cases">
+<h2>02 Use case diagram</h2>
+<div class="diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1380" role="img" aria-label="Use case diagram with operator and supporting external actors">
+<defs>
+<marker id="arrow-use-cases" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+<path d="M0 0L9 3.5L0 7" fill="#94a3b8"/>
+</marker>
+<pattern id="grid-use-cases" width="40" height="40" patternUnits="userSpaceOnUse">
+<path d="M40 0H0V40" fill="none" stroke="#1e293b" stroke-width=".5"/>
+</pattern>
+</defs>
+<rect width="1400" height="1380" fill="url(#grid-use-cases)"/>
+<rect x="400" y="40" width="580" height="1230" rx="14" fill="none" stroke="#22d3ee" stroke-dasharray="7 5"/>
+<text x="415" y="65" font-size="14" fill="#22d3ee" text-anchor="start">CREATOR DESKTOP — proposed use cases</text>
+<path d="M130 650L512 130" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 246" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 362" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 478" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 594" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 710" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 826" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 942" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 1058" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M130 650L512 1174" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M1210 200L868 246" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M1210 200L868 594" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M1210 200L868 710" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M1210 200L868 1058" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M1210 550L868 710" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M1210 850L868 710" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<path d="M1210 1100L868 826" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+<ellipse cx="690" cy="130" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="123" font-size="13" fill="#22d3ee" text-anchor="middle">UC-01</text>
+<text x="690" y="146" font-size="14" fill="#e2e8f0" text-anchor="middle">Workspace / settings</text>
+<ellipse cx="690" cy="246" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="239" font-size="13" fill="#22d3ee" text-anchor="middle">UC-02</text>
+<text x="690" y="262" font-size="14" fill="#e2e8f0" text-anchor="middle">Providers / models</text>
+<ellipse cx="690" cy="362" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="355" font-size="13" fill="#22d3ee" text-anchor="middle">UC-03</text>
+<text x="690" y="378" font-size="14" fill="#e2e8f0" text-anchor="middle">Project / template</text>
+<ellipse cx="690" cy="478" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="471" font-size="13" fill="#22d3ee" text-anchor="middle">UC-04</text>
+<text x="690" y="494" font-size="14" fill="#e2e8f0" text-anchor="middle">Product / evidence / assets</text>
+<ellipse cx="690" cy="594" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="587" font-size="13" fill="#22d3ee" text-anchor="middle">UC-05</text>
+<text x="690" y="610" font-size="14" fill="#e2e8f0" text-anchor="middle">Script / storyboard</text>
+<ellipse cx="690" cy="710" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="703" font-size="13" fill="#22d3ee" text-anchor="middle">UC-06</text>
+<text x="690" y="726" font-size="14" fill="#e2e8f0" text-anchor="middle">Preflight / approve / generate</text>
+<ellipse cx="690" cy="826" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="819" font-size="13" fill="#22d3ee" text-anchor="middle">UC-07</text>
+<text x="690" y="842" font-size="14" fill="#e2e8f0" text-anchor="middle">Compose / QA</text>
+<ellipse cx="690" cy="942" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="935" font-size="13" fill="#22d3ee" text-anchor="middle">UC-08</text>
+<text x="690" y="958" font-size="14" fill="#e2e8f0" text-anchor="middle">Export / posting packet</text>
+<ellipse cx="690" cy="1058" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="1051" font-size="13" fill="#22d3ee" text-anchor="middle">UC-09</text>
+<text x="690" y="1074" font-size="14" fill="#e2e8f0" text-anchor="middle">Recover / reconcile / cancel</text>
+<ellipse cx="690" cy="1174" rx="178" ry="46" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="690" y="1167" font-size="13" fill="#22d3ee" text-anchor="middle">UC-10</text>
+<text x="690" y="1190" font-size="14" fill="#e2e8f0" text-anchor="middle">Other templates / 3D / analytics</text>
+<circle cx="120" cy="595" r="12" fill="none" stroke="#94a3b8"/>
+<path d="M120 607v35 M97 621h46 M120 642l-22 28 M120 642l22 28" stroke="#94a3b8" fill="none"/>
+<text x="120" y="694" font-size="14" fill="#e2e8f0" text-anchor="middle">Operator</text>
+<circle cx="1235" cy="145" r="12" fill="none" stroke="#94a3b8"/>
+<path d="M1235 157v35 M1212 171h46 M1235 192l-22 28 M1235 192l22 28" stroke="#94a3b8" fill="none"/>
+<text x="1235" y="244" font-size="14" fill="#e2e8f0" text-anchor="middle">AI provider</text>
+<circle cx="1235" cy="495" r="12" fill="none" stroke="#94a3b8"/>
+<path d="M1235 507v35 M1212 521h46 M1235 542l-22 28 M1235 542l22 28" stroke="#94a3b8" fill="none"/>
+<text x="1235" y="594" font-size="14" fill="#e2e8f0" text-anchor="middle">Chrome</text>
+<circle cx="1235" cy="795" r="12" fill="none" stroke="#94a3b8"/>
+<path d="M1235 807v35 M1212 821h46 M1235 842l-22 28 M1235 842l22 28" stroke="#94a3b8" fill="none"/>
+<text x="1235" y="894" font-size="14" fill="#e2e8f0" text-anchor="middle">MCP server</text>
+<circle cx="1235" cy="1045" r="12" fill="none" stroke="#94a3b8"/>
+<path d="M1235 1057v35 M1212 1071h46 M1235 1092l-22 28 M1235 1092l22 28" stroke="#94a3b8" fill="none"/>
+<text x="1235" y="1144" font-size="14" fill="#e2e8f0" text-anchor="middle">Local compositor</text>
+<text x="25" y="1310" font-size="13" fill="#94a3b8" text-anchor="start">UC-06 includes reference/rights/capability validation and trusted human approval; detailed UML in use-cases.puml.</text>
+<text x="25" y="1342" font-size="13" fill="#94a3b8" text-anchor="start">UC-10 = later phases. UC-08 exports files; it does not automatically publish or attach a Shopee product tag.</text>
+</svg>
+</div>
+</section>
+<section id="user-flow">
+<h2>03 User flow</h2>
+<div class="diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1040" role="img" aria-label="User flow for product-grounded affiliate video">
+<defs>
+<marker id="arrow-user-flow" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+<path d="M0 0L9 3.5L0 7" fill="#94a3b8"/>
+</marker>
+<pattern id="grid-user-flow" width="40" height="40" patternUnits="userSpaceOnUse">
+<path d="M40 0H0V40" fill="none" stroke="#1e293b" stroke-width=".5"/>
+</pattern>
+</defs>
+<rect width="1400" height="1040" fill="url(#grid-user-flow)"/>
+<path d="M360 105H520" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M850 105H1010" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M1175 150V210" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M1010 255H850" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M520 255H360" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M195 300V365" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M360 410H520" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M850 410H1010" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M1175 455V520" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M1010 565H850" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M520 565H360" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M195 610V675" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M360 720H520" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<path d="M850 720H1010" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-user-flow)"/>
+<rect x="30" y="60" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="30" y="60" width="330" height="90" rx="8" fill="#22d3ee" fill-opacity=".09" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="195.0" y="89" font-size="16" fill="#e2e8f0" text-anchor="middle">1. Brief</text>
+<text x="195.0" y="113" font-size="12" fill="#94a3b8" text-anchor="middle">Intent / format / platform / style</text>
+<rect x="520" y="60" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="520" y="60" width="330" height="90" rx="8" fill="#22d3ee" fill-opacity=".09" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="685.0" y="89" font-size="16" fill="#e2e8f0" text-anchor="middle">2. Template</text>
+<text x="685.0" y="113" font-size="12" fill="#94a3b8" text-anchor="middle">Exact workflow + skill revisions</text>
+<rect x="1010" y="60" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="1010" y="60" width="330" height="90" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="1175.0" y="89" font-size="16" fill="#e2e8f0" text-anchor="middle">3. Inputs</text>
+<text x="1175.0" y="113" font-size="12" fill="#94a3b8" text-anchor="middle">Affiliate: product + variant required</text>
+<rect x="1010" y="210" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="1010" y="210" width="330" height="90" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="1175.0" y="239" font-size="16" fill="#e2e8f0" text-anchor="middle">4. Evidence &amp; assets</text>
+<text x="1175.0" y="263" font-size="12" fill="#94a3b8" text-anchor="middle">General: assets, product optional</text>
+<rect x="520" y="210" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="520" y="210" width="330" height="90" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="685.0" y="239" font-size="16" fill="#e2e8f0" text-anchor="middle">5. Rights / claims review</text>
+<text x="685.0" y="263" font-size="12" fill="#94a3b8" text-anchor="middle">Missing or revoked -&gt; BLOCKED</text>
+<rect x="30" y="210" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="30" y="210" width="330" height="90" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="195.0" y="239" font-size="16" fill="#e2e8f0" text-anchor="middle">6. Script / storyboard</text>
+<text x="195.0" y="263" font-size="12" fill="#94a3b8" text-anchor="middle">Scene-bound claims and references</text>
+<rect x="30" y="365" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="30" y="365" width="330" height="90" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="195.0" y="394" font-size="16" fill="#e2e8f0" text-anchor="middle">7. Role-specific models</text>
+<text x="195.0" y="418" font-size="12" fill="#94a3b8" text-anchor="middle">Planner / vision / video / voice</text>
+<rect x="520" y="365" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="520" y="365" width="330" height="90" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="685.0" y="394" font-size="16" fill="#e2e8f0" text-anchor="middle">8. Hard preflight</text>
+<text x="685.0" y="418" font-size="12" fill="#94a3b8" text-anchor="middle">Capabilities / references / quote</text>
+<rect x="1010" y="365" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="1010" y="365" width="330" height="90" rx="8" fill="#fb923c" fill-opacity=".09" stroke="#fb923c" stroke-width="1.5"/>
+<text x="1175.0" y="394" font-size="16" fill="#e2e8f0" text-anchor="middle">9. AI/hybrid OR source-only</text>
+<text x="1175.0" y="418" font-size="12" fill="#94a3b8" text-anchor="middle">Source-only skips video generation</text>
+<rect x="1010" y="520" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="1010" y="520" width="330" height="90" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="1175.0" y="549" font-size="16" fill="#e2e8f0" text-anchor="middle">10. Prepare &amp; readback [M0 AI]</text>
+<text x="1175.0" y="573" font-size="12" fill="#94a3b8" text-anchor="middle">Upload consent if required</text>
+<rect x="520" y="520" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="520" y="520" width="330" height="90" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="685.0" y="549" font-size="16" fill="#e2e8f0" text-anchor="middle">11. User approval [M0 AI]</text>
+<text x="685.0" y="573" font-size="12" fill="#94a3b8" text-anchor="middle">Exact payload / quote / expiry</text>
+<rect x="30" y="520" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="30" y="520" width="330" height="90" rx="8" fill="#fb923c" fill-opacity=".09" stroke="#fb923c" stroke-width="1.5"/>
+<text x="195.0" y="549" font-size="16" fill="#e2e8f0" text-anchor="middle">12. Durable dispatch [M0 AI]</text>
+<text x="195.0" y="573" font-size="12" fill="#94a3b8" text-anchor="middle">Reserve -&gt; persist intent -&gt; once</text>
+<rect x="30" y="675" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="30" y="675" width="330" height="90" rx="8" fill="#34d399" fill-opacity=".09" stroke="#34d399" stroke-width="1.5"/>
+<text x="195.0" y="704" font-size="16" fill="#e2e8f0" text-anchor="middle">13. Compose / QA</text>
+<text x="195.0" y="728" font-size="12" fill="#94a3b8" text-anchor="middle">Technical + human product/audio</text>
+<rect x="520" y="675" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="520" y="675" width="330" height="90" rx="8" fill="#22d3ee" fill-opacity=".09" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="685.0" y="704" font-size="16" fill="#e2e8f0" text-anchor="middle">14. Export packet</text>
+<text x="685.0" y="728" font-size="12" fill="#94a3b8" text-anchor="middle">MP4 / captions / links / report</text>
+<rect x="1010" y="675" width="330" height="90" rx="8" fill="#0f172a"/>
+<rect x="1010" y="675" width="330" height="90" rx="8" fill="#94a3b8" fill-opacity=".09" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1175.0" y="704" font-size="16" fill="#e2e8f0" text-anchor="middle">15. Manual posting</text>
+<text x="1175.0" y="728" font-size="12" fill="#94a3b8" text-anchor="middle">Product tag + AI/disclosure checks</text>
+<path d="M1175 455V480H1380V650H195V675" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#arrow-user-flow)"/>
+<text x="690" y="643" font-size="13" fill="#94a3b8" text-anchor="middle">Source-only bypasses steps 10-12; default affiliate AI uses generation</text>
+<rect x="30" y="845" width="620" height="105" rx="8" fill="#0f172a"/>
+<rect x="30" y="845" width="620" height="105" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="340.0" y="874" font-size="16" fill="#e2e8f0" text-anchor="middle">Exception: UNKNOWN after external dispatch</text>
+<text x="340.0" y="898" font-size="12" fill="#94a3b8" text-anchor="middle">Keep reservation. Reconcile existing work. No auto retry/reroute.</text>
+<rect x="720" y="845" width="620" height="105" rx="8" fill="#0f172a"/>
+<rect x="720" y="845" width="620" height="105" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="1030.0" y="874" font-size="16" fill="#e2e8f0" text-anchor="middle">Exception: incompatible / revoked / changed inputs</text>
+<text x="1030.0" y="898" font-size="12" fill="#94a3b8" text-anchor="middle">BLOCKED or re-review. Never silently remove required assets.</text>
+<text x="30" y="1000" font-size="14" fill="#94a3b8" text-anchor="start">QA failure returns to reviewed plan revision; every new paid attempt requires a new explicit intent/grant.</text>
+</svg>
+</div>
+</section>
+<section id="database">
+<h2>04 Logical ERD</h2>
+<div class="diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 930" role="img" aria-label="Logical grouped database ERD">
+<defs>
+<marker id="arrow-database" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+<path d="M0 0L9 3.5L0 7" fill="#94a3b8"/>
+</marker>
+<pattern id="grid-database" width="40" height="40" patternUnits="userSpaceOnUse">
+<path d="M40 0H0V40" fill="none" stroke="#1e293b" stroke-width=".5"/>
+</pattern>
+</defs>
+<rect width="1400" height="930" fill="url(#grid-database)"/>
+<rect x="20" y="30" width="1360" height="810" rx="14" fill="none" stroke="#a78bfa" stroke-dasharray="7 5"/>
+<text x="35" y="55" font-size="14" fill="#a78bfa" text-anchor="start">LOGICAL ERD GROUPS — all detailed columns/FKs are in SQL and generated data dictionary</text>
+<path d="M385 150H520" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M1175 205V315" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M220 205V315" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M385 175H440V370H520" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M385 370H520" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M220 425V545" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M385 600H520" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M1010 395H970V600H850" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M1175 425V545" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<path d="M1010 345H940V180H850" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+<rect x="55" y="95" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="55" y="95" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="220.0" y="124" font-size="16" fill="#e2e8f0" text-anchor="middle">Projects</text>
+<text x="220.0" y="148" font-size="12" fill="#94a3b8" text-anchor="middle">Intent + format + platform/style</text>
+<text x="220.0" y="168" font-size="12" fill="#94a3b8" text-anchor="middle">Exact template / product versions</text>
+<rect x="520" y="95" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="520" y="95" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="685.0" y="124" font-size="16" fill="#e2e8f0" text-anchor="middle">Recipes</text>
+<text x="685.0" y="148" font-size="12" fill="#94a3b8" text-anchor="middle">Template -&gt; workflow -&gt; skills</text>
+<text x="685.0" y="168" font-size="12" fill="#94a3b8" text-anchor="middle">All versioned and pinned</text>
+<rect x="1010" y="95" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="1010" y="95" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="1175.0" y="124" font-size="16" fill="#e2e8f0" text-anchor="middle">Provider registry</text>
+<text x="1175.0" y="148" font-size="12" fill="#94a3b8" text-anchor="middle">Providers -&gt; model routes</text>
+<text x="1175.0" y="168" font-size="12" fill="#94a3b8" text-anchor="middle">Connections / capabilities</text>
+<rect x="1010" y="315" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="1010" y="315" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="1175.0" y="344" font-size="16" fill="#e2e8f0" text-anchor="middle">Execution snapshot</text>
+<text x="1175.0" y="368" font-size="12" fill="#94a3b8" text-anchor="middle">Runs -&gt; run nodes</text>
+<text x="1175.0" y="388" font-size="12" fill="#94a3b8" text-anchor="middle">Immutable request + references</text>
+<rect x="520" y="315" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="520" y="315" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="685.0" y="344" font-size="16" fill="#e2e8f0" text-anchor="middle">Product truth</text>
+<text x="685.0" y="368" font-size="12" fill="#94a3b8" text-anchor="middle">Products -&gt; versions</text>
+<text x="685.0" y="388" font-size="12" fill="#94a3b8" text-anchor="middle">Evidence -&gt; claims</text>
+<rect x="55" y="315" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="55" y="315" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="220.0" y="344" font-size="16" fill="#e2e8f0" text-anchor="middle">Scene bindings</text>
+<text x="220.0" y="368" font-size="12" fill="#94a3b8" text-anchor="middle">Scenes -&gt; exact assets/claims</text>
+<text x="220.0" y="388" font-size="12" fill="#94a3b8" text-anchor="middle">Remote asset bindings scoped</text>
+<rect x="55" y="545" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="55" y="545" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="220.0" y="574" font-size="16" fill="#e2e8f0" text-anchor="middle">Media provenance</text>
+<text x="220.0" y="598" font-size="12" fill="#94a3b8" text-anchor="middle">Asset versions -&gt; artifacts</text>
+<text x="220.0" y="618" font-size="12" fill="#94a3b8" text-anchor="middle">Hash / rights / derivation</text>
+<rect x="520" y="545" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="520" y="545" width="330" height="110" rx="8" fill="#a78bfa" fill-opacity=".09" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="685.0" y="574" font-size="16" fill="#e2e8f0" text-anchor="middle">Review &amp; release</text>
+<text x="685.0" y="598" font-size="12" fill="#94a3b8" text-anchor="middle">Technical / fidelity / audiovisual</text>
+<text x="685.0" y="618" font-size="12" fill="#94a3b8" text-anchor="middle">Human release decision</text>
+<rect x="1010" y="545" width="330" height="110" rx="8" fill="#0f172a"/>
+<rect x="1010" y="545" width="330" height="110" rx="8" fill="#fb7185" fill-opacity=".09" stroke="#fb7185" stroke-width="1.5"/>
+<text x="1175.0" y="574" font-size="16" fill="#e2e8f0" text-anchor="middle">Intent / cost journal</text>
+<text x="1175.0" y="598" font-size="12" fill="#94a3b8" text-anchor="middle">Receipts -&gt; grants -&gt; intents</text>
+<text x="1175.0" y="618" font-size="12" fill="#94a3b8" text-anchor="middle">Wallets / budgets / reservations</text>
+<text x="30" y="890" font-size="13" fill="#94a3b8" text-anchor="start">Not shown as boxes: external jobs, event cursor/audit, settings and migration metadata. Full ERD is generated from DDL.</text>
+</svg>
+</div>
+</section>
+<div class="cards">
+<div class="card">Purpose ≠ format<br>Affiliate can also be Short or Long.</div>
+<div class="card">Product is a first-class input<br>Exact variant, evidence and authorized media.</div>
+<div class="card">Permission is not a prompt<br>Core validates grants, effects and budgets.</div>
+</div>
+<footer>Offline HTML · Inline SVG/CSS · No JS, tracking or external font/network requests.</footer>
+</main>
+</body>
+</html>

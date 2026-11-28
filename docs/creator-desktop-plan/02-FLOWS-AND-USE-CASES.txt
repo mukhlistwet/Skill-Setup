@@ -1,0 +1,105 @@
+FUNCTIONAL SPEC — FLOWS & USE CASES v0.2
+Status: PROPOSED. Requirement IDs bersumber dari requirements.csv.
+
+1. NAVIGASI APLIKASI
+Dashboard | Projects | Products | Assets | Templates | Generator | Jobs | Exports | Connections | Providers & Models | Settings.
+Generator dan Jobs selalu menunjukkan project/workspace aktif. Detail produk/scene dibuka sebagai panel agar konteks tidak hilang.
+M0 memakai packaged templates, bukan visual workflow builder bebas. Basic trim/order/captions cukup; editor timeline profesional di luar scope.
+
+2. AKTOR DAN PERMISSION
+Operator lokal: membuat proyek, meninjau bukti/aset, mengubah konfigurasi, mengizinkan upload/generation/export.
+App core: memvalidasi, merencanakan dan mengeksekusi hanya grant yang sah.
+AI provider/LLM: menghasilkan proposal; tidak boleh mengotorisasi tool, menambah provider diam-diam atau mengesahkan klaimnya sendiri.
+MCP server dan Chrome extension: sistem eksternal/pendukung yang tidak dipercaya untuk menentukan hak/approval.
+Local renderer: proses terkontrol untuk komposisi; tidak mendapat secret provider.
+Tidak ada auth multiuser app pada M0; keamanan akun OS bukan janji perlindungan dari administrator/malware yang telah menguasai mesin.
+
+3. UC-01 SETUP WORKSPACE / FR-01,20,21,22
+Precondition: app baru dibuka atau workspace dipilih.
+Main: pilih root data lokal -> lihat izin path dan ruang bebas -> pilih bahasa/default output/preview -> set backup destination -> tampilkan workspace readiness.
+Failure: direktori read-only/remote sync -> jelaskan dan pilih folder lain. File obstruction/path escape ditolak. Tidak auto migrasi profil Hermes.
+Postcondition: workspace id dan setting valid tersimpan; belum ada provider terhubung.
+
+4. UC-02 TAMBAH PROVIDER DAN MODEL / FR-07,08,10,17
+  Pilih adapter/protocol yang didukung -> beri nama provider/account alias -> endpoint divalidasi -> secret disimpan melalui credential broker OS -> Test metadata connection (scope terlihat) -> pilih model dari discovery bila ada atau masukkan exact identifier manual -> deklarasikan capability -> test read-only/fixture yang relevan -> simpan.
+  Catalog status: REGISTERED, CONNECTED, CAPABILITY_UNVERIFIED, VERIFIED, DEGRADED, UNSUPPORTED.
+  Manual model entry diperbolehkan tetapi bukan bukti capability. Browser route memilih label/model yang terbaca di UI, bukan ID API yang dikarang.
+  Set default model per role. Pengaturan default tidak mengubah run yang sudah dibuat.
+Alt: generic compatible endpoint beda contract -> adapter reports CONTRACT_MISMATCH; jangan mengatakan connected karena HTTP 200 saja.
+Alt: tidak ada discovery endpoint -> input manual + verified capability evidence setelah pilot.
+Secrets tidak tampil di daftar/model picker/log. Hapus provider yang direferensikan run lama = disable, bukan cascade delete.
+
+5. UC-03 BUAT PROJECT / FR-01,02,03,20
+  New Project -> tujuan konten -> platform -> format/durasi -> jenis/gaya -> template kompatibel -> project name/brief/bahasa/CTA -> output aspect/resolution/fps -> product step bila affiliate -> simpan draft.
+  Shortcut “Affiliate” membuka wizard dengan intent AFFILIATE; “Short” mengisi format SHORT; “Video Biasa” memilih GENERAL. User masih dapat membuat affiliate short maupun affiliate long.
+  Preset boleh di-override dengan validasi; platform-specific duration/resolution limits harus punya source/version dan diperbarui, bukan dianggap universal.
+  Global defaults < template defaults < project overrides < reviewed scene overrides; konflik hard requirement template tidak dapat di-override tanpa mengganti template/version.
+
+6. UC-04 TAMBAH PRODUK DAN BUKTI / FR-04,05,06
+  Paste link atau input manual -> confirm domain/market -> isi judul/seller/varian -> import aset berizin -> record source/owner/license/consent -> review candidate facts -> approve claims -> link project ke exact product version.
+  Input minimal boleh tersimpan sebagai draft; generate final script dan export affiliate diblokir sampai mandatory fields terpenuhi.
+  URL/import page berstatus UNTRUSTED_DATA. Teks seller tidak pernah menjadi instruksi tool.
+  Produk baru dari versi lama tidak menimpa run historis. Perubahan harga/varian menambah product version dan invalidates dependent approvals.
+Alt: shortlink unresolved -> user membuka sendiri lalu menyalin canonical URL; jangan meminta cookie/password.
+Alt: aset rights belum jelas -> dapat menginventaris draft, tidak boleh upload/generate/export final dengannya.
+Alt: tidak punya sample -> pilih product explainer berbasis facts, bukan template review pengalaman/demonstrasi hasil.
+
+7. UC-05 BRIEF -> SCRIPT -> STORYBOARD / FR-09,11,12
+  Core resolve template/workflow/skill versions -> build evidence pack -> operator pilih model planner -> tampilkan estimasi scope/biaya termasuk text call -> approval bila data dikirim/biaya -> planner menghasilkan typed proposal -> validate -> editor script dan claim references -> review -> scenes.
+  Setiap scene memiliki narration/text, durasi estimasi, visual source, product/asset binding, locked attributes dan intended changes.
+  AI “review saya setelah 7 hari” tidak boleh otomatis lolos; klaim pengalaman harus punya rekaman/bukti yang sesuai atau ditolak.
+  Character/background/product/voice adalah peran aset berbeda. Nama aset di prompt tidak menggantikan binding file/version.
+
+8. UC-06 PREFLIGHT, PREPARE DAN GENERATE / FR-10,12,13,14,17,22,27
+  Select role routes -> hard constraints filter -> user memilih dari compatible routes -> resolve references -> inspect live capability/context -> classify effects -> jika upload perlu approval upload terpisah -> prepare -> read back provider state -> show settings/reference/quote receipt -> approve exact request -> reserve budget+consume grant+persist intent atomically -> dispatch once -> track/reconcile -> download and validate -> human QA.
+  Effect classes: READ_LOCAL, READ_REMOTE, UPLOAD, PAID_GENERATION, LOCAL_RENDER, PUBLISH, ARBITRARY_EXEC.
+  Test connection hanya metadata read; prepare yang memindahkan data tidak otomatis termasuk read-only. Tool annotations tidak menggantikan registry effect policy.
+  Jika harga tidak diketahui: tidak membolehkan arbitrary spend; user dapat menyetujui bounded maximum dengan quote basis yang sah untuk API metered, atau route BLOCKED. UI route butuh quote/readback yang bisa diperiksa.
+  Jika Chrome tab berganti URL/project/account/model -> revoke prepared receipt dan grant. Satu controller/lease per tab.
+  UI prepare otomatis tetap disabled sampai accidental-submit prevention teruji; manual-assisted path tetap tersedia.
+Alt: required product reference unsupported -> BLOCKED. Tidak menurunkan requirement menjadi text prompt.
+Alt: grant expired atau payload berubah -> minta approval baru, bukan reuse.
+Alt: timeout setelah dispatch -> UNKNOWN, keep reservation -> reconcile; tidak auto retry/reroute.
+
+9. UC-07 FINISHING & REVIEW / FR-15,18
+  Select approved source clips -> arrange/trim -> recorded narration/TTS output authorized -> captions -> music with rights -> preview -> correct -> export candidate -> technical checks -> watch audiovisual review -> release decision.
+  Checks teknis: actual codec/container, dimensions/aspect, timestamps/duration, missing media, decode errors; loudness/black/freeze checks menjadi warnings dengan sampling disclosed.
+  Checks manusia: product geometry/label/warna/varian, klaim benar, visual bukan demo palsu, suara/caption jelas, consent/disclosure sesuai.
+  Product fidelity score/vision similarity adalah triage; tidak boleh otomatis menggantikan review audiovisual manusia.
+  REVIEW_FAILED -> edit/re-render local, atau generate baru dengan intent/approval/budget baru. Output lama dipertahankan.
+
+10. UC-08 EXPORT DAN POSTING MANUAL / FR-19,26
+  Pilih attribution mode. External link memerlukan affiliate URL dan sumber/verifikasi user; native platform tagging memerlukan langkah manual di akun yang memenuhi ketentuan. Link produk biasa bukan otomatis link affiliate.
+  Setelah QA pass -> export MP4 + SRT/VTT bila dipilih + approved caption/CTA + affiliate/product links + release report.
+  User membuka aplikasi/platform tujuan sendiri, memasang product tag/keranjang dan disclosure melalui fitur resmi, lalu opsional mencatat published URL manual.
+  Status EXPORTED tidak diubah menjadi PUBLISHED atau MONETIZED tanpa evidence terpisah. Auto publish = M2+/out of scope M0.
+
+11. UC-09 RECOVER / CANCEL / FR-16,17,21
+  Startup scans non-terminal runs -> local running processes re-check -> externally dispatched intents unresolved = RECONCILE_REQUIRED -> check status read-only on same scoped route/account -> associate existing output -> reconcile cost -> resume safe dependent nodes.
+  User pause stops scheduling new nodes; tidak menjamin provider berhenti.
+  Cancel remote = CANCEL_REQUESTED sampai provider readback confirms. Kalau API tidak mendukung cancel, jangan memalsukan cancellation success.
+  Disable connection stops new dispatch; unresolved job tetap dapat dipulihkan lewat approved diagnostic/reconnect.
+
+12. UC-10 SHORT/GENERAL/3D DAN ANALYTICS / FR-23,24,25
+  Template lain memakai core yang sama, tetapi mengubah required inputs, adapters dan QA. Educational tidak memerlukan product; affiliate selalu memerlukannya.
+  3D mengunci mesh/material/rig/camera/timing, dependency check dan domain QA. Blender dipakai untuk scene/offline render dan Three.js untuk procedural/interactive scene sesuai kebutuhan, dengan export timing/capture teruji; bukan image-to-video dengan nama “engineering”.
+  Import analytics berisi source/date/window/cost/commission state; jangan menghitung profit dari views atau estimated unpaid commission saja.
+  M2 template editor hanya memakai allowlisted node types, tidak menjalankan arbitrary shell dari teks skill.
+
+13. STATE MACHINES
+Project: DRAFT -> INPUTS_READY -> PLANNED -> REVIEWING -> READY_TO_EXECUTE -> PRODUCING -> READY_FOR_QA -> EXPORTED -> ARCHIVED.
+  REVISIONS_NEEDED dapat kembali ke input/plan; run historis immutable. Status project adalah agregat UI, bukan sumber kebenaran transaksi job.
+Node: PENDING -> BLOCKED/READY -> WAITING_APPROVAL -> RUNNING -> SUCCEEDED/FAILED/UNKNOWN/CANCEL_REQUESTED/CANCELED.
+  UNKNOWN hanya keluar melalui reconciliation yang berbukti atau manual resolution yang diaudit; tidak langsung READY.
+  Hanya local deterministic nodes tanpa side effect eksternal yang boleh retry otomatis dengan bounded policy.
+Asset rights: REVIEW_REQUIRED -> APPROVED -> REVOKED. Revocation menghalangi new runs/final exports terkait, tidak menghapus audit history.
+Approval: ISSUED -> CONSUMED atau EXPIRED/REVOKED. Perubahan material membuat approval tidak sah meski belum expired.
+
+14. SCREEN STATES DAN AKSESIBILITAS
+Setiap list: loading dengan cancel; empty dengan langkah berikutnya; error dengan stable code dan recovery; denied dengan izin yang dibutuhkan; success dengan state aktual.
+Generator: BLOCKED(reason+fix), READY_FOR_REVIEW, AWAITING_APPROVAL, RUNNING, UNKNOWN, QA_REQUIRED, COMPLETED. Tombol Generate tidak aktif saat compatibility/rights/quote gagal.
+Form: field error inline, keyboard navigation, focus restoration, status tidak bergantung warna saja, reduce motion, shortcut yang tidak men-trigger spend.
+Tidak ada hotkey Enter/Space global yang dapat menyetujui paid generation dari dialog lain.
+
+15. DIAGRAM
+Lihat diagrams.html untuk visual offline dan diagrams/use-cases.puml untuk sumber UML aktor/use case. Detailed flows dicatat di diagrams/user-flow.mmd dan diagrams/job-state.mmd.

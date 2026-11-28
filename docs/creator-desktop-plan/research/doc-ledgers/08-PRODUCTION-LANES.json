@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 23,
+      "url": "https://threejs.org/manual/pages/creating-a-scene.html",
+      "title": "Three.js official manual: scene, camera and renderer",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 24,
+      "url": "https://docs.blender.org/manual/en/latest/render/output/animation.html",
+      "title": "Blender official manual: rendering animations",
+      "accessed": "2026-11-28"
+    }
+  ]
+}

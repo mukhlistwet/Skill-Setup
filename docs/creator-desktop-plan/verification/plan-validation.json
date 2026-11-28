@@ -1,0 +1,76 @@
+{
+  "scope": "PLANNING_ARTIFACTS_ONLY",
+  "passed": true,
+  "documents": 9,
+  "functional_requirements": 27,
+  "nonfunctional_requirements": 9,
+  "use_cases": 10,
+  "schema_tables": 34,
+  "schema_columns": 241,
+  "schema_foreign_keys": 53,
+  "schema_tests_passed": 41,
+  "sqlite_fixture_runtime": "3.53.1",
+  "offline_html_files_checked": [
+    "index.html",
+    "diagrams.html"
+  ],
+  "svg_diagrams_xml_checked": 4,
+  "browser_pngs_checked": [
+    {
+      "diagram": "architecture",
+      "width": 1480,
+      "height": 1600
+    },
+    {
+      "diagram": "use-cases",
+      "width": 1480,
+      "height": 1600
+    },
+    {
+      "diagram": "user-flow",
+      "width": 1480,
+      "height": 1600
+    },
+    {
+      "diagram": "database",
+      "width": 1480,
+      "height": 1600
+    }
+  ],
+  "cited_primary_source_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "not_run": [
+    "Rust/Tauri implementation/build",
+    "Desktop UI E2E",
+    "Live Chrome/Flow connection",
+    "Live MCP handshake",
+    "Provider generation/upload",
+    "Production video render and audiovisual QA",
+    "Multi-process concurrency",
+    "Full media workspace migration/restore",
+    "PlantUML or Mermaid runtime rendering",
+    "Commission/revenue validation"
+  ]
+}

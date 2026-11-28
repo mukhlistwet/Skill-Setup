@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://v2.tauri.app/start",
+      "title": "Tauri overview",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 2,
+      "url": "https://v2.tauri.app/security/capabilities",
+      "title": "Tauri security capabilities",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 3,
+      "url": "https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging",
+      "title": "Chrome native messaging",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 4,
+      "url": "https://developer.chrome.com/blog/remote-debugging-port",
+      "title": "Chrome remote debugging security change",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 5,
+      "url": "https://github.com/modelcontextprotocol/rust-sdk",
+      "title": "Official MCP Rust SDK",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 6,
+      "url": "https://sqlite.org/foreignkeys.html",
+      "title": "SQLite foreign keys",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 7,
+      "url": "https://sqlite.org/wal.html",
+      "title": "SQLite WAL and WAL-reset bug",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 8,
+      "url": "https://ffmpeg.org/legal.html",
+      "title": "FFmpeg license considerations",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 11,
+      "url": "https://help.shopee.co.id/portal/4/article/81921",
+      "title": "Shopee ID: create video and attach products",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 12,
+      "url": "https://help.shopee.co.id/portal/4/article/72053",
+      "title": "Shopee ID: affiliate program",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 13,
+      "url": "https://help.shopee.co.id/portal/4/article/201244",
+      "title": "Shopee ID: qualitative video guidelines",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 14,
+      "url": "https://help.shopee.co.id/portal/10/article/197077",
+      "title": "Shopee ID: AI content labelling",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 15,
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports",
+      "title": "MCP 2026-07-28 transport overview",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 16,
+      "url": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices",
+      "title": "MCP security best practices",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 17,
+      "url": "https://support.google.com/flow/answer/16353334?co=GENIE.Platform%3DDesktop&hl=en",
+      "title": "Google Flow video creation and references",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 18,
+      "url": "https://support.google.com/flow/answer/16352836?hl=en",
+      "title": "Google Flow models and supported features",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 19,
+      "url": "https://github.com/modelcontextprotocol/rust-sdk/security/advisories/GHSA-9g45-5xwm-f3wc",
+      "title": "MCP Rust SDK redirect header advisory",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 20,
+      "url": "https://developer.chrome.com/docs/devtools/agents/get-started/configuration",
+      "title": "Chrome DevTools MCP configuration and autoConnect",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 21,
+      "url": "https://developer.chrome.com/docs/extensions/develop/concepts/activeTab",
+      "title": "Chrome activeTab temporary permission",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 22,
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+      "title": "MCP tools errors and untrusted annotations",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 23,
+      "url": "https://threejs.org/manual/pages/creating-a-scene.html",
+      "title": "Three.js official manual: scene, camera and renderer",
+      "accessed": "2026-11-28"
+    },
+    {
+      "id": 24,
+      "url": "https://docs.blender.org/manual/en/latest/render/output/animation.html",
+      "title": "Blender official manual: rendering animations",
+      "accessed": "2026-11-28"
+    }
+  ]
+}

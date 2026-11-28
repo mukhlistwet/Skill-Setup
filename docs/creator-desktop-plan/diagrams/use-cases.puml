@@ -1,0 +1,43 @@
+@startuml
+left to right direction
+actor "Operator / ayah keren" as User
+actor "AI provider" as AI
+actor "Chrome companion" as Chrome
+actor "MCP server" as MCP
+actor "Local compositor" as Media
+rectangle "Creator Desktop" {
+ usecase "UC-01 Workspace/settings" as U1
+ usecase "UC-02 Providers/models" as U2
+ usecase "UC-03 Project/template" as U3
+ usecase "UC-04 Product/evidence/assets" as U4
+ usecase "UC-05 Script/storyboard" as U5
+ usecase "UC-06 Preflight/approve/generate" as U6
+ usecase "UC-07 Compose/QA" as U7
+ usecase "UC-08 Export/manual posting pack" as U8
+ usecase "UC-09 Recover/reconcile/cancel" as U9
+ usecase "UC-10 Other templates/3D/analytics" as U10
+ usecase "Verify rights/bindings/capability" as Gate
+ usecase "Human approval for side effect" as Approval
+}
+User -- U1
+User -- U2
+User -- U3
+User -- U4
+User -- U5
+User -- U6
+User -- U7
+User -- U8
+User -- U9
+User -- U10
+AI -- U2
+AI -- U5
+AI -- U6
+Chrome -- U6
+MCP -- U6
+Media -- U7
+AI -- U9
+U6 ..> Gate : <<include>>
+U6 ..> Approval : <<include>>
+U8 ..> Gate : <<include>>
+note bottom of U8 : No automatic publishing in M0
+@enduml

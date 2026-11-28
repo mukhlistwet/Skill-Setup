@@ -1,0 +1,19 @@
+{
+  "scope": "SQLite schema design fixture only; not app/runtime acceptance",
+  "sqlite_version": "3.53.1",
+  "tests_run": 41,
+  "failures": 0,
+  "errors": 0,
+  "passed": true,
+  "synthetic_fixtures": true,
+  "not_run": [
+    "Rust/Tauri build",
+    "UI E2E",
+    "Chrome/Flow live connection",
+    "MCP live handshake",
+    "real provider dispatch",
+    "video export/visual/audio QA",
+    "multi-process concurrency",
+    "full workspace assets backup/restore"
+  ]
+}

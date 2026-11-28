@@ -1,0 +1,103 @@
+PRD — CREATOR DESKTOP v0.2
+Status: usulan; belum aplikasi berjalan. Sumber kebutuhan utama: permintaan ayah keren.
+
+1. MASALAH DAN OPPORTUNITY
+Saat ini brief, produk, aset, skill, provider AI, browser dan renderer terpisah. Risiko: produk/varian tertukar, klaim tidak berdasar, pilihan model tidak mendukung referensi, workflow dipilih berdasarkan nama skill saja, biaya tidak terlihat dan hasil tidak memiliki jejak asal.
+Hipotesis produk: satu workspace yang mengikat semua itu mengurangi kerja ulang dan kesalahan. Belum ada user study atau benchmark yang membuktikan penghematan waktu atau peningkatan komisi. Jangan memakai “viral” atau “menguntungkan” sebagai acceptance teknis.
+
+2. USER DAN JOB TO BE DONE
+Persona primer: kreator/affiliate solo yang memiliki link produk, aset sendiri/berizin, akun layanan sendiri, dan ingin membuat beberapa format tanpa mengatur ulang tool dari nol.
+Job primer: “Pilih produk yang tepat, buat naskah yang jujur, gunakan aset produk yang sesuai, pilih tool/model yang bisa memenuhi brief, review, lalu dapatkan paket video siap diperiksa sebelum posting.”
+Persona sekunder: pembuat educational/narrative content. Engineer 3D adalah lane terpisah, bukan prasyarat affiliate.
+Aktor pendukung: penyedia AI, MCP server, Chrome extension/host, filesystem dan compositor lokal. Mereka bukan pengguna yang berhak memberikan persetujuan bisnis.
+
+3. OBJECTIVES DAN PENGUKURAN
+  O1 Menghasilkan satu proyek affiliate yang dapat ditelusuri dari produk/varian sampai file export.
+     Ukur: seluruh klaim yang tampil punya evidence dan approval; seluruh aset punya hak penggunaan yang ditinjau.
+  O2 Memilih jalur yang kompatibel tanpa mengubah kebutuhan diam-diam.
+     Ukur: semua negative capability cases menghasilkan BLOCKED dengan alasan, bukan submit terdegradasi.
+  O3 Aman dilanjutkan setelah crash atau timeout.
+     Ukur: fault-injection tidak membuat dispatch ulang untuk intent UNKNOWN.
+  O4 Membuat konfigurasi provider/model bisa dipahami.
+     Ukur: user dapat membedakan terdaftar, terhubung, teruji dan berhak generate dalam usability pilot.
+  O5 Mengurangi waktu kerja ulang.
+     Ukur: bandingkan waktu operator dan accepted-shot cost pada task yang sama dengan proses manual; target angka ditetapkan setelah baseline.
+Outcome bisnis lanjutan: komisi tervalidasi, biaya produksi, conversion bila tersedia. View count tidak menggantikan revenue evidence; hasil belum dapat dijanjikan.
+
+4. TAKSONOMI PRODUK
+Jangan membuat kategori Affiliate vs Short vs Video Biasa sebagai tiga pilihan eksklusif.
+  Intent = tujuan konten.
+  Format = short/long/custom + durasi target.
+  Platform = tujuan export/policy profile.
+  Style = gaya produksi.
+  Template = resep versioned yang kompatibel dengan dimensi di atas.
+  Project = instance brief + settings + produk/aset.
+  Run = eksekusi rencana yang telah disnapshot dan disetujui.
+Pilihan model dilakukan per tahap (planner/vision/image/video/voice), bukan satu model yang diasumsikan bisa semua. Renderer FFmpeg/Blender bukan model AI.
+
+5. CORE FEATURES
+  Project Studio: brief, bahasa, tujuan, format, platform, template, output settings.
+  Product Library: link produk, seller, item identifier bila terverifikasi, varian, spesifikasi, sumber dan waktu observasi.
+  Evidence & Asset Library: foto/video asli, rights review, voice/likeness consent, claim-to-evidence map, versi immutable.
+  Templates & Workflows: packaged read-only presets, version pins, DAG, required inputs, human gates.
+  Providers & Models: provider instances, adapter/protocol support, credential reference, model catalog, role/capability matrix, test status.
+  Connections: MCP transport, Chrome pairing/tab consent, dependency diagnostics; tidak menyamakan connected dengan safe-to-generate.
+  Generator: scene plan, selected routes, reference binding, estimated costs/units, prepare/readback, approval.
+  Jobs & Recovery: queue, node state, immutable intent, event log, pause/cancel, reconcile unknown results.
+  Finishing & QA: trim/order, captions/narration/music authorized, export preset, product-fidelity review, technical probe/full decode.
+  Export Center: MP4, captions, approved caption/CTA text, product/affiliate link, provenance report dan posting checklist.
+  Settings: project/global settings terpisah, budgets, allowed paths/endpoints, privacy, retention, preview quality, backups.
+
+6. AFFILIATE SHOPEE: DOMAIN RULES
+Wajib ada produk yang dipromosikan, tetapi tidak selalu harus memegang sampel fisik. Kebutuhan sampel/rekaman nyata bergantung pada jenis klaim dan template. Demonstrasi hasil/ulasan pemakaian harus didukung bukti nyata yang sesuai, bukan video AI yang berpura-pura sebagai pengalaman pribadi.
+Link produk saja bukan izin memakai semua media seller. Imported seller image berstatus REVIEW_REQUIRED sampai hak komersial dan scope pemakaian ditinjau.
+Data wajib: marketplace=SHOPEE_ID, judul, seller/display identity, product URL, varian yang dipilih (atau single-variant yang dikonfirmasi), claim evidence, aset produk, rights review.
+Attribution mode dipilih eksplisit: EXTERNAL_LINK memakai affiliate link yang dimasukkan/diverifikasi user; PLATFORM_PRODUCT_TAG memakai pemasangan produk native saat posting manual. Canonical product URL tidak boleh otomatis disebut affiliate tracking link atau menjamin komisi. Jangan mengarang kode affiliate atau status keanggotaan.
+Nomor item/shop hanya diisi bila sumber benar-benar memberikan; jangan menebak dari shortlink. Resolusi shortlink harus tervalidasi, membatasi redirect dan tidak mengambil cookie.
+Harga, promo, stok dan komisi adalah snapshot berwaktu, nullable bila belum diketahui. MVP default tidak menampilkan angka harga/promo agar tidak mengarang atau cepat basi. Jika dipakai, perlu sumber, timestamp dan expiry; expiry tidak disamakan untuk semua marketplace.
+Shopee mendokumentasikan penambahan produk ke video pada langkah posting. File MP4 dan teks URL yang diekspor aplikasi tidak otomatis membuat product tag/keranjang di Shopee.[11]
+Kebijakan Shopee yang diambil membedakan kewajiban Label AI dari tambahan disclosure manual; release checklist harus mengingatkan operator mengaktifkan pengaturan platform ketika diwajibkan, bukan menganggap caption “AI” sudah cukup.[14]
+
+7. TEMPLATE CATALOG YANG DIRENCANAKAN
+M0 — PRODUCT_AI_HYBRID_EXPLAINER v1 (DEFAULT)
+  Produk: 1 produk/varian; foto/video canonical dengan izin dan facts verified. Footage rekaman sendiri tidak wajib untuk factual explainer, tetapi klaim penggunaan/hasil aktual harus didukung bukti yang sesuai.
+  Tahap: evidence/rights review -> AI script/storyboard -> exact route/capability/quote -> approval upload/generation -> reference-conditioned visual atau AI background/B-roll + product composite -> voice/captions -> compose -> QA -> export.
+  Satu exact generative video route menjadi acceptance MVP; tidak dianggap selesai hanya dari model dropdown, mock result atau export slideshow. Jika automation belum aman, tampilkan manual-assisted handoff secara jujur dan jangan mengklaim automatic generation terverifikasi.
+  AI host/karakter boleh sebagai penyaji dengan hak/consent/disclosure sesuai; tidak boleh menjadi fake testimonial atau demonstrasi palsu. Produk tidak boleh berubah. Preview rendah dan final spec tetap dipilih user.
+M0 — PRODUCT_EXPLAINER_REAL_FOOTAGE v1 (ALTERNATIF)
+  Footage asli/berizin tetap dapat memakai core yang sama untuk bukti hands-on dan detail produk. Blender tidak menjadi syarat salah satu template affiliate.
+M0 — GENERAL_NARRATED_SHORT v1
+  Memakai core yang sama, produk opsional, tetap butuh asset rights dan factual review bila menyampaikan fakta.
+M1 — PRODUCT_STILL_MOTION v1
+  Animasi crop/pan/fakta dari foto berizin. Label “product explainer”, bukan hands-on review. Jangan mengklaim memenuhi penilaian kualitas platform hanya karena export sukses.
+M0 — PRODUCT_WITH_GENERATED_BACKGROUND v1
+  Produk canonical tidak boleh berubah; komposit diperiksa manusia. Jika model tidak menjaga bentuk/label/varian, pilih compositor berbasis aset asli atau BLOCKED.
+M2 — NARRATIVE_MULTI_SCENE / ENGINEERING_3D
+  Aset karakter/lokasi/voice atau mesh/rig/material versioned, gates tambahan. Engineering memakai Blender atau Three.js yang dipilih per shot; bukan “pakai semua engine sekaligus”.
+
+8. SCOPE PRIORITY
+M0 (MVP release candidate): project/product/assets/evidence, locked AI/hybrid affiliate template, provider/model menu, satu text route dan satu exact generative video route yang dipilih setelah spike, workflow runner, Chrome read-only/manual-assisted sebelum automation gate lolos, satu MCP diagnostic connection yang ditinjau, FFmpeg finishing, approvals, durable recovery, product-fidelity QA/export dan backup.
+UI lengkap tidak berarti semua provider production adapter tersedia. Registrasi provider dengan protocol yang belum didukung harus menampilkan UNSUPPORTED, bukan tombol Generate palsu.
+M0 generation gate: exact video route membutuhkan asset binding + live capability/quote + upload consent + reconciliation; API atau UI dipilih setelah spike. Jika Chrome prepare tidak bisa dibuktikan aman, gunakan manual-assisted dan laporkan batas automation.
+M1: perluas template dan adapter setelah route pertama lulus pilot dengan output nyata dan biaya semua percobaan tercatat.
+M2: template authoring terkontrol, batch/A-B variants, 3D/Blender, analytics imports dengan provenance, adapter tambahan.
+Out of scope awal: auto publish Shopee/TikTok/YouTube/Instagram; API scraping tanpa izin; CAPTCHA/anti-bot bypass; cookie export; cloud GPU auto-rental; plugin arbitrary code; marketplace; team/cloud sync; e-commerce order/payment management; full professional NLE editor.
+
+9. MVP RELEASE ACCEPTANCE
+Satu project affiliate AI/hybrid dapat dibuat dengan produk/aset yang sah, review script/scene, generation melalui satu exact approved route dengan reference readback, compose lokal, lalu actual export/probe/full decode dan audiovisual/product-fidelity review. Tidak ada generation dalam tugas perencanaan ini.
+Bukti produk yang hilang memblokir final export; bukti klaim yang hilang memblokir approval naskah.
+Satu model incompatible, stale quote, revoked asset, wrong variant dan changed settings masing-masing menggagalkan preflight pada tes.
+Crash setelah dispatch eksternal menjadi UNKNOWN dan tidak auto-retry. Cancel lokal tidak boleh menyatakan biaya provider berhenti.
+Tidak ada secret di SQLite, log, backup proyek atau frontend store. Tidak ada operasi generation/upload/publish saat “Test connection”.
+Hasil visual/audio dan konten tetap harus ditinjau operator; checker teknis tidak membuktikan kebenaran demo produk atau keuntungan affiliate.
+
+10. TRADE-OFF DAN RISIKO BISNIS
+Aplikasi orchestrator dapat berubah menjadi wrapper besar tanpa produk yang bagus. Karena itu vertical slice produk-ke-export didahulukan daripada puluhan model/MCP.
+Kelebihan Rust: domain core terstruktur dan integrasi native; tidak menjamin adapter browser stabil atau rendering lebih cepat. Biaya maintenance tiap provider dan perubahan UI harus dimiliki jelas.
+Official Shopee qualitative guidance menekankan produk terlihat jelas, informasi detail, kualitas audio/visual dan konten original. Tidak ada dasar untuk menjamin video AI atau slideshow otomatis lolos penilaian atau menghasilkan komisi.[13]
+Preferensi user adalah AI/hybrid untuk affiliate. Klaim “lebih diterima audiens” tetap hipotesis; bandingkan hasil aktual, kejelasan produk, kualitas dan outcome tanpa menganggap engine menentukan penerimaan.
+
+Sources:
+[11] https://help.shopee.co.id/portal/4/article/81921 — Shopee ID: create video and attach products
+[13] https://help.shopee.co.id/portal/4/article/201244 — Shopee ID: qualitative video guidelines
+[14] https://help.shopee.co.id/portal/10/article/197077 — Shopee ID: AI content labelling

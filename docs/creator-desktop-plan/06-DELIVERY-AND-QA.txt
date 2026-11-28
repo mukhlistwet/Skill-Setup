@@ -1,0 +1,99 @@
+DELIVERY PLAN, QA DAN RISIKO — v0.2
+Status: rencana; tidak ada timeline/harga/benchmark yang telah dikonfirmasi.
+
+1. DELIVERY PRINCIPLE
+Bangun satu vertical slice product-to-export dahulu. Jangan memulai dengan puluhan model, visual DAG editor, cloud/team accounts atau Blender marketplace. App “bisa konek banyak tool” tidak bernilai jika produk salah dan export tidak dapat diperiksa.
+Owner product/approval: ayah keren. Owner implementasi per modul belum ditetapkan. Jika memakai worker agy, periksa CLI/model yang benar-benar tersedia setelah build disetujui; jangan mengasumsikan model lama masih aktif.
+Hasil setiap fase harus berupa evidence runnable, bukan screenshot tombol atau log sukses buatan.
+
+2. MILESTONE BERDASARKAN EXIT GATE, BUKAN JANJI TANGGAL
+D0 — PLAN REVIEW
+  Setujui taxonomy, Windows-first/Tauri vs pure Rust UI, template awal, batas API/Chrome/manual, budget/privacy dan lokasi repo.
+  Exit: signed-off assumptions/decisions; requirement IDs dan contracts baseline.
+  Tidak memerlukan generation atau dependency installation dalam tugas plan ini.
+D1 — TECHNICAL SPIKES (perlu izin build/probe terpisah)
+  S1 Tauri Windows/WebView2: buka app, typed IPC denied-by-default, diagnostics, safe local file access, version evidence.
+  S2 Media: FFmpeg discovery+license/build flags, synthetic short local encode/probe/full decode. Ini tes teknis, bukan produk nyata/quality proof.
+  S3 Credentials: OS store set/read/delete menggunakan dummy secret; cek JS/log/SQLite/backup tidak menerima nilainya.
+  S4 Chrome: explicit selected-tab consent + native messaging framing + per-user named-pipe pairing/revoke. Inspect mock page lalu allowed real tab read-only hanya jika disetujui. Buktikan tidak ada submit/upload/network mutation.
+  S5 MCP: official SDK client lifecycle/capability negotiation dan tools metadata (termasuk pagination) dengan satu reviewed fixture/server. Pin exact SDK/protocol/server revision dan uji lifecycle sesuai server, jangan otomatis memakai contoh initialize lama. Unknown-effect tool blocked; no inherited secrets, deny arbitrary executable. Tidak melakukan tools/call/model sampling saat diagnostic.
+  S6 Existing-session auto-connect optional: uji versi, izin browser, denial/revoke dan luas akses terpisah dari extension. Jangan menganggap dialog izin Chrome sebagai per-tab isolation.
+  Exit: tested choices atau documented fallback. Chrome failure -> manual assistant, bukan mengaku existing session otomatis bisa.
+D2 — OFFLINE DOMAIN / REPOSITORY FOUNDATION
+  Rust domain project/product/variant/evidence/asset/scene/template versions + SQL migrator + baseline UI flows.
+  Exact typed IPC DTOs, JSON schema, command errors dan event stream untuk slice disepakati sebelum backend/UI paralel.
+  Exit: create affiliate short with real input (authorized), explicit missing-input gates; fixture and integration tests.
+D3 — AI/HYBRID AFFILIATE PRODUCT-TO-EXPORT / M0
+  First template PRODUCT_AI_HYBRID_EXPLAINER; import canonical authorized product image/video + evidence, AI script/storyboard, reference-conditioned visual/background/B-roll, voice/captions, compose, QA, export. Real footage tetap alternatif/evidence, bukan syarat umum factual explainer.
+  One text route dan satu exact generative video route dipilih dari akun/model aktual setelah D1, dengan upload/cost consent, reference binding/readback, durable intent, reconciliation dan download. Pengujian generation membutuhkan izin/budget terpisah; tidak dilakukan dalam pekerjaan plan.
+  Providers/models screen, read-only Chrome dahulu dan satu MCP diagnostic connector exposed dengan truthful readiness. UI automation tidak dibuka sebelum gate accidental-submit lolos; manual-assisted harus dilabeli, bukan disebut automatic generation.
+  Exit: actual AI/hybrid output dengan product/variant provenance, actual route/quote/all-attempt costs, technical decode + human audiovisual/product-fidelity review, serta full workspace backup/restore rehearsal. Dropdown/mock/slideshow saja tidak memenuhi generative-route acceptance.
+  No fake product demo/testimonial, auto publish atau mandatory Blender.
+D4 — DURABILITY / RELEASE HARDENING / M0 RELEASE GATE
+  Journal/approvals/budget/accounting/cancel/recovery, injection and malicious asset/URL tests, disk-full/crash updates/clean-VM installer and native host lifecycle.
+  Exit: fault-injection evidence, secret scan, accessibility task pass, license/dependency review, signed release path; no claims from mock-only tests.
+D5 — EXPAND VERIFIED GENERATIVE LANES / M1
+  Setelah route M0 lulus, tambah template/provider berdasarkan kebutuhan, bukan jumlah model. Tiap route baru membutuhkan capability/reference/rights/quote/consent dan own acceptance.
+  UI automation tetap gated; tidak memindahkan asset/native IDs atau fallback lintas provider diam-diam. Periksa cross-engine product/character/voice continuity jika dipakai.
+  Exit: actual representative outputs, audiovisual QA, all-attempt costs dan negative cases untuk tambahan yang benar-benar diaktifkan; bukan sekadar registered connection.
+D6 — EXPANSION / M2
+  Add short/general/narrative template presets, versioned template editor (allowlisted types), batch variants and analytics CSV imports.
+  Engineering 3D lane: canonical meshes/materials/rig/camera/time, pilih Blender atau Three.js per kebutuhan. Blender dependency/offline render dan Three.js isolated preview/deterministic frame-capture+encode masing-masing perlu spike/smoke/domain QA. AI dapat membantu authoring code; cloud GPU hanya setelah izin terpisah.
+  Auto publishing remains a separate product/security/policy decision; no assumed Shopee publish API.
+No duration estimate yet: integration constraints, repo/team, current accounts, representative assets and reference device data are missing. Estimate effort after D1 instead of inventing a multiweek promise.
+
+3. TEST STRATEGY / TRACEABILITY
+requirements.csv adalah sumber requirement/acceptance IDs; planned test IDs di sana bukan klaim implementasi lulus.
+  Unit: taxonomy, settings precedence, capability tri-state, recipe graph, prompt/evidence compiler, canonicalization, state transition reducer, grant/budget math.
+  Schema fixture: execute SQL/constraints/FKs/immutability/journal rollback on disposable SQLite; tests currently in schema/verify_schema.py.
+  Contract: adapter effect registry, unsupported operation, model discovery/manual config, API error validation, cursor events, malformed external responses.
+  Integration: real OS credential broker, workspace filesystem/symlink-junction containment, SQLite transactions, native host/extension, stdio+HTTP MCP, FFmpeg process lifecycle.
+  E2E: create affiliate short, add exact product variant, resolve missing rights/evidence, review script, export; create general short without product; model incompatibility; changed setting invalidates approval.
+  Fault injection: crash before/after dispatch; timeout with no job ID; user cancel while provider still running; disk full; orphan file; stale tab epoch; driver/renderer unavailable.
+  Security: malicious seller page/prompts, XSS/remote WebView IPC exposure, endpoint redirects/private addresses, unreviewed MCP executable, wrong extension ID, file traversal/UNC/junction, secret export/log, malicious ZIP/import path.
+  Media QA: actual file probe/full decode, caption timing/spelling, full audiovisual review and scene transition/product identity. Sampled frames are supplemental.
+  Performance: define reference hardware and dataset then p95 UI responsiveness, memory/disk use and render concurrency; not inferred from Rust language choice.
+  Recovery: consistent DB+assets backup, restore new root with dependency/credential rebind; downgrade/upgrade failure behavior.
+All actual app-level tests are NOT RUN in planning phase. A schema fixture result must not be reported as an application pass.
+
+4. ACCEPTANCE SCENARIOS UNTUK REVIEW
+A Product missing: affiliate project saves as draft; script approval/final export BLOCKED(MISSING_PRODUCT).
+B Wrong variant: second product version bound to scene without project link rejected; visual QA checks output matches actual variant.
+C Unsupported references: selected route cannot satisfy required product+background -> BLOCKED, no dropping asset/switching model.
+D Upload consent: pressing Test connection cannot upload; prepare needing upload shows separate consent and data destination.
+E Unknown spending: click dispatched then timeout -> journal UNKNOWN, wallet reservation retained, new click does not create second provider request.
+F Revocation: previously approved image rights revoked -> new/final export blocked even if earlier run had approval; old audit remains.
+G Ordinary short: GENERAL+SHORT skips product step, same safe asset/QA/export machinery.
+H AI disclosure: release packet states required platform setting; app does not say burned-in text alone enables Shopee AI label.
+I Disabled integration: app supports provider config but installed adapter absent -> UNSUPPORTED; no simulated generation result.
+J Restore: config without credentials restored disabled; no cookies/session restored; missing assets flagged, not regenerated silently.
+
+5. RISK REGISTER
+R1 Scope explosion (high): taxonomy/template/core before more providers; ship slice-first.
+R2 Chrome/UI churn (high): selectors versioned, manual fallback, read-only spike, capability drift detection; one controller.
+R3 Product hallucination/fake reviews (high): canonical assets and claim evidence, truthful templates, human QA; avoid generative alteration of core product geometry/text.
+R4 Credentials/tool exfiltration (high): core broker, no unrestricted shell/MCP/remote WebView, explicit effect registry and endpoint policy.
+R5 Duplicate charges (high): stable intent/hash, atomic local grant/reservation, UNKNOWN reconciliation; cannot promise provider exactly-once.
+R6 Disk/media and SQLite sync corruption (high): local workspace, file promotion+hash, consistent backup/restore; do not use active synced DB.
+R7 Model/account access and pricing change (high): route-specific live evidence, quote expiry, no silent fallback/free-tier assumption.
+R8 Media/stock/music/commercial rights (high): rights provenance/review; upload access does not prove reuse permission; license review for distributed binaries.
+R9 Platform AI/content/product-tag rules change (high): source/version/check date and manual posting checklist; no generic compliance badge.
+R10 Desktop packaging/update trust (medium/high): clean-VM tests, host registration cleanup, signed release/update, migrator backup.
+R11 Third-party skill/source license (medium/high): pin/review guidance, attribution, import no arbitrary code; no bulk profile modification.
+R12 Business value unproven (medium/high): compare manual baseline and accepted-shot/validated commission outcome, not model count or demo views.
+
+6. OPEN DECISION LOG
+OD-01 UI: approve Tauri+React with Rust core vs all-Rust UI. Blocks bootstrap UI decision.
+OD-02 Repository/path/name/license of the new app. Blocks creating implementation repo, not this plan.
+OD-03 Initial official text/video/voice provider and actual available model/account. Blocks first AI/hybrid MVP route, adapter selection and price verification.
+OD-04 First real product plus authorized footage/voice. Blocks representative production sample, not schema design.
+OD-05 Chrome manual-first vs companion extension install permission. Blocks live integration spike.
+OD-06 Budget per provider/unit, quote expiry and retention. Blocks paid pilot.
+OD-07 Reference machine/OS/available toolchain and minimum spec target. Blocks performance commitment.
+OD-08 Backup retention/RPO/RTO and privacy/telemetry preference. Blocks release operational claims.
+OD-09 Generative product-background dapat menjadi route M0 setelah capability/rights/quote dan izin terpisah terpenuhi; exact route/account masih perlu dipilih. Engineering 3D dan publishing tetap deferred. Persetujuan plan bukan izin generation atau publish.
+
+7. DEFINITION OF READY / DONE
+Ready for build: D0 decisions agreed, first slice acceptance testable, actual provider/API/browser limits researched, contracts versioned, no secret needed in chat.
+Done for a slice: code exercised, negative cases/recovery pass, actual artifact where applicable, evidence captured, residual blockers disclosed. User approval for install/login/upload/paid execution/publishing must remain separate where it changes scope or side effects.
+Done for this planning task: named documents+requirements+diagrams+schema exist, schema checks run, citations/links/traceability validated, remaining user decisions visible. Not “application delivered”.
