@@ -1,0 +1,103 @@
+REVIEW DAN POSISI INTEGRASI: 3D ENGINEERING VIDEO
+Repository pengguna: mukhlistwet/3d-engineering-video-claude-skills
+Revision yang diperiksa: 8978568bee82b51a956087b24992b36214931e2e
+Status: read-only source/documentation review. Tidak menjalankan installer, skill, Blender, render, login, upload, rental atau generation.
+
+1. KOREKSI KATEGORI: HIGGSFIELD DI SINI BUKAN MODEL VIDEO 3D
+
+Benar repository ini memakai Higgsfield, tetapi mesin pembuat gambar utamanya adalah Blender/bpy/Cycles. Script membangun objek, material, kamera dan animasi; narasi dan caption mengikuti word timing.[1][2][11]
+Higgsfield dipakai sebagai layanan: audio/TTS, sandbox pengolahan audio, GPU rental untuk render, dan media transfer/delivery. Skill rendering menyebut ElevenLabs melalui tool audio serta gpu_rent/gpu_rental_exec/gpu_rental_stop, bukan menyerahkan seluruh video engineering ke Seedance.[2][3]
+Dokumentasi resmi Higgsfield juga menerangkan GPU Harness sebagai komputer GPU remote untuk Blender/software pengguna, dengan billing selama mesin siap berjalan. Dukungan layanan tidak membuktikan konektor akun Hermes pengguna sudah tersedia atau tervalidasi.[12]
+
+Implikasi desain: tiga lane berbeda, bukan tiga nama model yang setara.
+  A. Structured 3D: Blender scene/asset -> renderer lokal atau rental -> clean master.
+  B. Generative footage: Flow/Seedance -> klip model dari referensi.
+  C. Finishing: narasi, caption, compositing, editing, warna dan QA.
+
+Penilaian engineering saya: lane A lebih tepat dijadikan calon baseline untuk cutaway, exploded view dan mekanisme yang posisi/urutannya perlu dikendalikan. Ini inferensi arsitektur, bukan bukti semua animasi kit benar secara fisika atau hasil render deterministik piksel. Geometri dan aturan gerak tetap memerlukan pemeriksaan domain.
+
+2. BAGIAN YANG LAYAK DIPERTAHANKAN
+
+- Workflow narasi dahulu -> satu words.json -> animasi dan caption mengikuti clock yang sama. kitjob.py menjadi sumber durasi/frame job; ini pola yang dapat dipakai bersama finishing lane lain.[2][11]
+- Reference teardown memisahkan format/pacing dari penyalinan footage/audio/karakter. Analisis referensi bukan izin untuk menggunakan ulang aset pihak lain.[4]
+- Scene previews/checker sebelum rental; clean master terpisah; partial rerender dan pemeriksaan frame/audio/warna. Ini rancangan kontrol yang berguna, bukan test yang telah kami jalankan.[2][3]
+- Struktur job lokal dengan script, timings, scene, metadata dan hasil. newjob.sh mengumpulkan kit ke job directory dan berusaha mempertahankan file job yang sudah ada.[7]
+- README terbuka tentang keterbatasan: contoh produksi dan angka biaya adalah laporan penulis; format/pengujian awal berfokus pada vertical shorts dan lingkungan Claude Linux. Jangan menafsirkan contoh sebagai benchmark mesin pengguna atau bukti profit.[1]
+
+3. HAL YANG HARUS DIADAPTASI, BUKAN INSTALL APA ADANYA
+
+A. Runtime dan lingkungan — CONFIRMED SOURCE MISMATCH
+Skill secara eksplisit ditulis untuk Claude Linux + Higgsfield MCP. Setup memakai Python 3.13, bpy==5.3.0, apt-get, direktori /root dan shell scripts. Itu bukan bukti kompatibilitas langsung dengan Hermes native Windows.[2][5]
+Usulan: kontrak domain portable di Hermes; execution environment khusus untuk Blender (Linux/WSL/container/remote yang dipilih dan diuji). Jangan memasang bpy atau menjalankan apt di host pengguna mengikuti instruksi upstream. Pilih interpreter/dependency melalui environment terpisah dan smoke-test CPU setelah izin.
+
+B. Source resolution fork — CONFIRMED
+Dua skill utama dan kit/README masih mengarahkan clone ke davidalfasunarna/3d-engineering-video-claude-skills. Memasang skill dari fork pengguna tidak otomatis membuat runtime mengambil kit fork. Clone juga mengikuti branch, bukan pinned revision.[1][2][3]
+Usulan: satu source resolver dengan repo+full SHA+hash manifest yang disetujui. Pertahankan credit/lisensi upstream; jangan mengganti nama sumber lalu menghilangkan provenance. ZIP distribusi belum diperiksa parity-nya pada review ini.
+
+C. Fail-closed shell pipeline — CONFIRMED STATIC CONTROL-FLOW RISK
+setup.sh tidak memakai set -e/pipefail dan tetap mencetak SETUP_DONE setelah beberapa pipeline. finish.sh tidak memeriksa setiap background PID secara eksplisit sebelum marker akhir. after.sh dapat terus melanjutkan sesudah helper upload gagal.[5][6][10]
+up.sh memeriksa HTTP status, tetapi cabang gagal hanya mencetak respons dengan head; command itu dapat berhasil sehingga helper mengembalikan status sukses meskipun PUT bukan HTTP 200. Ini analisis source, belum reproduksi runtime.[9]
+Usulan: propagate exit status, explicit per-PID wait/check, temp output + atomic promote, structured stage state, dan output readback; marker DONE hanya setelah seluruh acceptance tahap lolos. Jangan melakukan partial rerender/re-upload hanya karena status yang belum pasti.
+
+D. Credit limit dan rental cleanup — DESIGN GAP TO VALIDATE
+Instruksi skill meminta persetujuan biaya, proyeksi, stop rental dan baca transaksi. Namun instruksi kepada agent bukan hard server-side budget cap. Rental dapat terus menagih selama aktif; idle auto-pause bukan jaminan maximum runtime.[3][12]
+Usulan: persisted rental ID dan status, monetary/credit reservation, elapsed-cost watchdog di luar percakapan, stop path untuk sukses/gagal/cancel, dan readback status rental sesudah stop. Hasil stop UNKNOWN harus diekskalasi sambil memeriksa rental yang sama; jangan menyewa mesin pengganti tanpa rekonsiliasi. Jangan berhenti pada asumsi finally selalu berjalan ketika proses/host mati.
+
+E. Aset dan konsistensi — EXTENSION YANG DIPERLUKAN
+Kit saat ini membangun scene procedural. Screening source Python yang diambil tidak menemukan jalur importer umum GLB/glTF atau bpy.data.libraries.load; ini bukan pembuktian bahwa semua format tidak mungkin didukung. Library aset lintas-lane perlu dibangun di atasnya, bukan diasumsikan sudah ada.
+Usulan tambahan registry: MODEL_3D, SCENE, MATERIAL, RIG, CAMERA_RIG, ANIMATION_CLIP, VOICE_TRACK, TIMING_MAP dan RENDER_OUTPUT. Rekam revision/hash, scale/unit, coordinate convention, dependency textures/fonts, izin aset, renderer/version/settings dan aturan fisika yang harus diperiksa.
+Jangan menganggap satu image reference Flow setara dengan scene mesh+rig Blender. Ekspor approved render/frame dapat menjadi referensi generatif hanya jika route tujuan menerima aset dan pengguna menyetujui upload. Jika label/geometri produk harus presisi, pertahankan render/footage asli sebagai hasil final, bukan menggambar ulang melalui model generatif.
+
+F. Lisensi dan verifikasi produk
+README menyatakan GPL-3.0-or-later dan menyebut code/doc berbeda dari hak output. Lisensi bukan MIT dan hak voice/media/service tetap terpisah. Preserve notices dan review kewajiban saat adaptasi/distribusi.[1][8]
+Tidak ada full MP4/audio produksi yang dirender/didengarkan oleh kami dalam review ini. Contact sheets/record produksi adalah bukti yang disediakan repository, bukan validasi kualitas atau biaya akun kami.
+
+4. REKOMENDASI INTEGRASI KE PLAN FLOW–SEEDANCE
+
+Pertahankan coordinator editorial dan registry/approval/journal yang sama; tambahkan structured-3D adapter terpisah.
+
+  Brief + fact checks
+    -> shot manifest + canonical assets
+    -> structured-3D renderer untuk shot mekanik/cutaway
+       ATAU generative adapter Flow/Seedance untuk shot yang memang sesuai
+    -> shared approved narration + timing map
+    -> finishing + full audiovisual/domain QA
+
+Jangan memaksa semua video melewati tiga engine. Pilih lane per kebutuhan; hasil Blender sendiri bisa menjadi video final tanpa Flow/Seedance. Higgsfield menjadi execution/service provider bila akun, model audio, GPU dan biaya tersedia; renderer lokal atau cloud lain adalah calon alternatif yang perlu diuji, bukan runtime yang sudah tersedia.
+
+Tahap tambahan yang diusulkan, belum dijalankan:
+  D0. Pin source fork dan audit dependency/license; tentukan environment Blender.
+  D1. Adapt satu CPU smoke scene + satu job contract, tanpa Higgsfield/biaya.
+  D2. Perbaiki fail-closed stage/output validation dan test crash/cancel/rental-stop via fixture.
+  D3. Bind canonical model/material/camera/timings; uji geometri/mechanical invariants.
+  D4. Setelah izin akun/budget: satu paid render; readback artifact dan rental stopped; actual-cost reconciliation.
+  D5. Baru uji handoff frame/clip ke Flow atau Seedance jika punya manfaat dibanding clean render asli.
+
+Kriteria adopsi: reproducible CPU smoke, tidak ada false DONE, tidak ada orphan rental saat fault tests,
+source/asset revision jelas, human/domain QA hasil nyata, dan biaya akun aktual terverifikasi.
+Tidak ada janji Blender pixel-identik, layout mekanik benar hanya karena render selesai, atau profit.
+
+5. BUKTI REVIEW
+
+metadata.json: repo metadata, commit full dan tree pinned.
+capture-manifest-v2.json: source yang benar-benar diambil dan SHA-256/Git blob identities.
+source/: teks source inert; tidak dieksekusi.
+higgsfield-gpu-harness.txt/.html: dokumen resmi live.
+sources-ledger.json: mapping sumber dan kutipan pendek.
+
+Scope negatif: tidak menginstall skill/kit, tidak mengubah fork, konektor atau konfigurasi runtime, tidak membuka sesi akun,
+tidak membuat audio, tidak upload aset, tidak merental GPU dan tidak memakai kredit.
+
+Sources:
+[1] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/README.md
+[2] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/skills/3d-engineering-video/SKILL.md
+[3] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/skills/higgsfield-blender-render/SKILL.md
+[4] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/skills/reference-short-teardown/SKILL.md
+[5] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/kit/box/setup.sh
+[6] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/kit/box/after.sh
+[7] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/kit/newjob.sh
+[8] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/LICENSE
+[9] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/kit/box/up.sh
+[10] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/kit/box/finish.sh
+[11] https://github.com/mukhlistwet/3d-engineering-video-claude-skills/blob/8978568bee82b51a956087b24992b36214931e2e/kit/kitjob.py
+[12] https://higgsfield.ai/blog/higgsfield-gpu-harness

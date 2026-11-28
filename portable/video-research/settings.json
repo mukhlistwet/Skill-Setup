@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "scope": "SELECTED_NON_SECRET_DEFAULT_PROFILE_SETTINGS_ONLY",
+  "restore_method": "Review then use native hermes config set; sync helper NEVER writes config.yaml",
+  "requires_separate_login": true,
+  "managed_settings": [
+    {
+      "key": "model.provider",
+      "value": "openai-codex"
+    },
+    {
+      "key": "model.default",
+      "value": "gpt-6.1-sol"
+    },
+    {
+      "key": "agent.max_turns",
+      "value": 150
+    },
+    {
+      "key": "agent.tool_use_enforcement",
+      "value": "auto"
+    },
+    {
+      "key": "compression.enabled",
+      "value": true
+    },
+    {
+      "key": "compression.threshold",
+      "value": 0.5
+    },
+    {
+      "key": "compression.target_ratio",
+      "value": 0.2
+    },
+    {
+      "key": "display.interface",
+      "value": "cli"
+    },
+    {
+      "key": "display.show_cost",
+      "value": false
+    },
+    {
+      "key": "browser.headed",
+      "value": false
+    },
+    {
+      "key": "browser.engine",
+      "value": "auto"
+    },
+    {
+      "key": "browser.use_real_profile",
+      "value": false
+    },
+    {
+      "key": "checkpoints.enabled",
+      "value": false
+    },
+    {
+      "key": "checkpoints.max_snapshots",
+      "value": 20
+    },
+    {
+      "key": "delegation.max_concurrent_children",
+      "value": 10
+    },
+    {
+      "key": "delegation.max_iterations",
+      "value": 250
+    }
+  ],
+  "excluded": [
+    "credentials",
+    "browser profiles/cookies",
+    "MCP account connections",
+    "logs/session databases",
+    "other Hermes profiles",
+    "device-specific paths"
+  ]
+}

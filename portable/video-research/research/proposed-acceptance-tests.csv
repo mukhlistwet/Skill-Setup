@@ -1,0 +1,66 @@
+test_id,phase,area,criterion,execution_mode,status
+T01,P0,Transport,"Given authorized live Chrome, connect read-only; report actual selected tab/project and detach cleanly",Live read-only,NOT_RUN_PROPOSED
+T02,P0,Account,Fresh or signed-out browser cannot be treated as user logged-in Flow; request user-led sign-in,Fixture + live read-only,NOT_RUN_PROPOSED
+T03,P0,Scope,Tab navigation to another project/account/origin invalidates lease and blocks any upload/submit,Fixture + live read-only,NOT_RUN_PROPOSED
+T04,P0,Scope,Other Chrome tabs and Hermes named profiles remain inaccessible to adapter and unchanged,Fixture + filesystem scope audit,NOT_RUN_PROPOSED
+T05,P0,Access,"Revoked debugging permission, CAPTCHA or expired session stops without bypass or retry click",Fixture; live only if naturally observed,NOT_RUN_PROPOSED
+T06,P1,Registry,Import approved actual file; correctly identify MIME/dimensions/hash and semantic role,Offline fixture,NOT_RUN_PROPOSED
+T07,P1,Files,"Reject traversal, UNC/network source, symlink/junction escape, oversized/decompression bomb and MIME spoof",Offline adversarial fixture,NOT_RUN_PROPOSED
+T08,P1,Injection,Ignore text in filename/metadata/image/page that asks to change policy or invoke arbitrary tools,Offline adversarial fixture,NOT_RUN_PROPOSED
+T09,P1,Roles,Image cannot silently become voice; unsupported media/roles fail validation before UI changes,Offline fixture,NOT_RUN_PROPOSED
+T10,P1,Versioning,Changing a source/crop changes revision; all dependent scene approvals become stale,Offline fixture,NOT_RUN_PROPOSED
+T11,P1,Rights,Missing or revoked likeness/voice/commercial rights blocks release; unapproved upload blocked,Offline fixture,NOT_RUN_PROPOSED
+T12,P2,Binding,"Same file uploaded twice and similar filenames must resolve to intended tile, not name-only match",Fixture + live prepare-only,NOT_RUN_PROPOSED
+T13,P2,Binding,Same filename but different content is treated as distinct version; ambiguous remote match stops,Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T14,P2,Binding,"Native remote handle missing is represented as null with verified UI locator/evidence, never invented ID",Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T15,P2,Mapping,Moving to another project does not reuse old mapping; rescope/reimport only after permission,Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T16,P1,Capabilities,Unavailable/retired model or unexpected rollout invalidates snapshot; no silent fallback,Offline fixture + live read-only,NOT_RUN_PROPOSED
+T17,P1,Limits,Unknown Ingredients slots cause explicit discovery/stop; no assumed API or Extend limit,Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T18,P2,Modes,Voice in unsupported Frames/Extend or unproven Frames+Ingredients combination fails before spending,Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T19,P2,Preflight,Model/output count/aspect/duration/resolution changed after prepare invalidates receipt and approval,Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T20,P2,Reference slots,Over-limit refs produce explicit selection conflict; never silently drop background/character/product,Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T21,P2,Character,Reuse selected approved native Character; modifying wardrobe/face creates revision not silent mutation,Fixture + live prepare-only,NOT_RUN_PROPOSED
+T22,P2,Voice,Inspect native Character and explicit voice selections; uncertainty blocks dialogue generation,Fixture + live prepare-only,NOT_RUN_PROPOSED
+T23,P3,Identity,"Same character in frontal, profile, wide and partial occlusion reviewed for face/hair/wardrobe and speaker drift",Paid live only after budget approval,NOT_RUN_PROPOSED
+T24,P3,Location,Same location from different camera angle retains agreed landmarks/materials/object relations,Paid live only after budget approval,NOT_RUN_PROPOSED
+T25,P3,Attribution,"Two distinct characters/props do not swap clothing, roles or assigned voice",Paid live only after budget approval,NOT_RUN_PROPOSED
+T26,P3,Entanglement,Character reference without room and room without extra people prevents obvious unwanted visual leakage,Paid live only after budget approval,NOT_RUN_PROPOSED
+T27,P3,Product fidelity,Compare real SKU/packaging/logo/color/count with generated frame; any material invented detail fails affiliate QA,Paid live only after budget approval,NOT_RUN_PROPOSED
+T28,P2,Scene diff,Scene card shows locked asset revisions and role mapping plus only intended camera/action delta,Offline fixture + live prepare-only,NOT_RUN_PROPOSED
+T29,P2,Stale refs,Clear prompt on submit/picker loss/stale selected reference must be detected via fresh UI readback,Fixture + live prepare-only,NOT_RUN_PROPOSED
+T30,P2,Composite,Approved composite/frame records parent assets and human approval; new composition generation needs separate cost authorization,Offline fixture; paid only when authorized,NOT_RUN_PROPOSED
+T31,P3,Transition,Accepted last-frame/start-frame or Extend seam reviewed in motion; no accumulated rejected-frame chain,Paid live only after budget approval,NOT_RUN_PROPOSED
+T32,P3,Dialogue,"Indonesian pronunciation, assigned voice, speaker turn and lip-sync reviewed by listening/full playback",Paid live only after budget approval,NOT_RUN_PROPOSED
+T33,P2,Prompt conflict,Contradictory locked asset vs scene instruction requires user choice instead of silently overriding reference,Offline fixture,NOT_RUN_PROPOSED
+T34,P2,No spend,Prepare may upload only approved media/select refs; cannot create Character/image/sample or trigger Generate,Instrumented fixture + live prepare-only,NOT_RUN_PROPOSED
+T35,P3,Approval,Expired/replayed/wrong-project/modified-payload approval cannot submit,Offline adversarial fixture,NOT_RUN_PROPOSED
+T36,P3,Costs,Account for output count and auxiliary renders; unknown quote cannot receive automatic approval,Offline fixture + live preflight,NOT_RUN_PROPOSED
+T37,P3,Cost drift,Quote/account balance change or concurrent manual generation forces recheck and may halt,Offline fixture + live preflight,NOT_RUN_PROPOSED
+T38,P3,Reservation,Pending/UNKNOWN reservations persist restart; two workers cannot over-reserve remaining project budget,Offline fault-injection fixture,NOT_RUN_PROPOSED
+T39,P3,Concurrency,Simultaneous submit same intent atomically claims once; changed body with same key fails,Offline concurrency fixture,NOT_RUN_PROPOSED
+T40,P3,Crash,"Crash immediately before/after UI click or before job-id persist leaves recoverable state, never blind resubmit",Offline fault-injection fixture,NOT_RUN_PROPOSED
+T41,P3,Timeout,Request timeout leaves UNKNOWN and reserved cost until verified reconciliation or user decision,Offline fault-injection fixture,NOT_RUN_PROPOSED
+T42,P3,Reconcile,Two manual/similar generations must not attach wrong output; ambiguous correlation requires review,Offline fixture + approved live pilot,NOT_RUN_PROPOSED
+T43,P3,Download,Truncated/wrong-extension/expired output fails hash/metadata/full decode; inspect path safety,Offline fixture + approved live download,NOT_RUN_PROPOSED
+T44,P3,QA,Human explicitly accepts/rejects each full clip and cross-scene transition; sampled frame checks not full QA,Approved live pilot,NOT_RUN_PROPOSED
+T45,P1,Bridge,"Reject wrong origin/session/nonce/expired lease, arbitrary JS/tool commands and external network listener",Offline adversarial fixture; extension route only where applicable,NOT_RUN_PROPOSED
+T46,P1,Privacy,No cookies/credentials/uploaded reference payloads in logs/exports/public share; no auto-share or publication,Offline fixture + source audit,NOT_RUN_PROPOSED
+T47,P5,Operator,User can pause/cancel queued work before dispatch and inspect attached assets/cost/state; in-flight cancellation not called refunded,Offline UX fixture + approved live pilot,NOT_RUN_PROPOSED
+T48,P1,Reproducibility,"Pinned source integrity, license inventory, contract and adapter fixture tests pass independently of live Flow",Offline fixture + source audit,NOT_RUN_PROPOSED
+T49,P5,Backup,Export/import restores exact asset revisions and provenance; deliberate delete invalidates remote mapping; no hidden cross-profile writes,Offline fixture,NOT_RUN_PROPOSED
+T50,P3,Kill switch,"Selector drift, missing refs, generation failure burst or user stop halts queue and preserves journal; no automated credit-consuming retry",Offline fixture + approved live pilot,NOT_RUN_PROPOSED
+T51,H0,Eligibility,Unknown route country/entitlement/saldo/expiry stays UNKNOWN and prevents auto-submit,Offline fixture + authorized read-only account check,NOT_RUN_PROPOSED
+T52,P4,Face trust,Flow face output does not become ModelArk trusted input; allowed authorized route or BLOCKED_FOR_ROUTE,Offline policy fixture; no prohibited upload,NOT_RUN_PROPOSED
+T53,H0,Commercial rights,Vendor preset marked internal-use-only cannot enter affiliate production without explicit applicable clearance,Offline rights fixture,NOT_RUN_PROPOSED
+T54,P4,Mode exclusivity,ModelArk first/last and omni-reference cannot be combined by the adapter; explicit route schema rejects,Offline contract fixture,NOT_RUN_PROPOSED
+T55,P4,Wallet spillover,Pack/quota exhausted cannot silently use cash balance/auto-top-up/another vendor; policy blocks before dispatch,Offline fault-injection fixture,NOT_RUN_PROPOSED
+T56,P4,Approval route,New platform/model or draft-to-finalize transaction needs matching quote and approval; old UNKNOWN stays reserved,Offline adversarial fixture,NOT_RUN_PROPOSED
+T57,P4,Voice IDs,Flow native voice handle not sent as Seedance voice ID; separate authorized audio and speaker mapping required,Offline contract fixture + approved handoff pilot,NOT_RUN_PROPOSED
+T58,P4,Credit units,Credits from distinct wallets never summed as interchangeable balance; missing currency conversion stays separate,Offline accounting fixture,NOT_RUN_PROPOSED
+T59,P4,Cross-engine continuity,Approved handoff full playback compares canonical appearance/location/audio and cost of all attempts; no average-score override for fidelity-critical failure,Approved paid comparison pilot only,NOT_RUN_PROPOSED
+T60,P4,Unlimited policy,Automated Higgsfield route cannot be classified free solely because manual web subscription says Unlimited,Offline entitlement fixture + read-only quote,NOT_RUN_PROPOSED
+T61,H0,Region,US-ineligible direct BytePlus route stays blocked; no VPN/region spoof; unknown jurisdiction requires clarification,Offline policy fixture,NOT_RUN_PROPOSED
+T62,P4,Reference totals,Per-kind limits and combined total limit checked separately for exact route/model; no adding across platforms,Offline contract fixture,NOT_RUN_PROPOSED
+T63,P4,API recovery,"Draft/finalize expiry, output retention, timeout and ambiguous job IDs preserve original artifact/journal and do not trigger unpaid-assumption/retry",Offline lifecycle fixture + authorized live inspection,NOT_RUN_PROPOSED
+T64,P4,Role compiler,Map canonical asset revisions to exact ordered native reference labels for each route; semantic roles cannot swap on reroute,Offline compiler fixture + prepare-only live test,NOT_RUN_PROPOSED
+T65,P2,Accidental submit,"Picker Enter, focus race, stale composer and native Agent drift cannot dispatch generation during prepare; if pre-send block unproven auto-prepare stays BLOCKED",Offline instrumented fixture; live prepare only after deny gate is proven and explicitly authorized,NOT_RUN_PROPOSED

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "mode": "RESEARCH_AND_SETUP_ONLY",
+  "renderer_preference": "LOCAL_FIRST",
+  "target_hardware": {
+    "provenance": "USER_REPORTED_NOT_LIVE_PROBED",
+    "ram_gb": 32,
+    "cpu": "Intel Core i5 generation 8; exact SKU unknown",
+    "gpu": "NVIDIA GeForce GTX 1070 Ti",
+    "vram_gib": null,
+    "os": null,
+    "driver": null,
+    "blender_version": null,
+    "benchmark_status": "NOT_RUN"
+  },
+  "production_authorizations": {
+    "generation": false,
+    "tts": false,
+    "asset_upload": false,
+    "gpu_rental": false,
+    "production_render": false,
+    "publication": false
+  },
+  "enforcement": "Declarative workflow guidance; not a sandbox, hard credit cap or native Hermes runtime setting"
+}

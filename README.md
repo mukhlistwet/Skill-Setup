@@ -1,5 +1,9 @@
 > **Hotfix v2.1.1:** Perbaikan resolusi path manifest untuk Windows PowerShell; gunakan BAT terbaru di paket ini.
 
+# Migrasi workflow video ke device baru
+
+Paket riset/setup video portabel tersedia di [portable/video-research/README.md](portable/video-research/README.md): dua skill authored, snapshot setting non-secret, target device yang dilaporkan pengguna, blueprint MCP yang tidak aktif, dan helper restore dry-run. Baca paket tersebut jika hendak menyamakan workflow video; jangan menjalankan installer global di bawah hanya untuk paket video. Akun, token, cookie dan state browser tidak disalin.
+
 # Engineering Agent Setup
 
 Panduan operasional, manifest, policy, template, dan skrip otomasi untuk menyiapkan lingkungan **AI coding-agent** pada **Windows 11 + PowerShell** secara konsisten saat pindah device atau memulai project baru.

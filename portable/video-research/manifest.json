@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "scope": "TWO_AUTHORED_VIDEO_SKILLS_AND_SELECTED_SAFE_SETTINGS",
+  "managed_skill_roots": [
+    "skills/media/creator-video-workflow",
+    "skills/media/video-production-setup"
+  ],
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "308a40fa1d89ae5ea4390b4c9b46a0108b09f171f07898f25d451fa0c69c4e9f",
+      "bytes": 72
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "7cf6d0751603d5dbd10f63a1dce0614f712f0bcd8f087ca2a1f616cb3902c7c1",
+      "bytes": 37
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b5f8fa98e0b7dd602cbc0c78084cb750d01c5cef7b695e21176517424650dc58",
+      "bytes": 1460
+    },
+    {
+      "path": "README.md",
+      "sha256": "50be689566165e6b98795cfeeb227ab5904874cd641d2b45897259cc8352975e",
+      "bytes": 5992
+    },
+    {
+      "path": "research/asset-contracts.txt",
+      "sha256": "9f1ca910dd86482a1bd7245a1e21b83419c102beea040466840c543701173393",
+      "bytes": 13673
+    },
+    {
+      "path": "research/asset-video-plan.txt",
+      "sha256": "b5a57a21ea6ec6228f2928c3a4245eac377627864e8dc773404e0bf0b8e64ff4",
+      "bytes": 28624
+    },
+    {
+      "path": "research/engineering-3d-review.txt",
+      "sha256": "abe9135bcc837f1f9c11bff2644ebc8a9a0674ab6b1a776622d3f45eae9c9d33",
+      "bytes": 10921
+    },
+    {
+      "path": "research/proposed-acceptance-tests.csv",
+      "sha256": "e2b8f4dc94029024e6996479725d57f76c23e784eb1732dddf8583f9cdfb9a91",
+      "bytes": 11442
+    },
+    {
+      "path": "research/proposed-requirements.csv",
+      "sha256": "ae5a063fd309a7d94eee13335fcf9ea51fba91f11d64d594977a9d9a894db20e",
+      "bytes": 5162
+    },
+    {
+      "path": "RESEARCH.md",
+      "sha256": "78fdd6cc114c8d59035ed58bf8a59a65b0ce4a24f25f8789676904c273c8bfac",
+      "bytes": 3826
+    },
+    {
+      "path": "settings-commands.txt",
+      "sha256": "26573aea215c73ed92065e84dd4a92f6474023f9baed45bd03664309c0f6168c",
+      "bytes": 798
+    },
+    {
+      "path": "settings.json",
+      "sha256": "565dd0c922a03a40e4b554d0654551bde546d0b2d7257c9caeb8efd147b7ec0a",
+      "bytes": 1586
+    },
+    {
+      "path": "skills/media/creator-video-workflow/references/asset-continuity-and-hybrid-routing.md",
+      "sha256": "ae58b1fed72fafb63471c6246052b4e52fd264b7719bcabc8b849fa68a0d3aaf",
+      "bytes": 6508
+    },
+    {
+      "path": "skills/media/creator-video-workflow/references/asset-continuity.md",
+      "sha256": "97b6bbb1d87f911b1b534a82c72682e8a17b0877088d53fb0c28a0abca1efe1a",
+      "bytes": 6770
+    },
+    {
+      "path": "skills/media/creator-video-workflow/references/platform-release-gates.md",
+      "sha256": "c574fdc67be939901507be143606428994a7b90b89477f2dc22741fae607b420",
+      "bytes": 4137
+    },
+    {
+      "path": "skills/media/creator-video-workflow/references/tool-research-and-affiliate-gates.md",
+      "sha256": "434506c8ac76d6d88872496d45158558b8ed7e5cb0aeff630a533d3e41c82b7e",
+      "bytes": 5168
+    },
+    {
+      "path": "skills/media/creator-video-workflow/references/tool-selection.md",
+      "sha256": "ef6cc71d9a08e51b205c85f62b4e2724bd1a97da046982bf8951fb40c4552b9b",
+      "bytes": 7571
+    },
+    {
+      "path": "skills/media/creator-video-workflow/SKILL.md",
+      "sha256": "6ac3483b76c4707dc3852b8d26714f3380a0971cee69481b33722b70729d10ab",
+      "bytes": 11665
+    },
+    {
+      "path": "skills/media/creator-video-workflow/templates/analytics.csv",
+      "sha256": "179bf855756090091e743499fb97d4b2e0700ea008b70f54ec461dff982450d9",
+      "bytes": 396
+    },
+    {
+      "path": "skills/media/creator-video-workflow/templates/asset-rights.csv",
+      "sha256": "95adcb38ad72857e4766df43836c4b2890efef25b864e09a838df376dcc193e5",
+      "bytes": 208
+    },
+    {
+      "path": "skills/media/creator-video-workflow/templates/product-evidence.csv",
+      "sha256": "ee5a6b22237867caba2a881a6f464e5efb6161b7a369c1940f5bae280347cb56",
+      "bytes": 180
+    },
+    {
+      "path": "skills/media/creator-video-workflow/templates/release-review.md",
+      "sha256": "f343519182216b216cea45f1aa85020f7ac17c2b50b9af1c967871d563000622",
+      "bytes": 1596
+    },
+    {
+      "path": "skills/media/creator-video-workflow/templates/video-brief.md",
+      "sha256": "2edc190b0fb4f867c9b83d74f1d1b4052f720572a2670f776e1a9e8f819a7e59",
+      "bytes": 1502
+    },
+    {
+      "path": "skills/media/video-production-setup/references/provider-pins.json",
+      "sha256": "3af85646cb1816e44ca39243eeb7960f8fb2e1166f6a5d5019153d9a51e9c8de",
+      "bytes": 883
+    },
+    {
+      "path": "skills/media/video-production-setup/references/targets.json",
+      "sha256": "db2a27d268a4ca0a0445dfe36982f1da165a33ba0d28674a9e81614f51084bcb",
+      "bytes": 692
+    },
+    {
+      "path": "skills/media/video-production-setup/SKILL.md",
+      "sha256": "8078bde7028fa0b3f54d87608038a6bf7fa0db9b7dd6951876634cd97f7bde67",
+      "bytes": 5998
+    },
+    {
+      "path": "templates/agy-blender-mcp.blueprint.json",
+      "sha256": "3885f320692387c3b6897701564e40b536d295c7dc2e4a63110f7b0efae96b04",
+      "bytes": 927
+    },
+    {
+      "path": "tests/test_sync.py",
+      "sha256": "dc828389954fe8bb93e3b2b009ae65f27a926e63d5752d01c3c150340d74c368",
+      "bytes": 11099
+    },
+    {
+      "path": "tools/sync_video_setup.py",
+      "sha256": "b6e8b36991b15327d6579f1ef7f9caf3d9a8d46b3ccbfd9077fa99747e87b69d",
+      "bytes": 4819
+    },
+    {
+      "path": "workflow-policy.json",
+      "sha256": "52ed2cd8b486d4fd0bf2119bc0a1ba274b8b94606889f64fa4d68eba875907eb",
+      "bytes": 727
+    }
+  ],
+  "excluded_runtime": [
+    "credentials",
+    "session/browser/account state",
+    "other profiles",
+    "external tool installation"
+  ],
+  "integrity_note": "Checksums are integrity checks, not a signature; trust a reviewed pinned Git revision."
+}

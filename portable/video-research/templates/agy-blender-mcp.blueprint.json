@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "TEMPLATE_DISABLED_NOT_NATIVE_AGY_CONFIG",
+  "install": false,
+  "enable": false,
+  "server": {
+    "name": "blender",
+    "transport": "stdio",
+    "command": "uvx",
+    "args": [
+      "--python",
+      "3.11",
+      "--from",
+      "git+https://github.com/ahujasid/mcp-for-blender.git@7f31a4623cafac7441ba9b97e67a8787b9069ee2",
+      "mcp-for-blender"
+    ],
+    "env": {
+      "BLENDER_HOST": "localhost",
+      "BLENDER_PORT": "9876",
+      "DISABLE_TELEMETRY": "true",
+      "BLENDER_MCP_SAFE_MODE": "1"
+    }
+  },
+  "approval_required": [
+    "review full source and dependencies",
+    "verify Blender/version/addon compatibility",
+    "install package/addon on selected target",
+    "configure exact agy client scope",
+    "separate local handshake approval"
+  ],
+  "note": "Pinned source snapshot, not a transitive environment lock. Sync helper does not process this blueprint."
+}

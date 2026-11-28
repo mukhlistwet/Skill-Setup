@@ -1,0 +1,30 @@
+{
+  "scope": "PORTABLE_SETUP_ONLY_NOT_BLENDER_OR_PROVIDER_RUNTIME",
+  "verified_at": "2026-11-28T20:32:23.307766+07:00",
+  "skills": 2,
+  "skill_files": 14,
+  "payload_files": 30,
+  "safe_settings": 16,
+  "fixture_results": {
+    "dry_run_no_target_created": true,
+    "all_skill_payload_hashes_restored": true,
+    "repeat_apply_idempotent": true,
+    "unrelated_config_and_skill_preserved": true
+  },
+  "active_skill_snapshot_matches": true,
+  "secret_pattern_scan_findings": [],
+  "target_device_status": "USER_REPORTED_NOT_PROBED",
+  "production_render_or_generation_run": false,
+  "account_state_exported": false,
+  "agy_review_status": "BLOCKED_HEADLESS_PERMISSION_THEN_TIMEOUT; independent review requested separately",
+  "manifest_sha256": "a814972a095160f546ca267b0b077fea18436bc4cc5f6b3b0f398853ad7b0194",
+  "unit_tests": {
+    "count": 14,
+    "result": "PASS",
+    "runtime": "Python 3.14 on Windows",
+    "scope": "portable-sync helper only",
+    "link_tests": "simulated link status; not a real NTFS symlink/junction integration test"
+  },
+  "initial_independent_review": "Three findings fixed by separate agent; regression tests green",
+  "final_independent_review": "PASS: bounded static review; see independent-review-final.json"
+}

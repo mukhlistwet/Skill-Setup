@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "reported_target": {
+    "source": "User statement; not a live probe",
+    "ram_gb": 32,
+    "cpu_family": "Intel Core i5",
+    "cpu_generation": 8,
+    "cpu_exact_sku": null,
+    "gpu_model": "NVIDIA GeForce GTX 1070 Ti",
+    "gpu_vram_gib": null,
+    "os": null,
+    "driver_version": null,
+    "blender_version": null,
+    "benchmark_status": "NOT_RUN"
+  },
+  "routing": {
+    "default": "LOCAL_FIRST",
+    "interactive_controller": "agy with optional Blender MCP",
+    "production_renderer": "Blender batch after separate authorization",
+    "cloud_gpu": "OPTIONAL_REQUIRES_APPROVAL",
+    "current_scope": "RESEARCH_AND_SETUP_ONLY"
+  }
+}

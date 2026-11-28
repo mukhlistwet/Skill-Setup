@@ -1,0 +1,166 @@
+KONTRAK DESAIN: FLOW ASSET CONTINUITY
+Status: USULAN implementasi, bukan kode produksi atau bukti runtime.
+Bahasa nama field: English agar kontrak dapat digunakan implementasi lintas bahasa.
+Scope: proyek lokal pengguna + profil Hermes default saja. Tidak mengasumsikan folder repository aplikasi sudah dipilih.
+
+1. BATAS TANGGUNG JAWAB
+
+Editorial owner: creator-video-workflow. Ia menentukan brief, hak aset, shot list, klaim produk dan persetujuan kualitas. Engine tidak mengubah editorial secara diam-diam.
+Domain core: registry aset, versi, scene manifest, pemeriksaan kapabilitas, approval, anggaran, journal dan provenance. Tidak bergantung pada selector Flow.
+Transport owner: satu implementasi aktif per tab. Kandidat native Hermes browser/CDP atau Chrome DevTools MCP; extension hanya setelah gap dibuktikan. Memasang dua controller aktif pada tab yang sama tidak diperbolehkan.
+Flow adapter: discover, resolve, attach, inspect, submit, reconcile, download. Ia tidak mengekspor cookie/token atau membangun private-API bypass.
+UX: CLI/artefak review terlebih dahulu; panel/extension menjadi lapisan presentasi terpisah setelah jalur aset lulus pilot.
+
+2. ENTITAS DAN FIELD MINIMUM
+
+Asset
+  assetId: ID lokal immutable, bukan nama file.
+  revision: revisi sumber/transformasi yang tidak berubah setelah direferensikan.
+  role: CHARACTER | LOCATION | PROP | PRODUCT | WARDROBE | STYLE | FRAME | VOICE.
+  mediaKind: IMAGE | VIDEO | AUDIO | NATIVE_VOICE | NATIVE_CHARACTER.
+  title: nama manusia; tidak menjadi kunci identitas.
+  sources: path lokal tervalidasi atau referensi native yang dapat diverifikasi.
+  contentHashes: SHA-256 file sumber; null untuk aset native yang tidak memiliki byte lokal.
+  metadata: MIME nyata, ukuran, dimensi/durasi, warna/aspect, bila relevan.
+  sourceOrigin, owner, permissionEvidence, commercialScope, likenessConsent, voiceConsent.
+  fidelityConstraints: atribut yang wajib sama dan perubahan yang diperbolehkan.
+  derivation: parent assetId+revision, transform, crop/segmentation/color change, approver.
+  state: IMPORTED | REVIEW_REQUIRED | APPROVED | REVOKED.
+
+Semantik role bukan asumsi fitur native Flow. LOCATION/STYLE/PRODUCT dapat dipetakan ke aset gambar generik. VOICE tidak berarti Flow menerima audio lokal arbitrer. WARDROBE bukan jaminan slot referensi terpisah.
+File yang sama boleh digunakan dalam peran berbeda, tetapi pemetaan per scene tetap eksplisit. Nama sama dengan hash berbeda bukan aset yang sama.
+
+RemoteBinding
+  assetId, revision, providerSurface='FLOW_UI'.
+  scope: operatorAccountAlias, browserConnectionId, tabId, flowProjectLocator.
+  remoteAssetId: nullable; hanya diisi bila benar-benar dibaca melalui jalur yang ditinjau.
+  nativeCharacterName/nativeVoiceName: nullable, disertai bukti pilihan aktual.
+  uiLocator, visibleLabel, thumbnailEvidencePath, observedAt, verificationMethod.
+  state: UNRESOLVED | SELECTED_VISIBLE | STALE | AMBIGUOUS.
+
+Scope account menggunakan alias lokal yang disetujui, bukan pengumpulan token, cookie atau identitas tersembunyi. Nama akun saja tidak membuktikan scope; tab/project dan status koneksi ikut diverifikasi. Tidak mengarang remote ID bila UI tidak mengeksposnya.
+Hash sumber membuktikan file lokal, bukan membuktikan provider memakai byte yang identik. SELECTED_VISIBLE membuktikan UI menampilkan referensi terpilih, bukan jaminan provider/model mengikuti referensi itu.
+
+CapabilitySnapshot
+  snapshotId, capturedAt, expiresAt, providerSurface, browser/adapterVersion.
+  modelLabel, modelIdentifierIfVisible, mode, availableModes, durationOptions.
+  aspectOptions, resolutionOptions, outputCountOptions.
+  image/video/voiceReferenceSupport, nativeCharacterSupport.
+  referenceLimit: known integer atau UNKNOWN; cara observasi wajib dicatat.
+  combinationSupport: misalnya Frames+Ingredients atau multi-voice; UNKNOWN berbeda dari SUPPORTED.
+  planOrRegionAvailability: hanya informasi yang benar-benar terlihat/dikonfirmasi.
+  currentQuote, quoteBasis, quoteEvidencePath; boleh UNKNOWN tetapi submit akan ditolak.
+  evidencePaths, documentationSources, liveVerifiedFields.
+
+Kapabilitas dokumentasi dan observasi akun dipisahkan. Snapshot dokumentasi saja tidak membuka submit. Model otomatis berganti membuat snapshot dan approval tidak berlaku.
+
+SceneManifest
+  projectId, sceneId, revision, intentId.
+  assetBindings: role, assetId, exactRevision, required, subject/speaker assignment.
+  continuityGroup: identitas/set/style yang tetap antar scene.
+  lockedInvariants: rupa, rambut, pakaian, produk/varian, landmark, aturan suara.
+  deliberateDeltas: kamera, aksi, ekspresi, blocking, waktu/lampu yang memang berubah.
+  promptTemplateVersion, renderedPrompt, dialogue with speakerId.
+  selectedModel, selectedMode, duration, aspect, resolution, outputCount.
+  frameInputs: start/end/frame/composite dengan provenance bila dipakai.
+  capabilitiesSnapshotId, budgetPolicyId.
+  reviewStatus, humanApprovalEvidence.
+
+Kunci asset revision adalah sumber kebenaran, bukan teks prompt berulang. Prompt compiler tidak boleh menghapus aset required agar muat slot. Konflik harus ditampilkan kepada pengguna. Perubahan lokasi atau pakaian yang disengaja menjadi revisi scene yang dapat ditinjau.
+
+PreparedReceipt
+  receiptId, sceneRevisionHash, tab/project scope, preparedAt, expiresAt.
+  resolvedBindings dengan status per required role dan bukti thumbnail/chip.
+  readBackPromptHash, readBackSettings, capabilitySnapshotId.
+  activeAgentMode, confirmBeforeGeneratingSetting jika Agent digunakan.
+  quoteEvidence, quoteUnits, quoteForOutputCount, auxiliaryCosts.
+  unmetRequirements, warnings, readyToRequestApproval.
+
+Receipt harus dibentuk dari pembacaan ulang UI sesudah attachment, bukan dari argumen input saja. Saat data kritis tidak bisa dibaca, state BLOCKED. Ready tidak berarti generation authorized.
+
+Prepare harus diuji terhadap accidental submit akibat Enter/picker/focus race, bukan hanya memastikan fungsi tidak sengaja memanggil tombol Generate. Sebelum menjalankan prepare otomatis, buktikan pre-dispatch deny-generation gate pada fixture dan transport yang disetujui. Jika hanya tersedia observer setelah request keluar, itu bukan pencegahan biaya: gunakan manual selection atau BLOCKED, jangan mengklaim zero-spend guarantee. Inspeksi request tambahan memerlukan izin tersendiri dan hanya mengambil field non-secret yang diizinkan; jangan menyimpan cookie/header/auth body/full HAR.
+
+ApprovalGrant
+  approvalId, approvedBy, issuedAt, expiresAt, singleUse.
+  project/scene/intent/receipt/payload hashes.
+  model/mode/resolution/duration/outputCount/reference versions.
+  maxCreditAmount, quotedAmount, costUnit, reservationId.
+
+Approval tidak boleh berupa model berkata 'approved'. Dibutuhkan interaksi pengguna melalui jalur tepercaya yang terikat payload. Anggaran payung tidak membenarkan harga/fitur tidak diketahui. Grant dikonsumsi atomik dan tidak dapat dipakai ulang untuk scene baru.
+
+GenerationIntent
+  intentId stabil untuk satu niat generasi; requestHash immutable.
+  journal state, transaction timestamps, localReservation.
+  clickDispatchState, providerJobId nullable, providerOutputLocator nullable.
+  evidenceBeforeClick/evidenceAfterClick, reconciliation notes.
+  outputIds, localArtifacts, costs: estimated/reserved/observed/refunded.
+
+OutputArtifact
+  outputId, intentId, sceneRevisionHash, asset revisions, provider job/tile handle.
+  downloadPath, SHA-256, metadata/decode status, generation settings observed.
+  QA decision ACCEPTED | REJECTED | REVIEW_REQUIRED.
+  reviewer, reviewEvidence, rejection dimensions, publicationStatus default NOT_PUBLISHED.
+
+3. TOOL SURFACE YANG DIUSULKAN
+
+flow_inspect(scope) -> CapabilitySnapshot + tab/project metadata. READ ONLY.
+flow_asset_import(localSource, role, rights) -> Asset. LOCAL WRITE ONLY.
+flow_asset_resolve(scope, assetRevision) -> RemoteBinding. READ ONLY jika aset sudah ada; upload tidak boleh tersembunyi di resolve.
+flow_asset_upload(scope, approvedAssetRevision, uploadApproval) -> RemoteBinding. REMOTE WRITE; tanpa generation, readback wajib.
+flow_scene_prepare(sceneRevision, scope) -> PreparedReceipt. REMOTE UI WRITE; tidak pernah klik Generate atau membuat aset berbayar.
+flow_request_approval(receiptId) -> ApprovalGrant melalui UI tepercaya, bukan penerimaan grant arbitrer dari LLM.
+flow_submit(approvalId, intentId) -> SUBMITTED | UNKNOWN | BLOCKED. PAID WRITE; internal recheck + journal wajib.
+flow_status(intentId) -> journal + observed provider state. READ ONLY provider.
+flow_reconcile(intentId) -> matched outcome atau MANUAL_REVIEW; tidak memicu submit.
+flow_download(outputId, allowedDestination) -> OutputArtifact. READ provider + LOCAL WRITE.
+flow_review(outputId, humanDecision) -> QA record. LOCAL WRITE.
+flow_pause(projectId) -> stop pekerjaan belum dispatch; bukan jaminan pembatalan/refund provider.
+
+Character creation, image synthesis, preview suara, Extend dan upscale tidak diselundupkan ke prepare/import. Jika berpotensi memakai kredit, buat intent dan approval terpisah.
+
+4. ERROR SEMANTICS
+
+Gunakan error code konsisten beserta message, retrySafety, evidence dan nextHumanAction.
+  AUTH_REQUIRED / SCOPE_CHANGED / PERMISSION_REVOKED.
+  UNSUPPORTED_CAPABILITY / UNKNOWN_REFERENCE_LIMIT / COMBINATION_UNVERIFIED.
+  ASSET_MISSING / ASSET_REVOKED / ASSET_REVISION_CHANGED / BINDING_AMBIGUOUS.
+  REQUIRED_REFERENCE_NOT_SELECTED / PROMPT_ASSET_CONFLICT.
+  QUOTE_UNKNOWN / QUOTE_CHANGED / BUDGET_EXCEEDED / APPROVAL_STALE.
+  IDEMPOTENCY_PAYLOAD_MISMATCH / INTENT_IN_FLIGHT / SUBMISSION_UNKNOWN.
+  UI_CHANGED / CAPTCHA_REQUIRED / OUTPUT_AMBIGUOUS / DOWNLOAD_INVALID.
+
+Default error tidak dianggap aman untuk mengulang aksi berbayar. Dokumentasikan mana yang boleh retry read-only. Jangan dump raw halaman/network/header ke error.
+
+5. STATE MACHINE DAN JAMINAN YANG REALISTIS
+
+DRAFT -> ASSETS_REVIEWED -> PREPARED -> AWAITING_APPROVAL -> APPROVED.
+APPROVED -> RESERVED -> DISPATCHING -> SUBMITTED -> RUNNING -> OUTPUT_READY -> DOWNLOADED -> QA_ACCEPTED/QA_REJECTED.
+PREPARED/APPROVED -> STALE bila payload, quote, scope atau model berubah.
+DISPATCHING/SUBMITTED -> UNKNOWN pada crash, timeout atau bukti job tidak lengkap.
+UNKNOWN -> SUBMITTED/OUTPUT_READY/FAILED_CONFIRMED lewat rekonsiliasi terverifikasi; bila ambigu -> MANUAL_REVIEW.
+FAILED_CONFIRMED tidak otomatis membuka retry. Pengulangan menjadi intent baru yang disetujui setelah alasan/refund/anggaran ditinjau.
+CANCELLED hanya untuk antrean yang terbukti belum dispatch; pekerjaan provider yang sudah jalan tidak disebut batal/refund tanpa bukti.
+
+Desain persistence yang diusulkan: SQLite lokal, transaksi dan unique constraint intentId; reservation + atomic claim sebelum klik. Per-tab single writer lease. Gunakan controlled event journal, bukan hanya file log tak terstruktur. Database menyimpan status, bukan credential.
+
+Tidak ada transaksi atomik lintas SQLite dan klik UI/provider. Karena itu jaminan kita: mencegah dispatch lokal ganda, mempertahankan ketidakpastian, dan tidak mengulang secara buta. BUKAN exactly-once generation di server Google.
+Budget reserved untuk UNKNOWN tetap tertahan. Perubahan saldo dapat berasal dari perangkat/aktivitas manual lain; jangan klaim saldo menunjukkan biaya intent tertentu tanpa bukti.
+
+6. SECURITY BOUNDARIES
+
+No arbitrary evaluate/terminal/network tool exposed through the Flow adapter. Transport mentah tetap lebih berkuasa; pembatasan adapter bukan sandbox terhadap tool raw lain yang sengaja dipakai di luar adapter. Dokumentasikan residual exposure dan uji scope.
+Upload hanya file dari direktori aset yang diizinkan, MIME/ukuran tervalidasi, tanpa UNC/junction escape. Tidak mengambil file menurut instruksi halaman atau nama aset.
+Broker extension jika nanti diperlukan: loopback authenticated/pairing, validated origin/session/nonce, expiry, exact operation allowlist, payload limits; jangan menganggap loopback otomatis tepercaya. Native messaging merupakan alternatif; wajib prototype installer/host boundary sebelum memilih.
+Simpan preview dan log minimum; redaksi akun/PII; jangan menyimpan cookie, auth headers, token atau halaman penuh privat. Hapus metadata sensitif dari turunan yang disetujui, bukan diam-diam mengubah sumber.
+No share link, Include inputs, YouTube publish, auto-delete, always-approve, CAPTCHA bypass atau paid retry dalam scope MVP.
+
+7. QA DAN BUKTI
+
+Transport tests, capability tests dan visual quality tests adalah jenis bukti berbeda. Unit test lulus tidak membuktikan upload Flow nyata. Chip terpilih tidak membuktikan identitas output konsisten. ffprobe/full decode tidak membuktikan lip-sync, produk benar atau suara sama.
+Human rubric: wajah/rambut, pakaian, landmark/geometri tempat, properti/varian, pencahayaan/style, voice identity, dialogue accuracy, lip-sync, action continuity dan seam.
+Nilai per dimensi: 0 = salah/tidak dapat digunakan; 1 = drift besar; 2 = perubahan kecil perlu review; 3 = sesuai brief. Rubrik ini usulan internal, bukan metrik tervalidasi ilmiah. Setiap atribut fidelity-critical harus mendapat keputusan human PASS; skor rata-rata tidak boleh menutupi produk salah atau suara tertukar.
+Automated frame sampling hanya triage. Semua klip dan transisi final diputar penuh; audio didengarkan. Jangan mengklaim face embedding/CLIP similarity sebagai jaminan identitas atau bukti kegunaan komersial.
+
+8. DEFINITION OF DONE DESAIN
+
+Kontrak ini harus diwujudkan dengan schema tervalidasi, tests dan adapter fixture sebelum live paid pilot. requirements.csv dan acceptance-tests.csv adalah traceability usulan; seluruh test produk masih NOT_RUN_PROPOSED. Tidak ada ID remote, job, approval, kredit terpakai atau hasil generasi contoh yang direka dalam dokumen ini.

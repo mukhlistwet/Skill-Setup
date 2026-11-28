@@ -1,0 +1,17 @@
+# Review on the target before execution. This is NOT an executable restore script.
+hermes config set model.provider openai-codex
+hermes config set model.default gpt-6.1-sol
+hermes config set agent.max_turns 150
+hermes config set agent.tool_use_enforcement auto
+hermes config set compression.enabled true
+hermes config set compression.threshold 0.5
+hermes config set compression.target_ratio 0.2
+hermes config set display.interface cli
+hermes config set display.show_cost false
+hermes config set browser.headed false
+hermes config set browser.engine auto
+hermes config set browser.use_real_profile false
+hermes config set checkpoints.enabled false
+hermes config set checkpoints.max_snapshots 20
+hermes config set delegation.max_concurrent_children 10
+hermes config set delegation.max_iterations 250

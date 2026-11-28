@@ -1,0 +1,36 @@
+requirement_id,phase,area,requirement,acceptance_test_ids
+R01,P0,Scope and transport,Inspect only selected Flow tab/project with existing authorized login; no cookie copy/export,T01;T02;T03;T04;T05
+R02,P1,Asset roles,"Registry supports character, location, prop/product, wardrobe, style, frame and voice with explicit media kind",T06;T07;T08;T09
+R03,P1,Immutable source,Content hash/version/owner/consent/import origin for each local asset and derivative,T06;T07;T10;T11
+R04,P1,Project mapping,Remote references are project/account/transport scoped; unknown handles remain null,T12;T13;T14;T15
+R05,P1,Capabilities,"Snapshot current model, mode, plan/region availability, duration/resolution/output support; unknown is not supported",T16;T17;T18;T19
+R06,P1,Limits,Discover live reference slots without a generation; never copy API or Extend limits into Ingredients,T17;T20
+R07,P2,Characters,Reuse native Character when available; explicit appearance revision and voice validation,T21;T22;T23
+R08,P2,Locations,Attach actual approved location references and keep geometry/landmarks/lighting guidance versioned,T24;T25;T26
+R09,P2,Products and props,Bind correct product variant/prop with fidelity-critical attributes and no unsupported product claims,T25;T26;T27
+R10,P2,Binding proof,Preflight receipt enumerates required roles and visible selected references; names in text alone do not pass,T12;T13;T14;T28;T29
+R11,P2,Frames route,Separate approved first/last frame or composite workflow from Ingredients; no silent dropping references,T18;T30;T31
+R12,P2,Voice route,Persist speaker-to-voice identity; reject unsupported voice plus mode and do not assume Character carries voice,T18;T22;T23;T32
+R13,P2,Scene contracts,Lock identity/location/product/style revision; allow only deliberate scene/camera/action deltas,T10;T24;T28;T33
+R14,P2,Prepare only,Clear and re-read stale prompt/reference state; prepare never triggers any paid generation or image preparation,T19;T29;T34
+R15,P3,Bound approval,"Approval binds project, scene revision, resolved references, model/mode, outputs, fresh quote, budget and expiry",T19;T35;T36;T37
+R16,P3,Budget,"Persistent project reservation covers pending and unknown charges, actual quote, auxiliary images/previews/upscales and output count",T35;T36;T37;T38
+R17,P3,Atomic submission,"Unique intent/request hash, atomic claim, one writer per tab; never promise provider exactly-once",T39;T40;T41
+R18,P3,Unknown outcomes,"Crash/timeout after click becomes UNKNOWN and reconciliation or manual review, never automatic resubmit",T40;T41;T42
+R19,P3,Output mapping,Map accepted provider job/tile identity to intent or keep ambiguous; download approved output and verify file/decode,T42;T43
+R20,P3,Continuity review,"Review actual full clips and boundary transitions including identity, location, props, wardrobe, lighting, voice and lip-sync",T23;T24;T25;T26;T27;T31;T32;T44
+R21,P1,Security,Block unapproved origins/files/paths/actions; treat webpage and asset text as untrusted; redact secrets,T03;T04;T05;T07;T08;T45;T46
+R22,P5,UX,"Human asset picker/scene cards with attached previews, visible drift and manual overrides; no blind batch",T28;T34;T35;T44;T47
+R23,P1,Reproducibility,"Pin reviewed runtime/deps/revisions; tests use controlled fixtures, no claimed Flow account validation",T01;T16;T48
+R24,P5,Portability and retention,Export/import registry+manifests with hash verification; backups and deletion do not publish refs or touch other profiles,T10;T11;T15;T46;T49
+R25,P3,Stop conditions,Stop on CAPTCHA/billing/model drift/ref loss/credit uncertainty/selector drift; user resolves access and no anti-abuse bypass,T05;T16;T19;T29;T37;T50
+R26,H0,Route eligibility,"Per-route jurisdiction, subscription and commercial rights checked before uploads; public access not account proof",T51;T53;T61
+R27,P4,Portable canonical assets,"No automatic cross-vendor upload; route allowlist, consent, origin trust and expiry bound to each asset",T52;T53;T57;T64
+R28,P4,Typed multimodal routes,Exact route/model enforces total and per-kind limits and mutually exclusive modes; no reference dropping,T54;T62;T64
+R29,P4,Wallet separation,"Wallet units, quote, expiry, quota/concurrency and pay-as-you-go spillover remain explicit",T51;T55;T58;T60
+R30,P4,No silent reroute,Changing provider/platform/model invalidates approval; UNKNOWN old job must reconcile before new intent,T55;T56;T63
+R31,P4,Voice portability,Native voice IDs are route-scoped; unsupported export/cloning must not be inferred from audio reference support,T57;T59
+R32,P4,Hybrid QA,Single-engine continuity group default until approved handoff test; cost counts rejected takes too,T59;T63
+R33,P4,Automation entitlements,Do not treat manual Unlimited/free web as automation allowance; use allowed route and live quote,T55;T60
+R34,P4,API lifecycle,Persist actual provider job status and retention/draft-finalize expiry; cannot claim refund/cancel without evidence,T56;T63
+R35,P2,Prepare pre-send guard,Prepare must prevent accidental generation from Enter/picker/focus races before dispatch; post-send observer alone is insufficient,T34;T65

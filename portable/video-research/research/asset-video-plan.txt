@@ -1,0 +1,348 @@
+RENCANA IMPLEMENTASI: ASSET-CONSISTENT VIDEO, FLOW + SEEDANCE OPSIONAL
+Tanggal riset: 28 November 2026, UTC+07.
+Status: PLAN ONLY. Riset sumber selesai; aplikasi/plugin/koneksi akun belum dibangun atau diuji.
+Pemilik keputusan kreatif: ayah keren. Koordinator rekayasa: Hermes. Worker implementasi yang diusulkan: agy, setelah discovery model dan izin build.
+
+RINGKASAN PUTUSAN
+
+Bangun pengendali kontinuitas aset yang memisahkan library canonical, manifest scene, bukti attachment, approval biaya, dan journal pekerjaan dari engine video. Jangan mulai dengan memasang banyak extension atau otomatis menambah MCP.
+
+Urutan pilihan: Flow standard prompt + aset native + manifest lokal; gunakan browser bawaan Hermes bila memenuhi kebutuhan; Chrome DevTools MCP hanya jika gap koneksi/upload terbukti; extension tipis/panel setelah kebutuhan UX atau privilege sempit benar-benar terbukti. Dokumentasi Hermes mendukung browser sendiri melalui CDP, sedangkan MCP menyediakan primitive upload, bukan pipeline Flow.[7][26]
+
+Flow menjadi baseline yang pertama dibuktikan, bukan pemenang kualitas yang sudah diketahui. Seedance diusulkan sebagai adapter opsional dengan registry canonical bersama, tetapi izin/trust aset, model, wallet dan approval terpisah. Kontrak kita memperlakukan native Character/voice-ID sebagai provider-scoped sampai portabilitas benar-benar dibuktikan.
+
+Konsistensi dibangun di tiga lapisan yang tidak saling menggantikan:
+  A. Sumber/version aset sama: hash dan provenance.
+  B. Input terpasang benar: typed reference/binding receipt.
+  C. Hasil benar-benar konsisten: review seluruh video/audio dan sambungan scene.
+A + B tidak menjamin C. Tidak menjanjikan wajah/background pixel-identik, semua take usable, atau exactly-once billing provider.
+
+1. KEBUTUHAN PRODUK YANG DIPRIORITASKAN
+
+MUST untuk MVP:
+  - Sisip/reuse karakter; lokasi/background; prop/produk; wardrobe; style; frame; dan suara bila mode mendukung.
+  - Asset tidak sekadar disebut dalam prompt: pilih/upload, resolve, pasang pada composer, baca ulang tipe/slot/identitasnya.
+  - Scene menyimpan revision aset yang dikunci dan perubahan yang disengaja. Kamera/aksi boleh berubah; wajah, produk dan landmark tidak berubah tanpa keputusan.
+  - Referensi wajib yang hilang atau melebihi kemampuan model membuat scene BLOCKED. Tidak ada silent dropping, model switch, first-image degradation atau penggantian voice.
+  - Approval sekali pakai mengikat scene, aset, route/model/mode, durasi/resolusi, output count dan quote aktual.
+  - Durable intent sebelum dispatch, single writer per tab, UNKNOWN setelah hasil submit ambigu; tidak otomatis generate ulang.
+  - Upload aset harus diizinkan terpisah dari generation. Tidak membagikan input, menerbitkan konten, membeli kredit atau mengubah paket.
+  - Scope profil Hermes default saja; Chrome target/account/project harus sesuai. Tidak menyalin/export cookie, token atau profil.
+
+SHOULD setelah MVP terbukti:
+  - Preset continuity group; resume journal; preview references; rejection/revision loop; output provenance.
+  - Pemilihan engine berbasis constraint + hasil pilot + wallet, bukan reputasi atau sisa saldo semata.
+  - Ekspor registry/manifest redacted dan perhitungan biaya per shot diterima.
+
+TIDAK DALAM SCOPE AWAL:
+  - Unattended mass generation, multi-tab throughput, auto-retry berbayar.
+  - Arbitrary voice cloning, lip-sync lintas-engine yang dijanjikan identik, transfer native ID vendor.
+  - Private-API auth replay, CAPTCHA/anti-abuse bypass, profile/account rotation.
+  - Publikasi otomatis ke Shopee/TikTok/YouTube/Instagram, atau klaim komisi/profit.
+  - Cloud database, Kubernetes, broker lintas profil, atau UI kompleks sebelum jalur reference terbukti.
+
+2. KEMAMPUAN FLOW YANG BENAR-BENAR DIDOKUMENTASIKAN
+
+Character native dapat dibuat dengan 1–2 gambar, diberi nama dan voice. Collections membantu menyimpan aset proyek. Ini tidak membuktikan reuse lintas akun/proyek atau auto-attachment voice di semua mode.[3]
+
+Lokasi, produk/props dan style dapat menjadi Ingredients visual; Frames menentukan gambar awal/akhir. Voice reference didokumentasikan untuk Omni Ingredients, bukan semua generation. Jumlah maksimum Ingredients umum dan kombinasi penuh Frames+Ingredients+voice belum ditetapkan dalam halaman yang dibaca.[2]
+
+Pilihan awal untuk dibuktikan di akun: Omni Flash 1.2 Ingredients untuk shot berdialog; Lite Ingredients untuk visual-only dengan batas 8 detik. Pada 5 Desember 2026, Fast/Quality dan Omni 1.1 dijadwalkan pensiun; Veo Extend sudah pensiun 5 November 2026. Jangan menjadikan model tersebut fondasi baru.[1]
+
+Approved frame dapat disimpan dan dipakai lagi. Omni Extend mendukung sampai tiga gambar referensi dengan paket yang memenuhi syarat; batas itu KHUSUS Extend, bukan batas seluruh Ingredients. Sambungan frame dan voice tetap membutuhkan QA.[4]
+
+Model/paket/wilayah, slot referensi nyata, pilihan suara, jumlah output dan quote akun belum diperiksa. Tarif dokumentasi bukan izin belanja; satu request dapat membuat lebih dari satu output.[11]
+
+Native Agent/Tools juga dipertimbangkan, bukan diabaikan. Agent punya instruksi/ref proyek serta default confirmation, tetapi dapat memilih model dan membuat variasi. Tools menyediakan mini-app reusable. Rekomendasi pilot: standard prompt, Agent OFF; jangan mengganti receipt/journal dengan instruksi percakapan atau banner biaya.[5][12]
+
+3. HASIL AUDIT IMPLEMENTASI YANG MENGUBAH PILIHAN
+
+Gflow CLI: pelajari type distinction media vs Character, pembacaan ulang chip dan no-blind-retry state. Pada SHA cdb439c25fcef941ba7afaea207c792eafe33e51, _mc_mention.py:226–304 memeriksa Character entity; queue.py:501–525 mempertahankan outcome indeterminate tetapi hook rekonsiliasi client belum dijalankan. Jadi bukan solusi lengkap siap pasang.[22][27]
+
+Gflow migrated_composer.py:499–589 menunjukkan chain settings→references/entities→prompt→chip count→submit. Jalur yang dibaca tidak memasangkan reference_audio. Adanya field DTO audio bukan bukti kondisi suara diteruskan end-to-end; jangan menyalin client/auth/transport graph tanpa review.[28]
+
+FlowKit: operations.py:347–384 justru mengecualikan location dan membatasi tiga ref; flow_client.py:941–962 menolak jalur reference-to-video default atau menurunkannya ke first-reference I2V bila degraded mode diaktifkan. Registry location bukan bukti background terkirim ke generation. Tidak dipilih sebagai engine runtime kita.[23][24]
+
+Hermes Connector: install_companion.py:70–92 menargetkan semua named profiles; sessions.py:75–115 melakukan discovery lintas profil. Stock install dan stock session discovery tidak memenuhi batas default-only. Jangan menganggap manual copy satu plugin menyelesaikan masalah scope.[25][29]
+
+Chrome DevTools MCP: upload_file pada source release yang dibaca menyelesaikan file input/chooser; tidak memiliki domain receipt aset Flow atau job journal. Gunakan hanya sebagai primitive bila dibutuhkan, bukan solusi konsistensi.[26]
+
+Parent mengambil ulang delapan berkas source pada SHA pinned dan mencocokkan raw bytes dengan snapshot. Ini memvalidasi bukti source, bukan runtime, keamanan menyeluruh atau binary distribusi.
+
+4. ARSITEKTUR DAN STACK YANG DIUSULKAN
+
+Alur:
+  Brief/shot list
+    -> canonical Asset Registry + continuity group
+    -> Scene Manifest + capability/rights validation
+    -> planner merekomendasikan eligible route
+    -> satu adapter aktif (Flow lebih dulu, Seedance opsional)
+    -> prepare + binding receipt + quote
+    -> trusted human approval + budget reservation
+    -> durable dispatch + status/reconciliation
+    -> local output + full audiovisual QA
+    -> finishing atas shot yang diterima
+
+Core lokal: Python dengan type contracts dan SQLite transaction untuk registry/journal. Pilihan dependency/schema validator dan versi baru dipin pada build; jangan menggunakan pip yang mengarah ke interpreter berbeda. Tidak perlu web server sebagai requirement MVP.
+
+Integrasi Hermes: dedicated tools/plugin dengan kontrak inspect, import/resolve/upload, prepare, request approval, submit, status/reconcile, download/review. Plugin menggunakan API publik yang ditinjau, aktif hanya default, dan tidak mengedit config dengan menulis YAML manual. Dokumentasi plugin menyediakan state per active profile; kode plugin tetap komponen full-trust yang harus ditinjau.[9]
+
+Generic video_generate memang mempunyai reference_image_urls provider-dependent. Alasan dedicated Flow tools adalah role aset, separate prepare/submit, approval, job recovery, serta edit/extend yang berbeda scope—bukan klaim generic tool tidak mendukung multi-reference.[10]
+
+Storage live yang DIUSULKAN: direktori application data lokal non-sync, terpisah dari laporan OneDrive ini. Jangan menjalankan journal SQLite aktif di folder sync. Path project/asset/state final belum dipilih atau dibuat. Backup/export redacted boleh disimpan di tujuan yang disetujui.
+
+Panel/extension adalah lapisan UX opsional, bukan otoritas job. Ia boleh hilang/restart tanpa hilangnya approval/journal. Jika dibuat, mulai izin tab/origin minimum dan user file picker; jangan meminta all_urls/cookies/debugger/nativeMessaging tanpa kebutuhan terpisah yang terbukti.
+
+5. KONTRAK ASET DAN ALUR OPERATOR
+
+Spesifikasi field/state/error authoritative berada di CONTRACTS.txt; dokumen ini tidak menduplikasi schema teknis lengkap.
+
+Asset minimum:
+  assetId + immutable revision; semantic role + media kind; canonical file/hash;
+  rights/consent/commercial clearance; allowedRoutes dan trust/expiry;
+  fidelity-critical invariants; derivative parents; approval status.
+
+RemoteBinding minimum:
+  account alias + route + project + tab scope;
+  provider ID bila benar-benar terlihat, atau null;
+  native media/entity/voice distinction; label/thumbnail/slot/readback evidence;
+  status unresolved/selected-visible/stale/ambiguous.
+
+Scene minimum:
+  exact asset revision per role/speaker; locked invariants; deliberate changes;
+  route/model/mode; prompt/dialog; aspect/duration/resolution/output count;
+  capability snapshot; quote; approval; intent; result and QA decision.
+
+Workflow:
+  1. Pengguna memilih canonical character, lokasi kosong, produk/prop, wardrobe/style dan voice yang diizinkan.
+  2. Import lokal memvalidasi file/MIME/ukuran/hash/path/izin. Upload baru tidak otomatis dilakukan.
+  3. Pilih continuity group; buat shot list. Jangan menempel banyak ref yang saling bertentangan.
+  4. Capability gate menentukan apakah semuanya dapat digunakan pada mode yang dipilih.
+  5. Resolve aset existing pada proyek yang benar. Jika perlu upload, tampilkan file dan tujuan untuk izin.
+  6. Pilih dan commit references; baca ulang tipe/slot/nama/ID yang tersedia. Nama sama saja tidak cukup.
+  7. Tampilkan scene card: refs wajib, prompt, perubahan, model/mode, quote dan risiko/unknown.
+  8. Setelah approval terikat payload dan preflight ulang, reserve budget dan tulis DISPATCHING sebelum klik.
+  9. Simpan job/tile receipt aktual. Jika ambigu, UNKNOWN; suspend queue dan reconcile tanpa resubmit.
+  10. Download output benar, periksa hash/metadata/full decode; putar seluruh video/audio dan bandingkan antar-scene.
+
+PENTING: prepare-only juga harus aman dari accidental submit saat Enter dipakai pada picker. Komentar source gflow sendiri mengakui risiko stray Enter; observer setelah request keluar bukan pengaman pra-belanja.[28] Rencana menuntut pre-dispatch deny gate untuk fase prepare, diuji di fixture dan kemudian pada UI yang diizinkan. Jika tidak bisa dibuktikan dengan transport/izin minimal, gunakan manual selection dan jangan menyebut prepare otomatis bebas risiko kredit. Inspeksi request tambahan hanya setelah izin khusus; tidak menyimpan header, body auth, token atau full HAR.
+
+6. TIGA STRATEGI KONTINUITAS
+
+A. Ingredients per shot: canonical Character + location + props/style yang relevan, voice bila didukung. Paling sesuai untuk perubahan sudut/aksi dengan identitas yang sama, tetapi tetap perlu uji drift.
+B. Approved keyframe: susun frame yang sudah disetujui dari aset sah lalu gunakan mode Frames. Jika pembuatan frame memakai model, ia intent/approval/kuota terpisah. Jangan mengasumsikan voice Ingredients ikut aktif.
+C. Extend: lanjutkan klip yang sudah diterima melalui mode yang memang mendukung, bukan mengganti seluruh sequence. Jangan mewariskan frame yang ditolak atau membangun rantai turunan yang makin drift.
+
+Lokasi canonical sebaiknya menampilkan landmark/layout tanpa orang yang tidak dimaksud; karakter/produk punya referensi yang jelas. Ini mengikuti panduan reference bersih Google, bukan jaminan background spatial-lock.[2]
+
+Jika merek/label produk harus persis dan hasil generatif tidak memenuhi, pakai foto/footage produk asli pada finishing. Jangan menyamarkan ilustrasi AI sebagai demonstrasi pengalaman atau fungsi produk nyata.
+
+7. STRATEGI HYBRID FLOW + SEEDANCE
+
+Seedance 2.5 mendokumentasikan gambar/video/audio reference dan pengendalian audiovisual; angka maksimum model bukan kontrak semua platform atau bukti fitur akun. Dreamina, Jimeng, ModelArk, Volcengine dan Higgsfield diperlakukan sebagai access route terpisah.[15][17]
+
+Flow continuity anchor + Seedance optional B-roll adalah strategi mitigasi awal, BUKAN bukti Flow lebih baik untuk dialog atau Seedance pasti lebih baik untuk gerak. Pilihan primary ditetapkan sesudah uji dengan brief dan aset sebanding.
+
+Default satu kelompok scene wajah/dialog tetap pada engine/voice yang sama. Kandidat handoff pertama adalah batas scene, establishing lokasi tanpa wajah, prop/product insert, atau shot gerak dengan input berizin. Native voice ID tidak dianggap portable; narasi master berizin di finishing adalah alternatif non-lip-sync.
+
+Pembatas yang dapat membatalkan rute:
+  - ModelArk membatasi upload reference wajah manusia nyata dan jalur trusted output. Flow output bukan original ModelArk dari akun yang sama. Jangan mencoba melewati aturan dengan screenshot/crop/recompress.[18]
+  - Reference Assets preset BytePlus dibatasi experience/internal use kecuali izin yang sesuai; bukan shortcut otomatis untuk affiliate/iklan.[19]
+  - BytePlus Model Services tidak tersedia di AS menurut terms yang dibaca. Eligibility aktual harus dikonfirmasi; zona waktu/region server bukan bukti domisili atau hak akses.[21]
+  - Higgsfield automated generation memakai kredit; manual-web Unlimited bukan hak otomasi.[20]
+
+Batas mode/reference detail, first-last versus omni, model-ID per route, status pricing/access dan consent dijelaskan dalam hybrid-seedance/LAPORAN-HYBRID-SEEDANCE.md. Batas ModeArk tidak disalin ke Dreamina/Higgsfield. Hard cap route akun tetap UNKNOWN sampai dibaca.
+
+Router hanya merekomendasikan kandidat yang lolos hard constraints. Kehabisan kredit/rate limit tidak mengizinkan pindah provider saat job lama UNKNOWN. Route baru berarti quote/payload/approval baru. Jika semua rute gagal constraint: PAUSE, bukan membeli kredit atau menurunkan kualitas diam-diam.
+
+8. TAHAP IMPLEMENTASI, DEPENDENSI DAN GATE
+
+Seluruh tahap di bawah BELUM DIJALANKAN. Tidak ada tanggal selesai atau estimasi effort yang direka. Setelah repository, transport dan akses dipastikan, baru buat estimasi berdasarkan vertical slice nyata.
+
+P0 — kelayakan native dan satu koneksi browser, READ ONLY
+  Tujuan: risiko paling awal dibuktikan sebelum membangun extension.
+  Input: izin melihat tab Flow yang dipilih; pengguna membuka proyek dan memegang proses login/consent.
+  Kerja: identifikasi account/project/model/mode/assets/voice/quote yang benar-benar terlihat; standard mode dan Agent OFF untuk pilot terkontrol; uji detach/revoke pada scope aman.
+  Transport: uji native Hermes dulu jika endpoint yang disetujui tersedia. Bedakan attach live, port klasik, user-approved debugging dan profile snapshot. Jangan mengaktifkan snapshot/copy profil demi melewati login.
+  Output: live-capability-observation + keputusan transport dengan alasan dan batas privilege.
+  PASS: target tepat, binding dapat diinspeksi, tidak membaca akun/profil lain, tanpa generation.
+  STOP: perlu token/cookie export, permission terlalu luas, atau fitur inti tidak tersedia. Opsi manual/compositing tetap valid.
+
+P1 — core domain offline dan kontrak
+  Dapat disiapkan tanpa akses akun, tetapi implementasi menunggu izin build.
+  Kerja: schema/type contracts; registry+revisions; SQLite journal/atomic claim/reservation;
+         ordered role compiler; capability UNKNOWN semantics; trusted approval; fixture adapters.
+  Uji: salah role/media, file berubah, duplicate name, wrong project, path escape, prompt injection,
+       concurrent intents, stale approval, unknown quote, disk penuh/locked dan restart.
+  Output: core yang diuji tanpa endpoint provider, docs kontrak dan traceability.
+  PASS: seluruh critical policy/contract tests lulus; data fixture jelas sintetis, bukan hasil Flow palsu.
+
+P2 — Flow asset prepare, TANPA GENERATION
+  Dependensi: P0 dan P1 lulus; izin upload terpisah.
+  Kerja: resolve existing Character/media/voice; upload satu aset yang disetujui bila perlu;
+         attach character + location + prop/style sesuai kapasitas; readback typed binding;
+         stale composer handling; pre-submit guard; prepared receipt dan recheck.
+  Output: bukti source→asset→slot/chip untuk tiap role wajib, atau hasil UNVERIFIABLE yang jujur.
+  PASS: tidak ada aksi berbiaya, reference benar, mode/output tidak berubah, approval belum dikonsumsi.
+  STOP: helper sukses tetapi backend/binding tidak dapat diverifikasi; jangan lanjut paid otomatis.
+
+P3 — pilot Flow terawasi dan rekonsiliasi
+  Dependensi: P2 lulus; pengguna menyetujui canonical assets, budget dan setiap generation.
+  Kerja: satu writer, satu intent aktif; quote sebelum dispatch; simpan receipt/status/output;
+         fault/restart tests di fixture; download dan full-clip QA untuk variasi sudut/aksi/dialog.
+  Uji kreatif: frontal/profile/wide/occlusion, interaksi prop, landmark lokasi, pakaian,
+              perubahan cahaya yang disengaja, bahasa Indonesia, suara dan lip-sync jika relevan.
+  PASS kontrol: tidak ada spend tanpa approval atau input yang diam-diam dihilangkan; unknown dikarantina.
+  PASS kreatif: setiap shot yang diterima memenuhi semua atribut kritis yang ditentukan ayah;
+               threshold usability keseluruhan ditetapkan sebelum pilot, bukan angka 80% yang dikarang.
+  STOP: salah akun/proyek, kebocoran credential, dispatch tanpa journal, atau retry unknown.
+  Jika kontrol lolos tetapi kualitas terus gagal, verdict model/brief PARTIAL atau INVALIDATED;
+  perbaiki aset/keyframe/editorial atau gunakan footage asli, bukan menambah akses browser.
+
+H0 — eligibility Seedance, sebelum P4
+  Kerja: pilih SATU route yang benar-benar dimiliki/diizinkan; cek country/terms/entitlement,
+         wallet/expiry/quote, reference policy wajah/voice dan clearance komersial.
+  Tidak activate model, membeli paket, membuat key atau login tanpa izin terpisah.
+  PASS: route dan aset memenuhi semua constraints; jika UNKNOWN maka P4 tetap BLOCKED.
+
+P4 — satu adapter Seedance dan pilot hybrid
+  Dependensi: baseline P3 dan H0. Jangan membangun banyak adapter paralel.
+  Kerja: typed route/mode/ref ordering; total/per-kind limits; quote per wallet;
+         prepare receipt; job lifecycle/retention; handoff canonical assets yang sah.
+  Pilot: brief/aset sebanding pada primary/secondary, lalu satu handoff yang disetujui.
+  PASS: tidak ada salah produk/identitas/voice pada shot diterima; color/motion/audio seam dapat diterima;
+        biaya semua percobaan dan waktu operator dicatat; manfaat hybrid nyata dibanding baseline.
+  Jika tidak lebih bermanfaat: gunakan Flow-only dan simpan Seedance sebagai opsi manual. Ini hasil valid.
+
+P5 — UX/panel/extension dan operasi terbatas
+  Dependensi: core+Flow stabil; hybrid tidak wajib bila H0/P4 belum lolos.
+  Kerja: asset picker berbasis role, scene cards/diff, previews, approval dialog, cost/queue state,
+         pause/resume, export/import, retention dan backup/restore.
+  Bandingkan native Tools atau UI lokal sederhana sebelum custom extension. Native Tools yang gagal
+  inspectability tidak dijadikan jalan belakang submission. Jika extension dibutuhkan, pilih izin minimum.
+  PASS: panel restart/revoke/tab-switch tidak menyebabkan replay; data tidak sync/terbagi tanpa izin;
+        live journal tetap lokal; semua critical regression tests lulus.
+  Unattended/batch throughput adalah fase lain dengan izin dan bukti baru, bukan konsekuensi otomatis P5.
+
+9. BUDGET, KUALITAS DAN OPERASI
+
+Wallet snapshot: provider/platform/accountAlias, unit, saldo observed/UNKNOWN, capturedAt,
+expiry/reset, request/concurrency limit, reservations dan sumber bukti. Angka kredit antarlayanan tidak dijumlahkan. Harga/kuota publik tidak dianggap saldo akun.
+
+Masukkan seluruh biaya yang benar-benar berlaku: output count, persiapan gambar/kuota, preview,
+input video, draft/finalize, extend, upscale, retry yang disetujui. Jangan menganggap gambar selalu berbayar atau selalu bebas kuota; baca kebijakan exact route dan quote saat itu.
+
+Cost per accepted shot memakai biaya SEMUA percobaan terkait, bukan hanya take terbaik.
+Bila tidak ada shot diterima, nilainya tidak terdefinisi. Laporan uang lintas-wallet memerlukan konversi
+berdasarkan pembayaran/harga yang nyata; bila tidak ada, laporkan vektor kredit masing-masing.
+
+Job UNKNOWN tetap menahan reservation. Saldo bisa berubah karena aktivitas manual/perangkat lain;
+local budget hanya membatasi dispatch yang kita kendalikan. Cancel antrean bukan jaminan cancel/refund server.
+
+QA checklist per shot + seam:
+  - identitas wajah/hair/wardrobe dan speaker benar;
+  - landmark/layout/geometri tempat dan screen direction;
+  - produk/varian, jumlah/bentuk/warna/logo/label;
+  - action/motion, tangan/prop, flicker/artifact;
+  - lighting/palette, crop/aspect/resolution;
+  - voice/timbre/accent, dialog, pronunciation, lip-sync;
+  - full video/audio playback, caption bila ada, metadata dan full decode.
+Tidak ada rata-rata skor yang membolehkan salah produk atau identitas pada shot diterima. Frame sampling
+atau embedding/CLIP similarity hanya triage, bukan bukti full QA atau identitas biometrik terjamin.
+
+Keamanan/operasi:
+  - satu browser controller dan fencing/lease untuk writer; scene scope dicek ulang sebelum mutasi;
+  - root file sempit, MIME nyata, hash ulang, junction/UNC/path traversal ditolak;
+  - secrets tidak masuk manifest/log; jangan simpan full HAR, cookie/auth header, private signed URL;
+  - source/plugin/dependency dipin; preserve lisensi/NOTICE bila mengadaptasi kode;
+  - jangan mengklaim adapter policy sebagai sandbox terhadap arbitrary terminal/browser tools lain;
+  - deployment restricted/unattended kelak butuh batas runtime/toolset/OS terpisah, bukan prompt saja;
+  - backup, restore dan journal crash tests sebelum ketergantungan operasional; UI failure tidak menghapus history.
+
+10. TRACEABILITY DAN DEFINITION OF DONE
+
+requirements.csv adalah authoritative requirement list; acceptance-tests.csv memetakan test ID dan execution mode.
+Seluruh test implementasi masih NOT_RUN_PROPOSED. Pemeriksaan berkas/sitasi bukan test produk yang lulus.
+
+MVP dinyatakan DONE hanya jika import/resolve→attachment→receipt→approval→single dispatch→status/reconcile→download→QA
+benar-benar dijalankan pada scope yang disetujui dan semua critical gates di atas terverifikasi.
+
+Hybrid DONE terpisah: satu route Seedance nyata dan handoff berizin lolos QA serta biaya direkonsiliasi.
+Flow-only yang selesai tidak boleh diberi label hybrid-ready. Extension terpasang tidak sama dengan pipeline working.
+
+Owner implementasi:
+  - Hermes: kontrak, orchestration, evidence, acceptance dan review integrasi.
+  - agy: worker slice terpilih setelah mengecek CLI/model yang benar-benar tersedia; model ringan untuk
+    schema/pure unit tasks, lebih kuat untuk state-machine/concurrency/security; jangan hardcode model pensiun.
+  - ayah keren: pemilihan canonical asset, izin upload/biaya dan keputusan kualitas final.
+  - Reviewer terpisah: critical authorization/replay/budget tests sebelum paid automation.
+
+11. KEPUTUSAN PENGGUNA YANG MASIH DIPERLUKAN SEBELUM EKSEKUSI
+
+Belum dijawab/dibuktikan, dan tidak diisi dengan asumsi:
+  - folder repository implementasi dan izin build;
+  - scope tab/project/account Flow dan izin read-only/Chrome debugging yang dipilih;
+  - satu set aset canonical yang boleh diunggah, fictional vs real likeness, dan hak komersial;
+  - country/eligibility dan route akun Seedance yang benar-benar dimiliki;
+  - wallet/saldo/expiry/entitlement aktual dan plafon biaya/attempt;
+  - format video, kebutuhan dialog/lip-sync, dan definisi atribut konsistensi yang wajib.
+
+Permintaan riset/plan bukan persetujuan menginstal, mengautentikasi, mengunggah atau membelanjakan kredit.
+Tidak perlu mengirim password, token, kartu atau kode 2FA lewat chat.
+
+12. HASIL NYATA PEKERJAAN RISET INI
+
+Selesai: pembacaan dokumen resmi live; audit source pinned; evaluasi native/MCP/extension;
+analisis hybrid; kontrak dan fase implementasi; requirement-to-test mapping; pemeriksaan evidence.
+
+Belum dilakukan: build aplikasi/plugin, instalasi paket/extension/MCP, edit config/profil,
+attach ke Chrome akun pengguna, login, upload, generation, benchmark continuity atau publikasi.
+
+Laporan rinci:
+  official/REPORT-ID.md
+  source-audit/REPORT-ID.md
+  architecture-review/laporan-arsitektur-keamanan-qa.md
+  hybrid-seedance/LAPORAN-HYBRID-SEEDANCE.md
+
+Kontrak/traceability:
+  CONTRACTS.txt
+  HYBRID-DESIGN-ADDENDUM.txt
+  requirements.csv
+  acceptance-tests.csv
+
+Bukti parent:
+  parent-evidence/captures.json
+  parent-evidence/hybrid-critical-live.json
+  parent-pinned-source-checks.json
+  hybrid-parent-verification.json
+  sources-ledger.json
+
+Backend extraction sempat gagal karena search-only; pengambilan publik HTTP dan browser resmi berhasil.
+Tidak mengklaim telah memakai metode web.run yang tidak tersedia pada subagen. Timestamp pengambilan
+bukan tanggal publikasi. Laporan source berpijak pada SHA yang dicatat, bukan seluruh versi masa depan.
+
+Sources:
+[1] https://support.google.com/flow/answer/16352836?hl=en
+[2] https://support.google.com/flow/answer/16353334?co=GENIE.Platform%3DDesktop&hl=en
+[3] https://support.google.com/flow/answer/16935308?co=GENIE.Platform%3DDesktop&hl=en
+[4] https://support.google.com/flow/answer/16935718?co=GENIE.Platform%3DDesktop&hl=en
+[5] https://support.google.com/flow/answer/17093911?co=GENIE.Platform%3DDesktop&hl=en
+[7] https://hermes-agent.nousresearch.com/docs/user-guide/features/browser
+[9] https://hermes-agent.nousresearch.com/docs/developer-guide/plugins
+[10] https://hermes-agent.nousresearch.com/docs/developer-guide/video-gen-provider-plugin
+[11] https://support.google.com/flow/answer/16526234?co=GENIE.Platform%3DDesktop&hl=en
+[12] https://support.google.com/flow/answer/17104535?hl=en&ref_topic=16908930
+[15] https://seed.bytedance.com/en/blog/one-take-creation-flexible-referencing-introducing-seedance-2-5
+[17] https://dreamina.capcut.com/ai-video/ai-video-reference-inputs-faq
+[18] https://docs.byteplus.com/en/docs/ModelArk/seedance-portrait-asset-guide
+[19] https://docs.byteplus.com/en/docs/ModelArk/2275639
+[20] https://higgsfield.ai/creator-hub/help-center/integrations/what-is-higgsfield-mcp
+[21] https://docs.byteplus.com/en/docs/legal/docs-service-specific-terms
+[22] https://github.com/ffroliva/gflow-cli/blob/cdb439c25fcef941ba7afaea207c792eafe33e51/src/gflow_cli/api/transports/_mc_mention.py
+[23] https://github.com/crisng95/flowkit/blob/0ff5b5e514ab4881c71b97f467f27853961225f4/agent/sdk/services/operations.py
+[24] https://github.com/crisng95/flowkit/blob/0ff5b5e514ab4881c71b97f467f27853961225f4/agent/services/flow_client.py
+[25] https://github.com/CorsenAI/hermes-connector/blob/505df7d7108f42d663f80634474ec431c21daf73/scripts/install_companion.py
+[26] https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/8dd516e3de26ee159a51dae2f3ed58db92ced72a/src/tools/input.ts
+[27] https://github.com/ffroliva/gflow-cli/blob/cdb439c25fcef941ba7afaea207c792eafe33e51/src/gflow_cli/worker/queue.py
+[28] https://github.com/ffroliva/gflow-cli/blob/cdb439c25fcef941ba7afaea207c792eafe33e51/src/gflow_cli/api/transports/migrated_composer.py
+[29] https://github.com/CorsenAI/hermes-connector/blob/505df7d7108f42d663f80634474ec431c21daf73/hermes-plugin/sessions.py

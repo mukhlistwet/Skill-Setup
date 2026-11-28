@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "RESEARCH_SNAPSHOT_NOT_INSTALLED_OR_RUNTIME_VALIDATED",
+  "engineering_kit": {
+    "repository": "mukhlistwet/3d-engineering-video-claude-skills",
+    "revision": "8978568bee82b51a956087b24992b36214931e2e",
+    "declared_license": "GPL-3.0-or-later",
+    "adoption": "ADAPT_AFTER_REVIEW_NO_BULK_INSTALL"
+  },
+  "blender_mcp": {
+    "repository": "ahujasid/mcp-for-blender",
+    "revision": "7f31a4623cafac7441ba9b97e67a8787b9069ee2",
+    "declared_package": "mcp-for-blender",
+    "declared_version": "2.3.3",
+    "declared_license": "MIT",
+    "distribution_parity": "NOT_VERIFIED",
+    "transitive_dependency_lock": "NOT_CREATED",
+    "runtime_handshake": "NOT_RUN"
+  },
+  "version_policy": "Check current source, compatibility and user approval before installation; preserve reviewed revisions and document any update."
+}
